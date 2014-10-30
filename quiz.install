@@ -581,7 +581,13 @@ function _quiz_update_7511($quiz_node, $field_names) {
       if (empty($quiz_node->{$field_name})) {
         continue;
       }
-      $quiz->{$field_name} = $quiz_node->{$field_name};
+
+      if ('body' === $field_name) {
+        $quiz->quiz_body = $quiz_node->body;
+      }
+      else {
+        $quiz->{$field_name} = $quiz_node->{$field_name};
+      }
     }
     entity_save('quiz_entity', $quiz);
   }
