@@ -1,7 +1,12 @@
 language: php
 php:
+  - 5.3
   - 5.4
   - 5.5
+
+matrix:
+  allow_failures:
+    - php: 5.3
 
 mysql:
   database: drupal
@@ -23,6 +28,17 @@ install:
 
 before_script:
   # ---------------------
+  # Install apache server
+  # ---------------------
+  - sudo apt-get install apache2 libapache2-mod-fastcgi
+  - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
+  - sudo a2enmod rewrite actions fastcgi alias
+  - echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
+  - wget https://cdn.rawgit.com/backdrop/backdrop/fe6e16b6114995eed008596aa7c733bc907a8fca/core/misc/travis-ci/vhost.conf -O /tmp/vhost.conf
+  - sudo cp -f /tmp/vhost.conf /etc/apache2/sites-available/default
+
+  # ---------------------
   # Variables
   # ---------------------
   - cd ..
@@ -40,6 +56,12 @@ before_script:
   - mv $VENDOR/* sites/all/modules/
 
   # ---------------------
+  # Change doc-root
+  # ---------------------
+  - sudo sed -i -e "s,/var/www,$DRUPAL,g" /etc/apache2/sites-available/default
+  - sudo service apache2 restart
+
+  # ---------------------
   # Prepare env for the module
   # ---------------------
   - drush vset --yes file_temporary_path /tmp
@@ -51,14 +73,8 @@ before_script:
   # ---------------------
   - drush cc all
 
-  # ---------------------
-  # Start server
-  # ---------------------
-  - drush --quiet --yes runserver localhost:8888 > /dev/null 2>&1 &
-  - until netstat -an 2>/dev/null | grep '8888.*LISTEN'; do true; done
-
 script:
-  - drush test-run --dirty --field-labels=0 'Quiz' --uri=http://localhost:8888
+  - drush test-run --dirty --field-labels=0 'Quiz'  --uri=http://localhost:80
 
 notifications:
   email: false
