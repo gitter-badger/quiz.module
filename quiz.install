@@ -233,7 +233,7 @@ function quiz_update_7402(&$sandbox) {
   if (!db_field_exists('quiz_node_properties', 'summary_pass_format')) {
     db_add_field('quiz_node_properties', 'summary_pass_format', array('type' => 'varchar', 'length' => 255));
     db_add_field('quiz_node_properties', 'summary_default_format', array('type' => 'varchar', 'length' => 255));
-    db_add_field('quiz_result_options', 'option_summary_format', array('type' => 'varchar', 'length' => 255));
+    db_add_field('quiz_node_result_options', 'option_summary_format', array('type' => 'varchar', 'length' => 255));
     db_add_field('quiz_user_settings', 'summary_pass_format', array('type' => 'varchar', 'length' => 255));
     db_add_field('quiz_user_settings', 'summary_default_format', array('type' => 'varchar', 'length' => 255));
   }
@@ -241,12 +241,12 @@ function quiz_update_7402(&$sandbox) {
 }
 
 /**
- * Adds index on vid column to the quiz_results table and on question_vid to
- * the quiz_relationship table.
+ * Adds index on vid column to the quiz_node_results table and on child_vid to
+ * the quiz_node_relationship table.
  */
 function quiz_update_7403() {
-  db_add_index('quiz_results', 'vid', array('vid'));
-  db_add_index('quiz_relationship', 'child_id', array('question_vid'));
+  db_add_index('quiz_node_results', 'vid', array('vid'));
+  db_add_index('quiz_node_relationship', 'child_id', array('child_vid'));
 }
 
 /**
@@ -254,34 +254,34 @@ function quiz_update_7403() {
  */
 function quiz_update_7404() {
   db_change_field('quiz_node_properties', 'number_of_random_questions', 'number_of_random_questions', array(
-      'type'     => 'int',
-      'size'     => 'small',
-      'unsigned' => TRUE,
-      'not null' => TRUE,
-      'default'  => 0,
+    'type' => 'int',
+    'size' => 'small',
+    'unsigned' => TRUE,
+    'not null' => TRUE,
+    'default' => 0,
   ));
-  db_change_field('quiz_results_answers', 'number', 'number', array(
-      'type'     => 'int',
-      'size'     => 'small',
-      'unsigned' => FALSE,
-      'not null' => TRUE,
-      'default'  => 1,
+  db_change_field('quiz_node_results_answers', 'number', 'number', array(
+    'type' => 'int',
+    'size' => 'small',
+    'unsigned' => FALSE,
+    'not null' => TRUE,
+    'default' => 1,
   ));
   return t('Increased the maximum quiz size.');
 }
 
 /**
- * Remove unsigned attribute from field time_start and time_end in quiz_results table.
+ * Remove unsigned attribute from field time_start and time_end in quiz_node_results table.
  */
 function quiz_update_7405() {
   $spec = array(
-      'type'     => 'int',
-      'unsigned' => FALSE,
-      'default'  => 0,
+    'type' => 'int',
+    'unsigned' => FALSE,
+    'default' => 0,
   );
-  db_change_field('quiz_results', 'time_start', 'time_start', $spec);
-  db_change_field('quiz_results', 'time_end', 'time_end', $spec);
-  return t('Removed unsigned attribute from field time_start and time_end in quiz_results table');
+  db_change_field('quiz_node_results', 'time_start', 'time_start', $spec);
+  db_change_field('quiz_node_results', 'time_end', 'time_end', $spec);
+  return t('Removed unsigned attribute from field time_start and time_end in quiz_node_results table');
 }
 
 /**
@@ -289,12 +289,12 @@ function quiz_update_7405() {
  */
 function quiz_update_7406(&$sandbox) {
   $spec = array(
-      'type'     => 'int',
-      'not null' => TRUE,
-      'default'  => 0,
-      'size'     => 'tiny'
+    'type' => 'int',
+    'not null' => TRUE,
+    'default' => 0,
+    'size' => 'tiny'
   );
-  db_add_field('quiz_results_answers', 'is_doubtful', $spec);
+  db_add_field('quiz_node_results_answers', 'is_doubtful', $spec);
   db_add_field('quiz_node_properties', 'mark_doubtful', $spec);
   return t('Added new format fields to the tables');
 }
@@ -304,13 +304,13 @@ function quiz_update_7406(&$sandbox) {
  */
 function quiz_update_7407(&$sandbox) {
   $spec = array(
-      'type'     => 'int',
-      'size'     => 'tiny',
-      'not null' => TRUE,
-      'default'  => 0,
+    'type' => 'int',
+    'size' => 'tiny',
+    'not null' => TRUE,
+    'default' => 0,
   );
-  db_add_field('quiz_relationship', 'auto_update_max_score', $spec);
-  return t('Added new auto update max score field to the quiz_relationship table');
+  db_add_field('quiz_node_relationship', 'auto_update_max_score', $spec);
+  return t('Added new auto update max score field to the quiz_node_relationship table');
 }
 
 /**
@@ -335,58 +335,64 @@ function quiz_uninstall() {
 }
 
 /**
- * Add new layout field to the quiz_results table.
+ * Add new layout field to the quiz_node_results table.
  */
 function quiz_update_7500() {
   $spec = array(
-      'serialize'   => TRUE,
-      'type'        => 'text',
-      'description' => "Serialized layout data.",
-      'size'        => 'medium',
+    'serialize' => TRUE,
+    'type' => 'text',
+    'description' => "Serialized layout data.",
+    'size' => 'medium',
   );
-  db_add_field('quiz_results', 'layout', $spec);
-  return t('Added new layout field to the quiz_results table');
+  db_add_field('quiz_node_results', 'layout', $spec);
+  return t('Added new layout field to the quiz_node_results table');
 }
 
 /**
- * Add new result_answer_id field to the quiz_results_answers table.
+ * Add new result_answer_id field to the quiz_node_results_answers table.
  */
 function quiz_update_7501() {
-  db_drop_primary_key('quiz_results_answers');
-  db_add_unique_key('quiz_results_answers', 'result_answer', array('result_id', 'question_nid', 'question_vid'));
+  db_drop_primary_key('quiz_node_results_answers');
+  db_add_unique_key('quiz_node_results_answers', 'result_answer', array('result_id', 'question_nid', 'question_vid'));
   $spec = array(
-      'description' => 'The result answer ID.',
-      'type'        => 'serial',
-      'unsigned'    => TRUE,
-      'not null'    => TRUE,
+    'description' => 'The result answer ID.',
+    'type' => 'serial',
+    'unsigned' => TRUE,
+    'not null' => TRUE,
   );
-  db_add_field('quiz_results_answers', 'result_answer_id', $spec, array('primary key' => array('result_answer_id')));
-  return t('Added new result_answer_id field to the quiz_results_answers table.');
+  db_add_field('quiz_node_results_answers', 'result_answer_id', $spec, array('primary key' => array('result_answer_id')));
+  return t('Added new result_answer_id field to the quiz_node_results_answers table.');
 }
 
 /**
- * Add new qr_id field to the quiz_relationship table.
+ * Add new qnr_id field to the quiz_node_relationship table.
  */
 function quiz_update_7502() {
-  db_drop_primary_key('quiz_relationship');
-  db_add_unique_key('quiz_relationship', 'parent_child', array('quiz_qid', 'quiz_vid', 'question_nid', 'question_vid'));
+  db_drop_primary_key('quiz_node_relationship');
+  db_add_unique_key('quiz_node_relationship', 'parent_child', array('parent_nid', 'parent_vid', 'child_nid', 'child_vid'));
   $spec = array(
-      'type'     => 'serial',
-      'size'     => 'normal',
-      'unsigned' => TRUE,
-      'not null' => TRUE,
+    'type' => 'serial',
+    'size' => 'normal',
+    'unsigned' => TRUE,
+    'not null' => TRUE,
   );
-  db_add_field('quiz_relationship', 'qr_id', $spec, array('primary key' => array('qr_id')));
-  return t('Added new qr_id field to the quiz_relationship table.');
+  db_add_field('quiz_node_relationship', 'qnr_id', $spec, array('primary key' => array('qnr_id')));
+  return t('Added new qnr_id field to the quiz_node_relationship table.');
 }
 
 /**
- * Add new qr_pid field to the quiz_relationship table.
+ * Add new qnr_pid field to the quiz_node_relationship table.
  */
 function quiz_update_7503() {
-  $spec = array('type' => 'int', 'size' => 'normal', 'unsigned' => TRUE, 'not null' => FALSE, 'default' => NULL);
-  db_add_field('quiz_relationship', 'qr_pid', $spec);
-  return t('Added new qr_pid field to the quiz_relationship table.');
+  $spec = array(
+    'type' => 'int',
+    'size' => 'normal',
+    'unsigned' => TRUE,
+    'not null' => FALSE,
+    'default' => NULL,
+  );
+  db_add_field('quiz_node_relationship', 'qnr_pid', $spec);
+  return t('Added new qnr_pid field to the quiz_node_relationship table.');
 }
 
 /**
@@ -394,18 +400,24 @@ function quiz_update_7503() {
  * This lets us do better filtering in Views (where NULL).
  */
 function quiz_update_7504() {
-  $spec = array('type' => 'int', 'unsigned' => FALSE);
-  db_change_field('quiz_results', 'time_start', 'time_start', $spec);
-  db_change_field('quiz_results', 'time_end', 'time_end', $spec);
-  db_query("UPDATE {quiz_results} SET time_end = NULL WHERE time_end = 0");
-  return t('Removed default attribute from field time_start and time_end in quiz_results table.');
+  $spec = array(
+    'type' => 'int',
+    'unsigned' => FALSE,
+  );
+  db_change_field('quiz_node_results', 'time_start', 'time_start', $spec);
+  db_change_field('quiz_node_results', 'time_end', 'time_end', $spec);
+  db_query("UPDATE {quiz_node_results} SET time_end = NULL WHERE time_end = 0");
+  return t('Removed default attribute from field time_start and time_end in quiz_node_results table.');
 }
 
 /**
  * Revamping quiz feedback options.
  */
 function quiz_update_7505() {
-  db_add_field('quiz_node_properties', 'review_options', array('type' => 'text', 'serialize' => TRUE));
+  db_add_field('quiz_node_properties', 'review_options', array(
+    'type' => 'text',
+    'serialize' => TRUE,
+  ));
 
   drupal_get_schema(NULL, TRUE);
 
@@ -439,8 +451,16 @@ function quiz_update_7505() {
  */
 function quiz_update_7506() {
   db_drop_primary_key('quiz_node_properties');
-  db_add_field('quiz_node_properties', 'qnp_id', array('type' => 'serial'), array('primary key' => array('qnp_id')));
-  db_add_field('quiz_node_properties', 'uid', array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0));
+  db_add_field('quiz_node_properties', 'qnp_id', array(
+    'type' => 'serial',
+    ), array('primary key' => array('qnp_id')));
+
+  db_add_field('quiz_node_properties', 'uid', array(
+    'type' => 'int',
+    'unsigned' => TRUE,
+    'not null' => TRUE,
+    'default' => 0,
+  ));
 
   // We could do this, but we should really migrate user settings from 4.x.
   // Patches welcome.
@@ -451,23 +471,34 @@ function quiz_update_7506() {
  * Add allow_change to restrict users from changing answers.
  */
 function quiz_update_7507() {
-  db_add_field('quiz_node_properties', 'allow_change', array('type' => 'int', 'size' => 'small', 'not null' => TRUE, 'default' => 1));
+  db_add_field('quiz_node_properties', 'allow_change', array(
+    'type' => 'int',
+    'size' => 'small',
+    'not null' => TRUE,
+    'default' => 1,
+  ));
 }
 
 /**
  * Make our answer_timestamp field NULLable for storing the attempt layout in
  * the database.
  */
-function quiz_update_7508() {
-  $spec = array('type' => 'int', 'unsigned' => TRUE, 'not null' => FALSE, 'default' => NULL);
-  db_change_field('quiz_node_results_answers', 'answer_timestamp', 'answer_timestamp', $spec);
-  db_drop_field('quiz_result', 'layout');
+function quiz_update_7509() {
+  db_change_field('quiz_node_results_answers', 'answer_timestamp', 'answer_timestamp', array(
+    'type' => 'int',
+    'unsigned' => TRUE,
+    'not null' => FALSE,
+    'default' => NULL,
+    )
+  );
+
+  db_drop_field('quiz_node_results', 'layout');
 }
 
 /**
  * Update schema for quiz when it becomeds entity.
  */
-function quiz_update_7509() {
+function quiz_update_7510() {
   db_rename_table('quiz_node_relationship', 'quiz_relationship');
   db_change_field('quiz_relationship', 'qnr_id', 'qr_id', array('type' => 'serial', 'size' => 'normal', 'unsigned' => TRUE, 'not null' => TRUE));
   db_change_field('quiz_relationship', 'parent_nid', 'quiz_qid', array());
@@ -488,7 +519,7 @@ function quiz_update_7509() {
 /**
  * Convert quiz nodes to quiz entity
  */
-function quiz_update_7510() {
+function quiz_update_7511() {
   // create temp columns quiz_revision.{node_nid, node_vid} to save old data
   db_add_field('quiz_entity', 'node_nid', array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0));
   db_add_index('quiz_entity', 'quiz_node', array('node_qid'));
@@ -507,7 +538,7 @@ function quiz_update_7510() {
   $select->orderBy('r.vid', 'ASC');
   $result = $select->execute();
   while ($row = $result->fetchAll()) {
-    _quiz_update_7510($row);
+    _quiz_update_7511($row);
   }
 }
 
@@ -516,7 +547,7 @@ function quiz_update_7510() {
  *
  * @param stdClass $row
  */
-function _quiz_update_7510($row) {
+function _quiz_update_7511($row) {
   // find quiz revision
   if ($quiz_id = db_query('SELECT qid FROM {quiz_entity} WHERE node_nid = :nid', array(':nid' => $row->nid))) {
     $quiz = quiz_entity_single_load($quiz_id);
@@ -541,7 +572,7 @@ function _quiz_update_7510($row) {
 /**
  * Convet quiz-node fields data to quiz entity
  */
-function quiz_update_7511() {
+function quiz_update_7512() {
   // quiz node type is defined by quiz.module, but this modules no longer power
   // it. Reown to core 'node' module.
   db_update("UDPATE {node_type} set module = 'node' WHERE type='quiz'");
@@ -569,11 +600,11 @@ function quiz_update_7511() {
   $result = $select->execute();
   while ($row = $result->fetchAll()) {
     $quiz_node = node_load($row->nid, $row->vid);
-    _quiz_update_7511($quiz_node, $field_names);
+    _quiz_update_7512($quiz_node, $field_names);
   }
 }
 
-function _quiz_update_7511($quiz_node, $field_names) {
+function _quiz_update_7512($quiz_node, $field_names) {
   $sql = 'SELECT vid FROM {quiz_entity_revision} WHERE node_vid = :vid';
   if ($quiz_vid = db_query($sql, array(':vid' => $quiz_node->vid))->fetchColumn()) {
     $quiz = quiz_entity_single_load(NULL, $quiz_vid);
@@ -596,7 +627,7 @@ function _quiz_update_7511($quiz_node, $field_names) {
 /**
  * Change path aliases from quiz-node to quiz-entity
  */
-function quiz_update_7512() {
+function quiz_update_7513() {
   $select = db_select('quiz_entity');
   $select->fields('quiz_entity', array('qid, node_nid'));
   $result = $select->execute();
@@ -611,7 +642,7 @@ function quiz_update_7512() {
 /**
  * Clean up data of when quiz was node.
  */
-function quiz_update_7513() {
+function quiz_update_7514() {
   # db_drop_table('quiz_node_properties');
   # delete all quiz nodes?
   # delete quiz node type?
