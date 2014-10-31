@@ -254,18 +254,18 @@ function quiz_update_7403() {
  */
 function quiz_update_7404() {
   db_change_field('quiz_node_properties', 'number_of_random_questions', 'number_of_random_questions', array(
-    'type' => 'int',
-    'size' => 'small',
-    'unsigned' => TRUE,
-    'not null' => TRUE,
-    'default' => 0,
+      'type'     => 'int',
+      'size'     => 'small',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+      'default'  => 0,
   ));
   db_change_field('quiz_node_results_answers', 'number', 'number', array(
-    'type' => 'int',
-    'size' => 'small',
-    'unsigned' => FALSE,
-    'not null' => TRUE,
-    'default' => 1,
+      'type'     => 'int',
+      'size'     => 'small',
+      'unsigned' => FALSE,
+      'not null' => TRUE,
+      'default'  => 1,
   ));
   return t('Increased the maximum quiz size.');
 }
@@ -275,9 +275,9 @@ function quiz_update_7404() {
  */
 function quiz_update_7405() {
   $spec = array(
-    'type' => 'int',
-    'unsigned' => FALSE,
-    'default' => 0,
+      'type'     => 'int',
+      'unsigned' => FALSE,
+      'default'  => 0,
   );
   db_change_field('quiz_node_results', 'time_start', 'time_start', $spec);
   db_change_field('quiz_node_results', 'time_end', 'time_end', $spec);
@@ -289,10 +289,10 @@ function quiz_update_7405() {
  */
 function quiz_update_7406(&$sandbox) {
   $spec = array(
-    'type' => 'int',
-    'not null' => TRUE,
-    'default' => 0,
-    'size' => 'tiny'
+      'type'     => 'int',
+      'not null' => TRUE,
+      'default'  => 0,
+      'size'     => 'tiny'
   );
   db_add_field('quiz_node_results_answers', 'is_doubtful', $spec);
   db_add_field('quiz_node_properties', 'mark_doubtful', $spec);
@@ -304,10 +304,10 @@ function quiz_update_7406(&$sandbox) {
  */
 function quiz_update_7407(&$sandbox) {
   $spec = array(
-    'type' => 'int',
-    'size' => 'tiny',
-    'not null' => TRUE,
-    'default' => 0,
+      'type'     => 'int',
+      'size'     => 'tiny',
+      'not null' => TRUE,
+      'default'  => 0,
   );
   db_add_field('quiz_node_relationship', 'auto_update_max_score', $spec);
   return t('Added new auto update max score field to the quiz_node_relationship table');
@@ -339,10 +339,10 @@ function quiz_uninstall() {
  */
 function quiz_update_7500() {
   $spec = array(
-    'serialize' => TRUE,
-    'type' => 'text',
-    'description' => "Serialized layout data.",
-    'size' => 'medium',
+      'serialize'   => TRUE,
+      'type'        => 'text',
+      'description' => "Serialized layout data.",
+      'size'        => 'medium',
   );
   db_add_field('quiz_node_results', 'layout', $spec);
   return t('Added new layout field to the quiz_node_results table');
@@ -355,10 +355,10 @@ function quiz_update_7501() {
   db_drop_primary_key('quiz_node_results_answers');
   db_add_unique_key('quiz_node_results_answers', 'result_answer', array('result_id', 'question_nid', 'question_vid'));
   $spec = array(
-    'description' => 'The result answer ID.',
-    'type' => 'serial',
-    'unsigned' => TRUE,
-    'not null' => TRUE,
+      'description' => 'The result answer ID.',
+      'type'        => 'serial',
+      'unsigned'    => TRUE,
+      'not null'    => TRUE,
   );
   db_add_field('quiz_node_results_answers', 'result_answer_id', $spec, array('primary key' => array('result_answer_id')));
   return t('Added new result_answer_id field to the quiz_node_results_answers table.');
@@ -371,10 +371,10 @@ function quiz_update_7502() {
   db_drop_primary_key('quiz_node_relationship');
   db_add_unique_key('quiz_node_relationship', 'parent_child', array('parent_nid', 'parent_vid', 'child_nid', 'child_vid'));
   $spec = array(
-    'type' => 'serial',
-    'size' => 'normal',
-    'unsigned' => TRUE,
-    'not null' => TRUE,
+      'type'     => 'serial',
+      'size'     => 'normal',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
   );
   db_add_field('quiz_node_relationship', 'qnr_id', $spec, array('primary key' => array('qnr_id')));
   return t('Added new qnr_id field to the quiz_node_relationship table.');
@@ -385,11 +385,11 @@ function quiz_update_7502() {
  */
 function quiz_update_7503() {
   $spec = array(
-    'type' => 'int',
-    'size' => 'normal',
-    'unsigned' => TRUE,
-    'not null' => FALSE,
-    'default' => NULL,
+      'type'     => 'int',
+      'size'     => 'normal',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+      'default'  => NULL,
   );
   db_add_field('quiz_node_relationship', 'qnr_pid', $spec);
   return t('Added new qnr_pid field to the quiz_node_relationship table.');
@@ -401,8 +401,8 @@ function quiz_update_7503() {
  */
 function quiz_update_7504() {
   $spec = array(
-    'type' => 'int',
-    'unsigned' => FALSE,
+      'type'     => 'int',
+      'unsigned' => FALSE,
   );
   db_change_field('quiz_node_results', 'time_start', 'time_start', $spec);
   db_change_field('quiz_node_results', 'time_end', 'time_end', $spec);
@@ -415,8 +415,8 @@ function quiz_update_7504() {
  */
 function quiz_update_7505() {
   db_add_field('quiz_node_properties', 'review_options', array(
-    'type' => 'text',
-    'serialize' => TRUE,
+      'type'      => 'text',
+      'serialize' => TRUE,
   ));
 
   drupal_get_schema(NULL, TRUE);
@@ -452,14 +452,14 @@ function quiz_update_7505() {
 function quiz_update_7506() {
   db_drop_primary_key('quiz_node_properties');
   db_add_field('quiz_node_properties', 'qnp_id', array(
-    'type' => 'serial',
+      'type' => 'serial',
     ), array('primary key' => array('qnp_id')));
 
   db_add_field('quiz_node_properties', 'uid', array(
-    'type' => 'int',
-    'unsigned' => TRUE,
-    'not null' => TRUE,
-    'default' => 0,
+      'type'     => 'int',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+      'default'  => 0,
   ));
 
   // We could do this, but we should really migrate user settings from 4.x.
@@ -472,10 +472,10 @@ function quiz_update_7506() {
  */
 function quiz_update_7507() {
   db_add_field('quiz_node_properties', 'allow_change', array(
-    'type' => 'int',
-    'size' => 'small',
-    'not null' => TRUE,
-    'default' => 1,
+      'type'     => 'int',
+      'size'     => 'small',
+      'not null' => TRUE,
+      'default'  => 1,
   ));
 }
 
@@ -485,10 +485,10 @@ function quiz_update_7507() {
  */
 function quiz_update_7509() {
   db_change_field('quiz_node_results_answers', 'answer_timestamp', 'answer_timestamp', array(
-    'type' => 'int',
-    'unsigned' => TRUE,
-    'not null' => FALSE,
-    'default' => NULL,
+      'type'     => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+      'default'  => NULL,
     )
   );
 
@@ -647,7 +647,7 @@ function quiz_update_7514() {
   # delete all quiz nodes?
   # delete quiz node type?
 
-  db_drop_index('quiz_node', 'quiz_node');
+  db_drop_index('quiz_entity', 'quiz_node');
   db_drop_field('quiz_entity', 'node_nid');
   db_drop_field('quiz_entity_revision', 'node_vid');
 }
