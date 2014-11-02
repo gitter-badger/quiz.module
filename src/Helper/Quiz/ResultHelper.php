@@ -38,6 +38,7 @@ class ResultHelper {
     if ($score['is_evaluated']) {
       // Call hook_quiz_scored().
       module_invoke_all('quiz_scored', $quiz, $score, $result_id);
+
       $this->maintainResult($user, $quiz, $result_id);
       db_update('quiz_results')
         ->fields(array('is_evaluated' => 1))

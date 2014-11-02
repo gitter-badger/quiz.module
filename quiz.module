@@ -177,8 +177,8 @@ function quiz_question_module_for_type($question_type) {
  *   TRUE if the question has been answered in the attempt.
  */
 function quiz_result_is_question_answered($result, $question) {
-  $qra = quiz_result_answer_load($result->result_id, $question->nid, $question->vid);
-  return !empty($qra->answer_timestamp);
+  $answer = quiz_result_answer_load($result->result_id, $question->nid, $question->vid);
+  return !empty($answer->answer_timestamp);
 }
 
 // ---------------------

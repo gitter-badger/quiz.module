@@ -65,12 +65,12 @@ class FormSubmission extends QuestionHelper {
         ->delete();
 
       // Mark our question attempt as skipped, reset the correct and points flag.
-      $qra = quiz_result_answer_load($this->result->result_id, $question->nid, $question->vid);
-      $qra->is_skipped = 1;
-      $qra->is_correct = 0;
-      $qra->points_awarded = 0;
-      $qra->answer_timestamp = REQUEST_TIME;
-      entity_save('quiz_result_answer', $qra);
+      $answer = quiz_result_answer_load($this->result->result_id, $question->nid, $question->vid);
+      $answer->is_skipped = 1;
+      $answer->is_correct = 0;
+      $answer->points_awarded = 0;
+      $answer->answer_timestamp = REQUEST_TIME;
+      entity_save('quiz_result_answer', $answer);
 
       $this->redirect($this->quiz, $this->result->getNextPageNumber($this->page_number));
     }
@@ -173,8 +173,6 @@ class FormSubmission extends QuestionHelper {
     // have pages of unanswered questions. Also kills a lot of the skip code that
     // was necessary before.
     foreach ($this->result->layout as $qinfo) {
-      // Load the Quiz answer submission from the database.
-      $qra = quiz_result_answer_load($this->result->result_id, $qinfo['nid'], $qinfo['vid']);
       $current_question = node_load($qinfo['nid'], $qinfo['vid']);
 
       foreach ($this->result->layout as $question) {
@@ -183,11 +181,14 @@ class FormSubmission extends QuestionHelper {
         }
       }
 
-      if (!$qra) {
+      // Load the Quiz answer submission from the database.
+      if (!$answer = quiz_result_answer_load($this->result->result_id, $qinfo['nid'], $qinfo['vid'])) {
         $qi_instance = _quiz_question_response_get_instance($this->result->result_id, $current_question, NULL);
         $qi_instance->delete();
         $bare_object = $qi_instance->toBareObject();
-        quiz()->getQuizHelper()->saveQuestionResult($this->quiz, $bare_object, array('set_msg' => TRUE, 'question_data' => $question_array));
+        quiz()
+          ->getQuizHelper()
+          ->saveQuestionResult($this->quiz, $bare_object, array('set_msg' => TRUE, 'question_data' => $question_array));
       }
     }
 
