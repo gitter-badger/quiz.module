@@ -131,7 +131,7 @@ function _quiz_get_question_row($sub_form, $id) {
 function theme_quiz_categorized_form($variables) {
   $form = $variables['form'];
 
-  drupal_add_js(drupal_get_path('module', 'quiz') . '/js/quiz.admin.categorized-form.js');
+  drupal_add_js(drupal_get_path('module', 'quiz') . '/misc/js/quiz.admin.categorized-form.js');
 
   $rows = array();
   foreach ($form as $key => &$existing) {

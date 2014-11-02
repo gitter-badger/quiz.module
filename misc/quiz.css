@@ -1,11 +1,11 @@
-/*
+/**
  * Definitions that apply while viewing questions
  */
 .question-type-name {
   font-style: italic;
 }
 
-/*
+/**
  * Definitions that apply while taking the quiz.
  */
 #quiz-progress {
@@ -36,7 +36,6 @@ td.quiz-summary-qcell table td {
 }
 
 .quiz-summary-text {
-
 }
 
 .feedback-icon {
@@ -355,13 +354,3 @@ input#edit-submit-hidden {
 .quiz-score-icon.unselected {
   background-image: url('images/circle-o_808080_64.png');
 }
-
-/*
-Fun
-
-#quiz-question-answering-form {
-  background-image: url('theme/question_bg.png');
-  background-repeat: no-repeat;
-  background-position: top left;
-}
-*/

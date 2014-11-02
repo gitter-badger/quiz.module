@@ -126,7 +126,7 @@ class QuizAnsweringForm {
           '#prefix'        => '<div class="mark-doubtful checkbox enabled"><div class="toggle"><div></div></div>',
           '#suffix'        => '</div>',
           '#default_value' => 0,
-          '#attached'      => array('js' => array(drupal_get_path('module', 'quiz') . '/js/quiz_take.js')),
+          '#attached'      => array('js' => array(drupal_get_path('module', 'quiz') . '/misc/js/quiz_take.js')),
       );
 
       // @TODO: Reduce queries
@@ -190,7 +190,7 @@ class QuizAnsweringForm {
     if ($is_last && $this->quiz->backwards_navigation && !$this->quiz->repeat_until_correct) {
       $form['#attributes']['class'][] = 'quiz-answer-confirm';
       $form['#attributes']['data-confirm-message'] = t("By proceeding you won't be able to go back and edit your answers.");
-      $form['#attached']['js'][] = drupal_get_path('module', 'quiz') . '/js/quiz_confirm.js';
+      $form['#attached']['js'][] = drupal_get_path('module', 'quiz') . '/misc/js/quiz_confirm.js';
     }
   }
 

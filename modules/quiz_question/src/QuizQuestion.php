@@ -161,7 +161,7 @@ abstract class QuizQuestion {
   private function includeAutoTitleScript() {
     $max_length = variable_get('quiz_autotitle_length', 50);
     drupal_add_js(array('quiz_max_length' => $max_length), array('type' => 'setting'));
-    drupal_add_js(drupal_get_path('module', 'quiz') . '/js/quiz.auto-title.js');
+    drupal_add_js(drupal_get_path('module', 'quiz') . '/misc/js/quiz.auto-title.js');
   }
 
   /**

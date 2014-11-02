@@ -9,7 +9,7 @@
  * Jumper form.
  */
 function quiz_jumper_form($form, $form_state, $questions, $current) {
-  $form['#attached']['js'][] = drupal_get_path('module', 'quiz') . '/js/quiz.jumper.js';
+  $form['#attached']['js'][] = drupal_get_path('module', 'quiz') . '/misc/js/quiz.jumper.js';
 
   $form['question_number'] = array(
       '#type'          => 'select',
