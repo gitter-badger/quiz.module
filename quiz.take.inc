@@ -1,20 +1,10 @@
 <?php
 
-use Drupal\quiz\Controller\QuizQuestionFeedbackController;
-
 /**
  * @file quiz.take.inc
  *
  * Functions to render and process quiz-taking pages.
  */
-
-/**
- * Return a form with question feedback.
- */
-function quiz_question_feedback($quiz, $question) {
-  $controller = new QuizQuestionFeedbackController($quiz);
-  return $controller->buildRenderArray($question);
-}
 
 /**
  * Actions to take at the end of a quiz

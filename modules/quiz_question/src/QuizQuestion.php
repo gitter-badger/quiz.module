@@ -2,6 +2,8 @@
 
 namespace Drupal\quiz_question;
 
+use Drupal\quiz\Controller\QuizQuestionFeedbackController;
+use Drupal\quiz\Entity\QuizEntity;
 use stdClass;
 
 /**
@@ -320,7 +322,8 @@ abstract class QuizQuestion {
     if ($quiz->repeat_until_correct && !$result->isCorrect()) {
       form_set_error('', t('The answer was incorrect. Please try again.'));
 
-      $feedback = quiz_question_feedback($quiz, $current_question);
+      $controller = new QuizQuestionFeedbackController($quiz);
+      $feedback = $controller->buildRenderArray($current_question);
       $element['feedback'] = array(
           '#weight' => 100,
           '#markup' => drupal_render($feedback),
@@ -353,7 +356,7 @@ abstract class QuizQuestion {
    */
   function saveRelationships() {
     if (!empty($this->node->quiz_nid) && !empty($this->node->quiz_vid)) {
-      /* @var $quiz \Drupal\quiz\Entity\QuizEntity */
+      /* @var $quiz QuizEntity */
       $quiz = quiz_entity_single_load($this->node->quiz_nid, $this->node->quiz_vid);
       $quiz_id = $quiz->qid;
       $ids[0] = $quiz_id;
