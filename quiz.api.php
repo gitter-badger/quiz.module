@@ -22,33 +22,6 @@
  */
 
 /**
- * Implements hook_quiz_begin().
- *
- * Fired when a new quiz result is created.
- */
-function hook_quiz_begin($quiz, $result_id) {
-
-}
-
-/**
- * Implements hook_quiz_finished().
- *
- * Fired after the last question is submitted.
- */
-function hook_quiz_finished($quiz, $score, $data) {
-
-}
-
-/**
- * Implements hook_quiz_scored().
- *
- * Fired when a quiz is evaluated.
- */
-function hook_quiz_scored($quiz, $score, $result_id) {
-
-}
-
-/**
  * Implements hook_quiz_question_info().
  */
 function hook_quiz_question_info() {
@@ -61,4 +34,31 @@ function hook_quiz_question_info() {
           'module'            => 'quiz_question',
       ),
   );
+}
+
+/**
+ * Implements hook_quiz_begin().
+ *
+ * Fired when a new quiz result is created.
+ */
+function hook_quiz_begin(Drupal\quiz\Entity\QuizEntity $quiz, $result_id) {
+
+}
+
+/**
+ * Implements hook_quiz_finished().
+ *
+ * Fired after the last question is submitted.
+ */
+function hook_quiz_finished(Drupal\quiz\Entity\QuizEntity $quiz, $score, $data) {
+
+}
+
+/**
+ * Implements hook_quiz_scored().
+ *
+ * Fired when a quiz is evaluated.
+ */
+function hook_quiz_scored(Drupal\quiz\Entity\QuizEntity $quiz, $score, $result_id) {
+
 }
