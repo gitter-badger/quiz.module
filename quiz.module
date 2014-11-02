@@ -125,16 +125,6 @@ function quiz_action_options($type = 'all') {
 }
 
 /**
- * Returns an array with quiz titles keyed with quiz node ids.
- *
- * @return array
- *   Options suitable for a form, in which the value is nid.
- */
-function quiz_get_quiz_options() {
-  return quiz()->getQuizHelper()->getSettingHelper()->getQuizOptions();
-}
-
-/**
  * Finds out if a quiz has been answered or not.
  *
  * @return
