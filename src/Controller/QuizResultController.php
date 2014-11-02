@@ -2,33 +2,28 @@
 
 namespace Drupal\quiz\Controller;
 
-class QuizResultController {
+use Drupal\quiz\Entity\QuizEntity;
+
+class QuizResultController extends QuizResultBaseController {
 
   /**
    * Callback for quiz-result/%
    *
    * Quiz result report page for the quiz admin section
    *
-   * @param \Drupal\quiz\Entity\QuizEntity $quiz
-   *   The quiz entity
+   * @param QuizEntity $quiz
    * @param $result_id
    *   The result id
    */
   public static function staticCallback($quiz, $result_id) {
-    // Make sure we have the right version of the quiz
-    $result = db_query('SELECT quiz_vid, uid FROM {quiz_results} WHERE result_id = :result_id', array(
-        ':result_id' => $result_id
-      ))->fetchObject();
-    if ($quiz->vid != $result->vid) {
-      $quiz_id = $quiz->qid;
-      $quiz = quiz_entity_single_load($quiz_id, $result->vid);
-    }
+    $result = quiz_result_load($result_id);
+    $quiz_revision = quiz_entity_single_load($quiz->qid, $result->vid);
+    $obj = new static($quiz, $quiz_revision, $result);
+    return $obj->render();
+  }
 
+  public function render() {
     // Get all the data we need.
-    $questions = quiz()->getQuizHelper()->getResultHelper()->getAnswers($quiz, $result_id);
-    $score = quiz()->getQuizHelper()->getResultHelper()->calculateScore($quiz, $result_id);
-    $summary = quiz()->getQuizHelper()->getResultHelper()->getSummaryText($quiz, $score);
-
     // Lets add the quiz title to the breadcrumb array.
     # $breadcrumb = drupal_get_breadcrumb();
     # $breadcrumb[] = l(t('Quiz Results'), 'admin/quiz/reports/results');
@@ -36,12 +31,12 @@ class QuizResultController {
     # drupal_set_breadcrumb($breadcrumb);
 
     $data = array(
-        'quiz'      => $quiz,
-        'questions' => $questions,
-        'score'     => $score,
-        'summary'   => $summary,
-        'result_id' => $result_id,
-        'account'   => user_load($result->uid),
+        'quiz'      => $this->quiz_revision,
+        'questions' => $this->getAnswers(),
+        'score'     => $this->score,
+        'summary'   => $this->getSummaryText(),
+        'result_id' => $this->result->result_id,
+        'account'   => user_load($this->result->uid),
     );
 
     return theme('quiz_result', $data);

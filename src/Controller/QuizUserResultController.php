@@ -13,19 +13,7 @@ use Drupal\quiz\Entity\Result;
  *
  * Show result page for a given result
  */
-class QuizUserResultController {
-
-  /** @var QuizEntity */
-  private $quiz;
-
-  /** @var QuizEntity */
-  private $quiz_revision;
-
-  /** @var Result */
-  private $result;
-
-  /** @var int */
-  private $quiz_id;
+class QuizUserResultController extends QuizResultBaseController {
 
   /**
    * @param Result $result
@@ -35,17 +23,6 @@ class QuizUserResultController {
     $quiz_revision = quiz_entity_single_load($result->quiz_qid, $result->quiz_vid);
     $obj = new static($quiz, $quiz_revision, $result);
     return $obj->render();
-  }
-
-  public function __construct($quiz, $quiz_revision, $result) {
-    $this->quiz = $quiz;
-    $this->quiz_revision = $quiz_revision;
-    $this->result = $result;
-    $this->quiz_id = $this->result->quiz_qid;
-    $this->score = quiz()
-      ->getQuizHelper()
-      ->getResultHelper()
-      ->calculateScore($this->quiz_revision, $this->result->result_id);
   }
 
   /**
@@ -58,9 +35,9 @@ class QuizUserResultController {
 
     $data = array(
         'quiz'      => $this->quiz_revision,
-        'questions' => quiz()->getQuizHelper()->getResultHelper()->getAnswers($this->quiz_revision, $this->result->result_id),
+        'questions' => $this->getAnswers(),
         'score'     => $this->score,
-        'summary'   => quiz()->getQuizHelper()->getResultHelper()->getSummaryText($this->quiz_revision, $this->score),
+        'summary'   => $this->getSummaryText(),
         'result_id' => $this->result->result_id,
         'account'   => user_load($this->result->uid),
     );
