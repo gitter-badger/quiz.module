@@ -4,7 +4,34 @@
  * User pages.
  * @file
  */
-// THEME FUNCTIONS
+
+/**
+ * Jumper form.
+ */
+function quiz_jumper_form($form, $form_state, $questions, $current) {
+  $form['#attached']['js'][] = drupal_get_path('module', 'quiz') . '/js/quiz.jumper.js';
+
+  $form['question_number'] = array(
+      '#type'          => 'select',
+      '#options'       => $questions,
+      '#default_value' => $current,
+  );
+
+  $form['submit'] = array(
+      '#type'       => 'submit',
+      '#value'      => t('Jump'),
+      '#attributes' => array('class' => array('js-hide')),
+      '#submit'     => array(function($form, &$form_state) {
+            $quiz = quiz_entity_single_load(__quiz_get_context_id());
+            quiz()
+              ->getQuizHelper()
+              ->getQuestionHelper()
+              ->redirect($quiz, $form_state['values']['question_number'] - 1);
+            $form_state['redirect'] = "quiz/" . $quiz->qid . "/take/" . $form_state['values']['question_number'];
+      }),
+  );
+  return $form;
+}
 
 /**
  * Pass the correct mark to the theme so that theme authors can use an image.
@@ -36,10 +63,10 @@ function theme_quiz_progress($variables) {
     // Show jump form.
     if ($variables['pager']) {
       $output .= theme('quiz_pager', array(
-        'quiz'     => $variables['quiz'],
-        'siblings' => variable_get('quiz_pager_siblings', 5),
-        'current'  => $variables['current'],
-        'total'    => count($variables['questions']),
+          'quiz'     => $variables['quiz'],
+          'siblings' => variable_get('quiz_pager_siblings', 5),
+          'current'  => $variables['current'],
+          'total'    => count($variables['questions']),
       ));
     }
     else {
@@ -147,11 +174,11 @@ function theme_quiz_result($variables) {
 
   // Display overall result.
   $params = array(
-    '%num_correct'    => $score['numeric_score'],
-    '%question_count' => $score['possible_score'],
-    '!username'       => ($user->uid == $account->uid) ? t('You') : theme('username', array('account' => $account)),
-    '@score'          => $score['percentage_score'],
-    '!yourtotal'      => ($user->uid == $account->uid) ? t('Your') : t('Total'),
+      '%num_correct'    => $score['numeric_score'],
+      '%question_count' => $score['possible_score'],
+      '!username'       => ($user->uid == $account->uid) ? t('You') : theme('username', array('account' => $account)),
+      '@score'          => $score['percentage_score'],
+      '!yourtotal'      => ($user->uid == $account->uid) ? t('Your') : t('Total'),
   );
 
   // @todo should use quiz_feedback_can_review but we dont have the quiz result here.
