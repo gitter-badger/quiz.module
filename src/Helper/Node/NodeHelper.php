@@ -8,7 +8,7 @@ abstract class NodeHelper {
    * Common actions that need to be done before a quiz is inserted or updated
    *
    * @param $quiz
-   *   Quiz node
+   *   Quiz entity
    */
   protected function presaveActions(&$quiz) {
     $this->translateFormDate($quiz, 'quiz_open');

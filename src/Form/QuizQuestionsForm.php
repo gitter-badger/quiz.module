@@ -78,7 +78,7 @@ class QuizQuestionsForm extends BaseForm {
    * @param $types
    *   All the question types(array)
    * @param $quiz
-   *   The quiz node
+   *   The quiz entity
    */
   private function addFieldsForCreatingQuestions(&$form, &$types, &$quiz) {
     // Display links to create other questions.
@@ -121,10 +121,9 @@ class QuizQuestionsForm extends BaseForm {
   /**
    * Add fields for random quiz to the quiz_questions_form
    *
-   * @param $form
+   * @param array $form
    *   FAPI form array
-   * @param $quiz
-   *   The quiz node(object)
+   * @param QuizEntity $quiz
    */
   private function addFieldsForRandomQuiz(&$form, $quiz) {
     if ($quiz->randomization != 2) {
@@ -192,8 +191,8 @@ class QuizQuestionsForm extends BaseForm {
    *   FAPI form(array)
    * @param $questions
    *   The questions to be added to the question list(array)
-   * @param $quiz
-   *   The quiz node(object)
+   * @param QuizEntity $quiz
+   *   The quiz entity
    * @param $question_types
    *   array of all available question types
    */
@@ -503,7 +502,7 @@ class QuizQuestionsForm extends BaseForm {
   /**
    * Update a quiz set of items with new weights and membership
    * @param $quiz
-   *   The quiz node
+   *   The quiz entity
    * @param $weight_map
    *   Weights for each question(determines the order in which the question will be taken by the quiz taker)
    * @param $max_scores

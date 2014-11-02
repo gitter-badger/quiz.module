@@ -146,7 +146,7 @@ function theme_quiz_view_stats($variables) {
  * Theme the result page.
  *
  * @param $quiz
- *  The quiz node object.
+ *  The quiz entity object.
  * @param $questions
  *  The questions array as defined by _quiz_get_answers.
  * @param $score

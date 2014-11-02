@@ -13,7 +13,7 @@ class QuizCategorizedForm extends BaseForm {
    * @param array $form_state
    *  The form state array
    * @param object $quiz
-   *  The quiz node
+   *  The quiz entity
    */
   public function getForm($form, $form_state, $quiz) {
     $form['#tree'] = TRUE;

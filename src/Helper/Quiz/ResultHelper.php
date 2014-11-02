@@ -9,7 +9,7 @@ class ResultHelper {
   /**
    * Update a score for a quiz.
    *
-   * This updates the quiz node results table.
+   * This updates the quiz entity results table.
    *
    * It is used in cases where a quiz score is changed after the quiz has been
    * taken. For example, if a long answer question is scored later by a human,
@@ -18,7 +18,7 @@ class ResultHelper {
    * Important: The value stored in the table is the *percentage* score.
    *
    * @param $quiz
-   *   The quiz node for the quiz that is being scored.
+   *   The quiz entity for the quiz that is being scored.
    * @param $result_id
    *   The result ID to update.
    * @return
@@ -122,7 +122,7 @@ class ResultHelper {
    * Calculates the score user received on quiz.
    *
    * @param $quiz
-   *   The quiz node.
+   *   The quiz entity.
    * @param $result_id
    *   Quiz result ID.
    *
@@ -213,7 +213,7 @@ class ResultHelper {
    * Deletes results for a quiz according to the keep results setting
    *
    * @param QuizEntity $quiz
-   *  The quiz node to be maintained
+   *  The quiz entity to be maintained
    * @param int $result_id
    *  The result id of the latest result for the current user
    * @return
@@ -286,7 +286,7 @@ class ResultHelper {
    * This was _quiz_delete_old_in_progress()
    *
    * @param $quiz
-   *   A quiz node where old in progress results shall be deleted.
+   *   A quiz entity where old in progress results shall be deleted.
    * @param $uid
    *   The userid of the user the old in progress results belong to.
    */
@@ -319,7 +319,7 @@ class ResultHelper {
    *   again).
    *
    * @param $quiz
-   *   The quiz node object.
+   *   The quiz entity object.
    * @param $score
    *   The score information as returned by quiz_calculate_score().
    * @return

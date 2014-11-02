@@ -13,7 +13,7 @@ use Drupal\quiz\Helper\QuizHelper;
  * yet.
  *
  * Quiz.nodeHelper — Helper for node-hook implementations.
- * Quiz.quizHelper — Helper for quiz node/object.
+ * Quiz.quizHelper — Helper for quiz entity/object.
  * Quiz.mailHelper — Build/format email messages.
  * Quiz.quizHelper.settingHelper - Get/Set/… quiz settings.
  * Quiz.quizHelper.resultHelper — Helper methods for quiz's results.

@@ -25,7 +25,7 @@ class SettingHelper extends FormHelper {
    * Returns the users default settings.
    *
    * @param $node
-   *   Quiz node.
+   *   Quiz entity.
    * @param $uid
    *   (optional) The uid of the user to get the settings for. Defaults to the
    *   current user (NULL).
@@ -90,7 +90,7 @@ class SettingHelper extends FormHelper {
   }
 
   /**
-   * Insert or update the quiz node properties accordingly.
+   * Insert or update the quiz entity properties accordingly.
    */
   public function saveQuizSettings($entity) {
     $sql = "SELECT qnp_id

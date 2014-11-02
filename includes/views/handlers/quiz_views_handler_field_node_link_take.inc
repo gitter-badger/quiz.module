@@ -6,7 +6,7 @@
  */
 
 /**
- * Field handler to present a link to take a quiz node.
+ * Field handler to present a link to take a quiz entity.
  *
  * @ingroup views_field_handlers
  */

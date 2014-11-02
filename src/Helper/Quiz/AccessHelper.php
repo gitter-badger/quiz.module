@@ -23,7 +23,7 @@ class AccessHelper {
    * Helper function to determine if a user has access to view his quiz results
    *
    * @param object $quiz
-   *  The Quiz node
+   *  The Quiz entity
    */
   public function canAccessMyResults($quiz, $account) {
     if ($quiz->type !== 'quiz') {
@@ -37,7 +37,7 @@ class AccessHelper {
    * pages.
    *
    * @param $quiz
-   *   The quiz node.
+   *   The quiz entity.
    * @param $result_id
    *   The result id of a result we are trying to access.
    * @return boolean
@@ -97,10 +97,10 @@ class AccessHelper {
   }
 
   /**
-   * Retrieves the quiz node from the menu router.
+   * Retrieves the quiz entity from the menu router.
    *
    * @return
-   *   Quiz node, if found, or FALSE if quiz node can't be retrieved from the menu
+   *   Quiz entity, if found, or FALSE if quiz entity can't be retrieved from the menu
    *   router.
    */
   private function getQuizFromMenu() {

@@ -77,7 +77,7 @@ function quiz_views_handlers() {
  * Implements hook_views_data_alter().
  */
 function quiz_views_data_alter(&$data) {
-  // Join the quiz properties table to Quiz nodes.
+  // Join the quiz properties table to quiz entities.
   $data['quiz_entity_revision']['table']['join'] = array(
       'quiz_entity' => array('left_field' => 'vid', 'field' => 'vid', 'type' => 'INNER'),
   );

@@ -465,7 +465,7 @@ function quiz_access_my_result($result) {
  * pages.
  *
  * @param $quiz
- *   The quiz node.
+ *   The quiz entity.
  * @param $result_id
  *   The result id of a result we are trying to access.
  * @return boolean
@@ -480,7 +480,7 @@ function quiz_access_results($quiz, $result_id = NULL) {
  * Helper function to determine if a user has access to view his quiz results
  *
  * @param object $quiz
- *  The Quiz node
+ *  The Quiz entity
  */
 function quiz_access_my_results($quiz) {
   global $user;
@@ -491,7 +491,7 @@ function quiz_access_my_results($quiz) {
  * Does the current user have access to take the quiz?
  *
  * @param $quiz
- *  The quiz node
+ *  The quiz entity
  */
 function quiz_take_access($quiz) {
   global $user;

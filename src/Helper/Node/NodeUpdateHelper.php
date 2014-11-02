@@ -7,7 +7,7 @@ use PDO;
 class NodeUpdateHelper extends NodeHelper {
 
   public function execute($quiz) {
-    // Quiz node vid (revision) was updated.
+    // Quiz entity vid (revision) was updated.
     if (isset($quiz->revision) && $quiz->revision) {
       // Create new quiz-question relation entries in the quiz_relationship table.
       $this->updateQuestionRelationship($quiz->old_vid, $quiz->vid, $quiz->qid);

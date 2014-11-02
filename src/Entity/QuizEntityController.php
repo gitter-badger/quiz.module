@@ -93,7 +93,7 @@ class QuizEntityController extends EntityAPIController {
 
       // When this function called direct from node form submit the
       // $option['option_summary']['value'] and $option['option_summary']['format'] are we need
-      // But when updating a quiz node eg. on manage questions page, this values
+      // But when updating a quiz entity eg. on manage questions page, this values
       // come from loaded node, not from a submitted form.
       if (is_array($option['option_summary'])) {
         $option['option_summary_format'] = $option['option_summary']['format'];

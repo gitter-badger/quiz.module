@@ -134,7 +134,7 @@ function short_answer_theme($existing, $type, $theme, $path) {
  * reflected in the total scoring table.
  *
  * @param $quiz
- *  Quiz node.
+ *  Quiz entity.
  * @param $nid
  *  Node ID of question.
  * @param $vid

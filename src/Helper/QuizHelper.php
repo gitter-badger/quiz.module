@@ -169,9 +169,9 @@ class QuizHelper {
    * a user should answer when taking a quiz. quiz_build_question_list is written for that purpose.
    *
    * @param $quiz_nid
-   *   Quiz node id.
+   *   Quiz entity id.
    * @param $quiz_vid
-   *   Quiz node version id.
+   *   Quiz entity version id.
    *
    * @return
    *   An array of questions.
@@ -240,7 +240,7 @@ class QuizHelper {
    * Get an array list of random questions for a quiz.
    *
    * @param $quiz
-   *   The quiz node.
+   *   The quiz entity.
    *
    * @return
    *   Array of nid/vid combos for quiz questions.
@@ -414,7 +414,7 @@ class QuizHelper {
    * a quiz.
    *
    * @param $quiz
-   *   Quiz node.
+   *   Quiz entity.
    * @return
    *   Array of question node IDs.
    */
@@ -582,7 +582,7 @@ class QuizHelper {
    * Copies questions when a quiz is translated.
    *
    * @param $quiz
-   *   The new translated quiz node.
+   *   The new translated quiz entity.
    */
   public function copyQuestions($quiz) {
     // Find original questions.
@@ -741,7 +741,7 @@ class QuizHelper {
    * Store a quiz question result.
    *
    * @param $quiz
-   *  The quiz node
+   *  The quiz entity
    * @param $result
    *  Object with data about the result for a question.
    * @param $options

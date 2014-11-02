@@ -16,9 +16,9 @@ class QuizAdminController {
   }
 
   /**
-   * Renders the quiz node form for the admin pages
+   * Renders the quiz entity form for the admin pages
    *
-   * This form is used to configure default values for the quiz node form
+   * This form is used to configure default values for the quiz entity form
    */
   public function getForm($form, &$form_state) {
     // Create a dummy node to use as input for quiz_form
@@ -97,7 +97,7 @@ class QuizAdminController {
    * Returns the users default settings.
    *
    * @param $node
-   *   Quiz node.
+   *   Quiz entity.
    * @param $uid
    *   (optional) The uid of the user to get the settings for. Defaults to the
    *   current user (NULL).

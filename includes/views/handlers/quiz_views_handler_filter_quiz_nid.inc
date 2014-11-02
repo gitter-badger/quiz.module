@@ -8,7 +8,7 @@
 class quiz_views_handler_filter_quiz_nid extends views_handler_filter {
 
   /**
-   * An array that the subselect will fill with all the corresponding quiz node,
+   * An array that the subselect will fill with all the corresponding quiz entity,
    * according to the configuration on the argument settings form. These vids
    * will then be the actual ones used while generating the real query.
    *
@@ -75,7 +75,7 @@ class quiz_views_handler_filter_quiz_nid extends views_handler_filter {
         'initial' => t('Initial: original version of the quiz ONLY.'),
       // 'all' => t('All: ALL versions of the quiz.')
       ),
-      '#description'   => t('The filter will limit score results for a particular quiz node id(s) into one or more quiz node revision ids, depending on your selection.'),
+      '#description'   => t('The filter will limit score results for a particular quiz entity id(s) into one or more quiz entity revision ids, depending on your selection.'),
       '#default_value' => $this->options['which_vid'],
     );
 

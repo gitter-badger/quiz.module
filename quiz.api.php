@@ -6,7 +6,7 @@
  *
  * These entity types provided by Quiz also have entity API hooks.
  *
- * quiz (settings for quiz nodes)
+ * quiz (settings for quiz entities)
  * quiz_result (quiz attempt/result)
  * quiz_result_answer (answer to a specific question in a quiz result)
  * quiz_relationship (relationship from quiz to question)
@@ -53,12 +53,12 @@ function hook_quiz_scored($quiz, $score, $result_id) {
  */
 function hook_quiz_question_info() {
   return array(
-    'long_answer' => array(
-      'name' => t('Example question type'),
-      'description' => t('An example question type that does something.'),
-      'question provider' => 'ExampleAnswerQuestion',
-      'response provider' => 'ExampleAnswerResponse',
-      'module' => 'quiz_question',
-    ),
+      'long_answer' => array(
+          'name'              => t('Example question type'),
+          'description'       => t('An example question type that does something.'),
+          'question provider' => 'ExampleAnswerQuestion',
+          'response provider' => 'ExampleAnswerResponse',
+          'module'            => 'quiz_question',
+      ),
   );
 }

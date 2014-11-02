@@ -100,7 +100,7 @@ class QuizTakeController extends QuizTakeLegacyController {
   /**
    * Actions to take place at the start of a quiz.
    *
-   * This is called when the quiz node is viewed for the first time. It ensures
+   * This is called when the quiz entity is viewed for the first time. It ensures
    * that the quiz can be taken at this time.
    *
    * @return

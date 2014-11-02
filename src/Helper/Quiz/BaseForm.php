@@ -14,7 +14,7 @@ abstract class BaseForm {
    * Adds checkbox for creating new revision. Checks it by default if answers exists.
    *
    * @param array $form FAPI form(array)
-   * @param stdClass $quiz Quiz node(object)
+   * @param stdClass $quiz Quiz entity(object)
    */
   protected function addRevisionCheckbox(&$form, &$quiz) {
     // Recomend and preselect to create the quiz as a new revision if it already has been answered

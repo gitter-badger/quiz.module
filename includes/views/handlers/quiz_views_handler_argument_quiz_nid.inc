@@ -8,7 +8,7 @@
 class quiz_views_handler_argument_quiz_nid extends views_handler_argument_numeric {
 
   /**
-   * An array that the subselect will fill with all the corresponding quiz node,
+   * An array that the subselect will fill with all the corresponding quiz entity,
    * according to the configuration on the argument settings form. These vids
    * will then be the actual ones used while generating the real query.
    *
@@ -46,7 +46,7 @@ class quiz_views_handler_argument_quiz_nid extends views_handler_argument_numeri
             'initial' => t('Initial: original version of the quiz ONLY.'),
             'all'     => t('All: ALL versions of the quiz.')
         ),
-        '#description'   => t('The validator will transform the incoming quiz node id(s) into one or more quiz node revisions, depending on your selection.'),
+        '#description'   => t('The validator will transform the incoming quiz entity id(s) into one or more quiz entity revisions, depending on your selection.'),
         '#default_value' => $this->options['which_vid'],
         '#weight'        => -1,
     );

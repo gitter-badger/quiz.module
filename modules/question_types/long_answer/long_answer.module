@@ -120,7 +120,7 @@ function long_answer_theme() {
  * reflected in the total scoring table.
  *
  * @param $quiz
- *  Quiz node.
+ *  Quiz entity.
  * @param $nid
  *  Node ID of question.
  * @param $vid

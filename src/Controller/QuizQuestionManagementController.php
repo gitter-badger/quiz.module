@@ -15,7 +15,7 @@ class QuizQuestionManagementController {
    * Creates a form for quiz questions.
    *
    * @param $quiz
-   *   The quiz node we are managing questions for.
+   *   The quiz entity we are managing questions for.
    * @return
    *   String containing the form.
    */

@@ -179,7 +179,7 @@ function quiz_question_revision_actions_submit($form, &$form_state) {
       $quiz = quiz_entity_single_load((int) $qid, (int) $vid);
     }
 
-    // If the quiz node is to be revised and/or (un)published we save it now
+    // If the quiz entity is to be revised and/or (un)published we save it now
     if (isset($quiz)) {
       $quiz->auto_created = TRUE;
       $quiz->status = $publish;
