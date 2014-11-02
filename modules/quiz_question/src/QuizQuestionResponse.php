@@ -392,8 +392,8 @@ abstract class QuizQuestionResponse {
    * Can the quiz taker view the requested review?
    */
   public function canReview($option) {
-    $quiz_result = quiz_result_load($this->result_id);
-    return quiz_feedback_can_review($option, $quiz_result);
+    $result = quiz_result_load($this->result_id);
+    return quiz()->getQuizHelper()->getFeedbackHelper()->canReview($option, $result);
   }
 
   /**

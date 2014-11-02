@@ -181,16 +181,15 @@ function theme_quiz_result($variables) {
       '!yourtotal'      => ($user->uid == $account->uid) ? t('Your') : t('Total'),
   );
 
-  // @todo should use quiz_feedback_can_review but we dont have the quiz result here.
   $output = '';
-  if (quiz_feedback_can_review('score', $result)) {
+  if (quiz()->getQuizHelper()->getFeedbackHelper()->canReview('score', $result)) {
     // Show score.
     $output .= '<div id="quiz_score_possible">' . t('!username got %num_correct of %question_count possible points.', $params) . '</div>' . "\n";
     $output .= '<div id="quiz_score_percent">' . t('!yourtotal score: @score%', $params) . '</div>' . "\n";
   }
 
-  if (quiz_feedback_can_review('quiz_feedback', $result)) {
-    // Show quiz feedback.
+  if (quiz()->getQuizHelper()->getFeedbackHelper()->canReview('quiz_feedback', $result)) {
+    // Show quiz feedback
     if (isset($summary['passfail'])) {
       $output .= '<div id="quiz_summary">' . $summary['passfail'] . '</div>' . "\n";
     }
