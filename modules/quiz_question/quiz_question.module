@@ -371,25 +371,35 @@ function quiz_question_get_max_score($nid, $vid) {
 function quiz_question_report_form($question) {
   $answer = $question->answers[0];
   $response_instance = _quiz_question_response_get_instance($answer['result_id'], $question, $answer);
+
   // If need to specify the score weight if it isn't already specified.
   if (!isset($response_instance->question->score_weight)) {
     $vid = db_query('SELECT quiz_vid FROM {quiz_results} WHERE result_id = :rid', array(
         ':rid' => $answer['result_id']
       ))->fetchField();
 
-    $qnr_max_score = db_query('SELECT qnr.max_score FROM {quiz_relationship} qnr
-      WHERE qnr.question_vid = :question_vid AND qnr.quiz_vid = :quiz_vid', array(':question_vid' => $question->vid, ':quiz_vid' => $vid))
-      ->fetchField();
+    $qr_max_score = db_query('SELECT qnr.max_score
+      FROM {quiz_relationship} qnr
+      WHERE qnr.question_vid = :question_vid AND qnr.quiz_vid = :quiz_vid', array(
+        ':question_vid' => $question->vid,
+        ':quiz_vid'     => $vid
+      ))->fetchField();
 
-    if ($qnr_max_score === FALSE) {
-      $qnr_max_score = db_query('SELECT qt.max_score FROM {quiz_results} qnr
+    if ($qr_max_score === FALSE) {
+      $qr_max_score = db_query('SELECT qt.max_score FROM {quiz_results} qnr
          JOIN {quiz_results_answers} qnra ON (qnr.result_id = qnra.result_id)
          JOIN {quiz_terms} qt ON (qt.vid = qnr.quiz_vid AND qt.tid = qnra.tid)
-         WHERE qnr.result_id = :rid AND qnra.question_nid = :qnid AND qnra.question_vid = :qvid', array(':rid' => $answer['result_id'], ':qnid' => $question->nid, ':qvid' => $question->vid))
-        ->fetchField();
+         WHERE qnr.result_id = :rid AND qnra.question_nid = :qnid AND qnra.question_vid = :qvid', array(
+          ':rid'  => $answer['result_id'],
+          ':qnid' => $question->nid,
+          ':qvid' => $question->vid
+        ))->fetchField();
     }
 
-    $response_instance->question->score_weight = ($qnr_max_score == 0 || $response_instance->question->max_score == 0) ? 0 : ($qnr_max_score / $response_instance->question->max_score);
+    $response_instance->question->score_weight = 0;
+    if (($qr_max_score != 0 && $response_instance->question->max_score != 0)) {
+      $response_instance->question->score_weight = $qr_max_score / $response_instance->question->max_score;
+    }
   }
 
   return $response_instance->getReportForm();
