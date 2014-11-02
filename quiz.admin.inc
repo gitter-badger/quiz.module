@@ -26,8 +26,6 @@ function quiz_entity_form($form, &$form_state, $quiz, $op = 'edit') {
  */
 function theme_question_selection_table($variables) {
   $form = $variables['form'];
-  drupal_add_tabledrag('question-list', 'match', 'parent', 'qnr-pid', 'qnr-pid', 'qnr-id', TRUE, 1);
-  drupal_add_tabledrag('question-list', 'order', 'sibling', 'question-list-weight');
 
   // Building headers
   $headers = array(t('Question'), t('Type'), t('Actions'), t('Update'), t('Max score'), t('Auto update max score'), t('Delete'));
@@ -36,10 +34,7 @@ function theme_question_selection_table($variables) {
   }
   $headers[] = t('Weight');
   $headers[] = t('Parent ID');
-  $headers[] = array(
-    'data'  => t('ID'),
-    'class' => array('tabledrag-hide'),
-  );
+  $headers[] = array('data' => t('ID'), 'class' => array('tabledrag-hide'));
 
   // Building table body
   $rows = array();
@@ -54,21 +49,24 @@ function theme_question_selection_table($variables) {
     unset($form['types'], $form['view_links'], $form['remove_links'], $form['stayers']);
     unset($form['max_scores'], $form['auto_update_max_scores'], $form['revision'], $form['weights'], $form['titles'], $form['compulsories'], $form['qr_ids'], $form['qr_pids']);
   }
-  $html_attr = array('id' => 'question-list');
 
-  // We hide the table if no questions have been added so that jQuery can show it the moment the first question is beeing added.
+  // We hide the table if no questions have been added so that jQuery can show
+  // it the moment the first question is beeing added.
+  $html_attr = array();
   if (isset($form['no_questions'])) {
     $html_attr['style'] = "display:none;";
   }
 
-  $table = theme('table', array('header' => $headers, 'rows' => $rows, 'attributes' => $html_attr));
+  drupal_add_tabledrag('question-list', 'match', 'parent', 'qnr-pid', 'qnr-pid', 'qnr-id', TRUE, 1);
+  drupal_add_tabledrag('question-list', 'order', 'sibling', 'question-list-weight');
 
   return drupal_render($form['random_settings'])
-    . $table
+    . theme('table', array(
+        'header'     => $headers,
+        'rows'       => $rows,
+        'attributes' => array('id' => 'question-list') + $html_attr))
     . drupal_render_children($form);
 }
-
-// HELPER FUNCTIONS
 
 /**
  * Helper function for theme_question_selection_table
@@ -86,28 +84,27 @@ function theme_question_selection_table($variables) {
  *   Array defining a table row
  */
 function _quiz_get_question_row($sub_form, $id) {
-  $question_types = quiz_get_question_types();
   $type = $sub_form['types'][$id]['#markup'];
 
   $action = theme('item_list', array(
-    'items'      => array(
-      drupal_render($sub_form['view_links'][$id]),
-      '<SPAN CLASS="q-remove" STYLE="display:none">' . drupal_render($sub_form['remove_links'][$id]) . '</SPAN>',
-    ),
-    'attributes' => array(
-      'class' => array('links', 'inline'),
-    ),
+      'items'      => array(
+          drupal_render($sub_form['view_links'][$id]),
+          '<SPAN CLASS="q-remove" STYLE="display:none">' . drupal_render($sub_form['remove_links'][$id]) . '</SPAN>',
+      ),
+      'attributes' => array(
+          'class' => array('links', 'inline'),
+      ),
   ));
   $qr_pid = $sub_form['qr_pids'][$id]['#default_value'];
   $data_array = array(
-    // The checkbox and the title
-    ($qr_pid ? theme('indentation', array('size' => 1)) : NULL) . drupal_render($sub_form['titles'][$id]),
-    $type,
-    $action,
-    isset($sub_form['revision'][$id]) ? drupal_render($sub_form['revision'][$id]) : t("Up to date"),
-    drupal_render($sub_form['max_scores'][$id]),
-    drupal_render($sub_form['auto_update_max_scores'][$id]),
-    drupal_render($sub_form['stayers'][$id]),
+      // The checkbox and the title
+      ($qr_pid ? theme('indentation', array('size' => 1)) : NULL) . drupal_render($sub_form['titles'][$id]),
+      $type,
+      $action,
+      isset($sub_form['revision'][$id]) ? drupal_render($sub_form['revision'][$id]) : t("Up to date"),
+      drupal_render($sub_form['max_scores'][$id]),
+      drupal_render($sub_form['auto_update_max_scores'][$id]),
+      drupal_render($sub_form['stayers'][$id]),
   );
   if (isset($sub_form['compulsories'])) {
     $data_array[] = drupal_render($sub_form['compulsories'][$id]);
@@ -115,16 +112,16 @@ function _quiz_get_question_row($sub_form, $id) {
   $data_array[] = drupal_render($sub_form['weights'][$id]);
   $data_array[] = drupal_render($sub_form['qr_pids'][$id]);
   $data_array[] = array(
-    'class' => array('tabledrag-hide'),
-    'data'  => drupal_render($sub_form['qr_ids'][$id]),
+      'class' => array('tabledrag-hide'),
+      'data'  => drupal_render($sub_form['qr_ids'][$id]),
   );
 
   $leaf_class = $sub_form['types'][$id]['#question_type'] != 'quiz_page' ? 'tabledrag-leaf' : '';
 
   return array(
-    'class' => array('q-row', 'draggable', $leaf_class),
-    'id'    => 'q-' . $id,
-    'data'  => $data_array
+      'class' => array('q-row', 'draggable', $leaf_class),
+      'id'    => 'q-' . $id,
+      'data'  => $data_array
   );
 }
 
@@ -165,6 +162,9 @@ function theme_quiz_categorized_form($variables) {
  * This function limits the options to dates most systems support.
  */
 function _quiz_after_build_fix_year_options() {
-  $form_element['year']['#options'] = drupal_map_assoc(range(1970, 2030));
-  return $form_element;
+  return array(
+      'year' => array(
+          '#options' => drupal_map_assoc(range(1970, 2030))
+      )
+  );
 }
