@@ -53,7 +53,7 @@ class QuizQuestionsForm {
     }
 
     // We add the questions to the form array
-    $types = _quiz_get_question_types();
+    $types = quiz_get_question_types();
     $this->addQuestionsToForm($form, $questions, $quiz, $types);
 
     // Show the number of questions in the table header.
@@ -355,7 +355,7 @@ class QuizQuestionsForm {
       return;
     }
 
-    $question_types = array_keys(_quiz_get_question_types());
+    $question_types = array_keys(quiz_get_question_types());
 
     foreach ($weight_map as $id => $weight) {
       list($nid, $vid) = explode('-', $id, 2);

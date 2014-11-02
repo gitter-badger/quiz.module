@@ -247,7 +247,7 @@ function _quiz_is_int($value, $min = 1, $max = NULL) {
  * @return
  *  Array of question types.
  */
-function _quiz_get_question_types() {
+function quiz_get_question_types() {
   static $quiz_questions = array();
 
   // We vastly improves performance by statically caching the question types.

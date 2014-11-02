@@ -116,7 +116,7 @@ function theme_question_selection_table($variables) {
  *   Array defining a table row
  */
 function _quiz_get_question_row($sub_form, $id) {
-  $question_types = _quiz_get_question_types();
+  $question_types = quiz_get_question_types();
   $type = $sub_form['types'][$id]['#markup'];
 
   $action = theme('item_list', array(

@@ -312,7 +312,7 @@ class QuizHelper {
     FROM {node} n
     INNER JOIN {taxonomy_index} tn USING (nid)
     WHERE n.status = 1 AND tn.tid IN ($term_ids)
-    AND n.type IN ('" . implode("','", array_keys(_quiz_get_question_types()))
+    AND n.type IN ('" . implode("','", array_keys(quiz_get_question_types()))
       . "') ORDER BY RAND()");
 
     $questions = array();
@@ -497,7 +497,7 @@ class QuizHelper {
     $terms = $this->getQuizTermsByVocabularyId($quiz->vid);
     $questions = array();
     $nids = array();
-    $question_types = array_keys(_quiz_get_question_types());
+    $question_types = array_keys(quiz_get_question_types());
     if (empty($question_types)) {
       return array();
     }
@@ -992,7 +992,7 @@ class QuizHelper {
    *   hook.
    */
   public function getQuestionModuleFromType($question_type) {
-    $types = _quiz_get_question_types();
+    $types = quiz_get_question_types();
     if (!isset($types[$question_type])) {
       drupal_set_message(t('The module for the questiontype %type is not enabled', array('%type' => $question_type)), 'warning');
       return FALSE;

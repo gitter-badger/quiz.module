@@ -60,7 +60,7 @@ class QuizQuestionManagementController {
   public function getQuestionAddingLinks() {
     $items = array();
 
-    foreach (_quiz_get_question_types() as $type => $info) {
+    foreach (quiz_get_question_types() as $type => $info) {
       if (!node_access('create', $type)) {
         continue;
       }
