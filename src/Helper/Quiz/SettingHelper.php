@@ -7,21 +7,6 @@ use Drupal\quiz\Helper\FormHelper;
 class SettingHelper extends FormHelper {
 
   /**
-   * Returns an array with quiz titles keyed with quiz ids.
-   *
-   * @return array
-   *   Options suitable for a form, in which the value is nid.
-   */
-  public function getQuizOptions() {
-    $options = array();
-    $rows = db_query('SELECT q.qid, q.title FROM {quiz_entity} q WHERE 1');
-    foreach ($rows as $quiz_row) {
-      $options[$quiz_row->qid] = drupal_substr(check_plain($quiz_row->title), 0, 30);
-    }
-    return $options;
-  }
-
-  /**
    * Returns the users default settings.
    *
    * @param $node
