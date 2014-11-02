@@ -353,9 +353,7 @@ function quiz_node_prepare($node) {
  * Implements hook_user_cancel().
  */
 function quiz_user_cancel($edit, $account, $method) {
-  if (variable_get('quiz_durod', 0)) {
-    quiz()->getQuizHelper()->getResultHelper()->deleteByUserId($account->uid);
-  }
+  quiz()->getHookImplementation()->getHookUserCancel($account, $method)->execute();
 }
 
 /**

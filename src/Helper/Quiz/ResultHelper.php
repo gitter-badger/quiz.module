@@ -194,22 +194,6 @@ class ResultHelper {
   }
 
   /**
-   * Deletes all results associated with a given user.
-   *
-   * @param int $uid
-   *  The users id
-   */
-  public function deleteByUserId($uid) {
-    $res = db_query("SELECT result_id FROM {quiz_results} WHERE uid = :uid", array(
-        ':uid' => $uid));
-    $result_ids = array();
-    while ($result_id = $res->fetchField()) {
-      $result_ids[] = $result_id;
-    }
-    entity_delete_multiple('quiz_result', $result_ids);
-  }
-
-  /**
    * Deletes results for a quiz according to the keep results setting
    *
    * @param QuizEntity $quiz

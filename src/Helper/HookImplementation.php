@@ -8,6 +8,7 @@ use Drupal\quiz\Helper\HookImplementation\HookFieldExtraFields;
 use Drupal\quiz\Helper\HookImplementation\HookMenu;
 use Drupal\quiz\Helper\HookImplementation\HookQuizFinished;
 use Drupal\quiz\Helper\HookImplementation\HookQuizScored;
+use Drupal\quiz\Helper\HookImplementation\HookUserCancel;
 
 class HookImplementation {
 
@@ -16,6 +17,7 @@ class HookImplementation {
   private $hookFieldExtraFields;
   private $hookQuizFinished;
   private $hookQuizScored;
+  private $hookUserCancel;
 
   /**
    * @return HookMenu
@@ -92,6 +94,21 @@ class HookImplementation {
 
   public function setHookQuizScored($hookQuizScored) {
     $this->hookQuizScored = $hookQuizScored;
+    return $this;
+  }
+
+  /**
+   * @return HookUserCancel
+   */
+  public function getHookUserCancel($account, $method) {
+    if (NULL === $this->hookUserCancel) {
+      $this->hookUserCancel = new HookUserCancel($account, $method);
+    }
+    return $this->hookUserCancel;
+  }
+
+  public function setHookUserCancel($hookUserCancel) {
+    $this->hookUserCancel = $hookUserCancel;
     return $this;
   }
 
