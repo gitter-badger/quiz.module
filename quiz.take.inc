@@ -71,7 +71,7 @@ function quiz_end_scoring($result_id) {
   global $user;
 
   $quiz_result = quiz_result_load($result_id);
-  $quiz = node_load($quiz_result->quiz_qid, $quiz_result->quiz_vid);
+  $quiz = quiz_entity_single_load($quiz_result->quiz_qid, $quiz_result->quiz_vid);
   $questions = $quiz_result->layout;
 
   // Mark all missing answers as blank. This is essential here for when we may
