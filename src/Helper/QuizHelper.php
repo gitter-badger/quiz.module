@@ -159,7 +159,7 @@ class QuizHelper {
     $question->quiz_nid = $quiz_id;
     $question->quiz_vid = $quiz->vid;
     _quiz_question_get_instance($question)->saveRelationships();
-    quiz_update_max_score_properties(array($quiz->vid));
+    $this->updateMaxScoreProperties(array($quiz->vid));
   }
 
   /**
@@ -397,7 +397,7 @@ class QuizHelper {
         ->execute();
     }
 
-    quiz_update_max_score_properties(array($quiz->vid));
+    $this->updateMaxScoreProperties(array($quiz->vid));
     return TRUE;
   }
 
@@ -581,14 +581,14 @@ class QuizHelper {
   /**
    * Copies questions when a quiz is translated.
    *
-   * @param $node
+   * @param $quiz
    *   The new translated quiz node.
    */
-  public function copyQuestions($node) {
+  public function copyQuestions($quiz) {
     // Find original questions.
     $query = db_query('SELECT question_nid, question_vid, question_status, weight, max_score, auto_update_max_score
-    FROM {quiz_relationship}
-    WHERE quiz_vid = :quiz_vid', array(':quiz_vid' => $node->translation_source->vid));
+        FROM {quiz_relationship}
+        WHERE quiz_vid = :quiz_vid', array(':quiz_vid' => $quiz->translation_source->vid));
     foreach ($query as $res_o) {
       $original_question = node_load($res_o->question_nid);
 
@@ -602,7 +602,7 @@ class QuizHelper {
       }
 
       // Set the correct language.
-      $original_question->language = $node->language;
+      $original_question->language = $quiz->language;
 
       // Save the node.
       node_save($original_question);
@@ -610,8 +610,8 @@ class QuizHelper {
       // Save the relationship between the new question and the quiz.
       db_insert('quiz_relationship')
         ->fields(array(
-            'quiz_qid'              => $node->nid,
-            'quiz_vid'              => $node->vid,
+            'quiz_qid'              => $quiz->nid,
+            'quiz_vid'              => $quiz->vid,
             'question_nid'          => $original_question->nid,
             'question_vid'          => $original_question->vid,
             'question_status'       => $res_o->question_status,
@@ -845,11 +845,11 @@ class QuizHelper {
   /**
    * Updates the max_score property on the specified quizzes
    *
-   * @param $vids
+   * @param $quiz_vids
    *  Array with the vid's of the quizzes to update
    */
-  public function updateMaxScoreProperties($vids) {
-    if (empty($vids)) {
+  public function updateMaxScoreProperties($quiz_vids) {
+    if (empty($quiz_vids)) {
       return;
     }
 
@@ -859,7 +859,7 @@ class QuizHelper {
             FROM {quiz_relationship} qnr
             WHERE qnr.question_status = :status AND quiz_vid = {quiz_entity_revision}.vid)', array(
           ':status' => QUESTION_ALWAYS))
-      ->condition('vid', $vids, 'IN')
+      ->condition('vid', $quiz_vids)
       ->execute();
 
     db_update('quiz_entity_revision')
@@ -867,23 +867,23 @@ class QuizHelper {
             FROM {quiz_terms} qt
             WHERE qt.nid = {quiz_entity_revision}.qid AND qt.vid = {quiz_entity_revision}.vid)')
       ->condition('randomization', 3)
-      ->condition('vid', $vids, 'IN')
+      ->condition('vid', $quiz_vids)
       ->execute();
 
     db_update('quiz_entity_revision')
       ->fields(array('changed' => REQUEST_TIME))
-      ->condition('vid', $vids, 'IN')
+      ->condition('vid', $quiz_vids)
       ->execute();
 
     db_update('quiz_entity')
       ->fields(array('changed' => REQUEST_TIME))
-      ->condition('vid', $vids, 'IN')
+      ->condition('vid', $quiz_vids)
       ->execute();
 
     $results_to_update = db_query('SELECT vid '
       . ' FROM {quiz_entity_revision} '
       . ' WHERE vid IN (:vid) AND max_score <> :max_score', array(
-        ':vid'       => $vids,
+        ':vid'       => $quiz_vids,
         ':max_score' => 0
       ))->fetchCol();
     if (!empty($results_to_update)) {
@@ -898,7 +898,7 @@ class QuizHelper {
             FROM {quiz_entity_revision} qnp
             WHERE qnp.vid = {quiz_results}.quiz_vid
           ))')
-        ->condition('quiz_vid', $results_to_update, 'IN')
+        ->condition('quiz_vid', $results_to_update)
         ->execute();
     }
   }
@@ -906,8 +906,7 @@ class QuizHelper {
   /**
    * Find out if a quiz is available for taking or not
    *
-   * @param $quiz
-   *  The quiz node
+   * @param \Drupal\quiz\Entity\QuizEntity $quiz
    * @return
    *  TRUE if available
    *  Error message(String) if not available
