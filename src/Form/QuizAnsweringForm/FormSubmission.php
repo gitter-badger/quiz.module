@@ -138,7 +138,7 @@ class FormSubmission extends QuestionHelper {
    */
   private function formSubmitFinalizeQuestionAnswering($form, &$form_state) {
     // No more questions. Score quiz.
-    $score = quiz_end_scoring($_SESSION['quiz'][$this->quiz->qid]['result_id']);
+    $score = $this->endScoring();
 
     // Only redirect to question results if there is not question feedback.
     if (empty($this->quiz->review_options['question']) || !array_filter($this->quiz->review_options['question'])) {
@@ -155,6 +155,51 @@ class FormSubmission extends QuestionHelper {
     // feedback for the last question, THEN go to the results page.
     $_SESSION['quiz']['temp']['result_id'] = $this->result->result_id;
     unset($_SESSION['quiz'][$this->quiz_id]);
+  }
+
+  /**
+   * Score a completed quiz.
+   */
+  private function endScoring() {
+    global $user;
+
+    // Mark all missing answers as blank. This is essential here for when we may
+    // have pages of unanswered questions. Also kills a lot of the skip code that
+    // was necessary before.
+    foreach ($this->result->layout as $qinfo) {
+      // Load the Quiz answer submission from the database.
+      $qra = quiz_result_answer_load($this->result->result_id, $qinfo['nid'], $qinfo['vid']);
+      $current_question = node_load($qinfo['nid'], $qinfo['vid']);
+
+      foreach ($this->result->layout as $question) {
+        if ($question['nid'] == $current_question->nid) {
+          $question_array = $question;
+        }
+      }
+
+      if (!$qra) {
+        $qi_instance = _quiz_question_response_get_instance($this->result->result_id, $current_question, NULL);
+        $qi_instance->delete();
+        $bare_object = $qi_instance->toBareObject();
+        quiz()->getQuizHelper()->saveQuestionResult($this->quiz, $bare_object, array('set_msg' => TRUE, 'question_data' => $question_array));
+      }
+    }
+
+    $score = quiz()->getQuizHelper()->getResultHelper()->calculateScore($this->quiz, $this->result->result_id);
+    if (!isset($score['percentage_score'])) {
+      $score['percentage_score'] = 0;
+    }
+    $this->result->is_evaluated = $score['is_evaluated'];
+    $this->result->score = $score['percentage_score'];
+    $this->result->time_end = REQUEST_TIME;
+    entity_save('quiz_result', $this->result);
+    if ($user->uid) {
+      $score['passing'] = quiz()->getQuizHelper()->isPassed($user->uid, $this->quiz->qid, $this->quiz->vid);
+    }
+    else {
+      $score['passing'] = $score['percentage_score'] >= $this->quiz->pass_rate;
+    }
+    return $score;
   }
 
 }
