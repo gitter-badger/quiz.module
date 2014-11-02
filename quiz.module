@@ -56,8 +56,8 @@ define('QUIZ_KEEP_ALL', 2);
  * @return \Drupal\quiz\Quiz
  */
 function quiz($className = 'Drupal\quiz\Quiz') {
-  static $quiz;
-  return null === $quiz ? ($quiz = new $className) : $quiz;
+  static $obj;
+  return null === $obj ? ($obj = new $className) : $obj;
 }
 
 /**
