@@ -373,15 +373,6 @@ function quiz_mail($key, &$message, $params) {
 }
 
 /**
- * Implements hook_quiz_finished().
- *
- * Performs actions like sending quiz results over email at the end of quiz.
- */
-function quiz_quiz_finished($quiz, $score, $session_data) {
-  return quiz()->getHookImplementation()->getHookQuizFinished($quiz, $score, $session_data)->execute();
-}
-
-/**
  * Implements hook_quiz_scored().
  *
  * Performs actions like sending quiz results over email at the end of quiz.
