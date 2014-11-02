@@ -145,7 +145,7 @@ class FormSubmission extends QuestionHelper {
       $form_state['redirect'] = "quiz-result/{$this->result->result_id}";
     }
 
-    quiz_end_actions($this->quiz, $score, $_SESSION['quiz'][$this->quiz_id]);
+    $this->endActions($score, $_SESSION['quiz'][$this->quiz_id]);
 
     // Remove all information about this quiz from the session.
     // @todo but for anon, we might have to keep some so they could access
@@ -199,6 +199,34 @@ class FormSubmission extends QuestionHelper {
     else {
       $score['passing'] = $score['percentage_score'] >= $this->quiz->pass_rate;
     }
+    return $score;
+  }
+
+  /**
+   * Actions to take at the end of a quiz
+   *
+   * @param int $score
+   *  Score as a number
+   */
+  private function endActions($score, $session_data) {
+    // Call hook_quiz_finished().
+    // @TODO consider hook_entity_update if we make quiz results rules capable
+    module_invoke_all('quiz_finished', $this->quiz, $score, $session_data);
+
+    // Lets piggy back here to perform the quiz defined action since were done
+    // with this quiz.
+    // We will verify that there is an associated action with this quiz and then
+    // perform that action.
+    if (!empty($this->quiz->aid)) {
+      // @TODO get rid of this. Replace with rules. Make quiz results entities or
+      // something
+      // Some actions are reliant on objects and I am unsure which ones, for now I
+      // have simply passed the actions_do() function an empty array. By passing
+      // this function a single id then it will retrieve the callback, get the
+      // parameters and perform that function (action) for you.
+      actions_do($this->quiz->aid, $this->quiz, $score, $session_data);
+    }
+
     return $score;
   }
 
