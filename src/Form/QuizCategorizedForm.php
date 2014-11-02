@@ -3,13 +3,9 @@
 namespace Drupal\quiz\Form;
 
 use Drupal\quiz\Controller\QuizQuestionManagementController;
+use Drupal\quiz\Helper\Quiz\BaseForm;
 
-class QuizCategorizedForm {
-
-  public static function staticGet($form, $form_state, $quiz) {
-    $obj = new static();
-    return $obj->getForm($form, $form_state, $quiz);
-  }
+class QuizCategorizedForm extends BaseForm {
 
   /**
    * Form for managing what questions should be added to a quiz with categorized random questions.
@@ -34,7 +30,7 @@ class QuizCategorizedForm {
     $form['tid'] = array('#type' => 'value', '#value' => NULL);
 
     // Give the user the option to create a new revision of the quiz
-    _quiz_add_revision_checkbox($form, $quiz);
+    $this->addRevisionCheckbox($form, $quiz);
 
     // Timestamp is needed to avoid multiple users editing the same quiz at the same time.
     $form['timestamp'] = array('#type' => 'hidden', '#default_value' => REQUEST_TIME);

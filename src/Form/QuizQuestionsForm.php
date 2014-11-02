@@ -3,15 +3,10 @@
 namespace Drupal\quiz\Form;
 
 use Drupal\quiz\Entity\QuizEntity;
+use Drupal\quiz\Helper\Quiz\BaseForm;
 use stdClass;
 
-class QuizQuestionsForm {
-
-  public static function staticGet($form, $form_state, $quiz) {
-    module_load_include('admin.inc', 'quiz', 'quiz');
-    $obj = new static();
-    return $obj->formGet($form, $form_state, $quiz);
-  }
+class QuizQuestionsForm extends BaseForm {
 
   /**
    * Handles "manage questions" tab.
@@ -61,7 +56,7 @@ class QuizQuestionsForm {
     $form['question_list']['#title'] .= ' (' . $always_count . ')';
 
     // Give the user the option to create a new revision of the quiz
-    _quiz_add_revision_checkbox($form, $quiz);
+    $this->addRevisionCheckbox($form, $quiz);
 
     // Timestamp is needed to avoid multiple users editing the same quiz at the same time.
     $form['timestamp'] = array('#type' => 'hidden', '#default_value' => REQUEST_TIME);
@@ -398,7 +393,7 @@ class QuizQuestionsForm {
    * Updates from the "manage questions" tab.
    */
   public function formSubmit($form, &$form_state) {
-    /* @var $quiz \Drupal\quiz\Entity\QuizEntity */
+    /* @var $quiz QuizEntity */
     $quiz = 'node' === arg(0) ? node_load(arg(1)) : quiz_entity_single_load(arg(1));
 
     // Update the refresh latest quizzes table so that we know what the users latest quizzes are
