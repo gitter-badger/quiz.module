@@ -34,8 +34,8 @@ class QuizQuestionFeedbackController {
     $this->result = $result;
   }
 
-  public function render($question_number) {
-    $question = node_load($this->result->layout[$question_number]['nid']);
+  public function render($page_number) {
+    $question = node_load($this->result->layout[$page_number]['nid']);
     return $this->buildRenderArray($question);
   }
 
