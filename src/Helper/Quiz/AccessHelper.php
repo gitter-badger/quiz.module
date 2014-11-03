@@ -137,10 +137,8 @@ class AccessHelper {
       return FALSE;
     }
 
-    $quiz_id = $quiz->qid;
-
     // User maybe revisiting the quiz, trying to resume
-    if (!isset($_SESSION['quiz'][$quiz_id])) {
+    if (!isset($_SESSION['quiz'][$quiz->qid])) {
       $controller = new QuizTakeController($quiz, $user, FALSE);
       if (FALSE === $controller->initQuizResume()) {
         return FALSE;
@@ -151,8 +149,7 @@ class AccessHelper {
       return TRUE;
     }
 
-    $result_id = $_SESSION['quiz'][$quiz_id]['result_id'];
-
+    $result_id = (int) $_SESSION['quiz'][$quiz->qid]['result_id'];
     $result = quiz_result_load($result_id);
     $question_index = $page_number;
     $qinfo_last = $page_number == 1 ? NULL : $result->layout[$question_index - 1];
