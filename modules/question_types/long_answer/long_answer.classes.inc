@@ -212,20 +212,20 @@ class LongAnswerResponse extends QuizQuestionResponse {
     $query = db_select('quiz_long_answer_user_answers', 'answer');
     $query->fields('answer', array('result_id', 'question_nid', 'question_vid', 'answer_feedback', 'answer_feedback_format'));
     $query->fields('question_revision', array('title'));
-    $query->fields('qnr', array('time_end', 'time_start', 'uid'));
+    $query->fields('qr', array('time_end', 'time_start', 'uid'));
     $query->join('node_revision', 'question_revision', 'answer.question_vid = question_revision.vid');
-    $query->join('quiz_results', 'qnr', 'answer.result_id = qnr.result_id');
-    $query->join('quiz_entity', 'quiz', 'qnr.quiz_qid = quiz.qid');
+    $query->join('quiz_results', 'qr', 'answer.result_id = qr.result_id');
+    $query->join('quiz_entity', 'quiz', 'qr.quiz_qid = quiz.qid');
     $query->condition('answer.is_evaluated', 0);
 
     if (user_access('score own quiz') && user_access('score taken quiz answer')) {
-      $query->condition(db_or()->condition('quiz.uid', $user->uid)->condition('qnr.uid', $user->uid));
+      $query->condition(db_or()->condition('quiz.uid', $user->uid)->condition('qr.uid', $user->uid));
     }
     elseif (user_access('score own quiz')) {
       $query->condition('quiz.uid', $user->uid);
     }
     elseif (user_access('score taken quiz answer')) {
-      $query->condition('qnr.uid', $user->uid);
+      $query->condition('qr.uid', $user->uid);
     }
 
     $unscored = array();
