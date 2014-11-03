@@ -62,46 +62,28 @@ class RevisionStatsController {
   private function getDateVSTakeupCountChart() {
     $end = 30;
     $sql = "SELECT COUNT(result_id) AS count,
-            DATE_FORMAT(FROM_UNIXTIME(time_start), '%Y.%m.%e') AS date
+            DATE_FORMAT(FROM_UNIXTIME(time_start), '%Y-%m-%e') AS date
             FROM {quiz_results}
-            WHERE quiz_vid = :vid";
+            WHERE vid = :vid AND time_start > (UNIX_TIMESTAMP(NOW()) - (86400*$end))";
     $sql_args[':vid'] = $this->vid;
     if ($this->uid) {
       $sql .= " AND uid = :uid";
       $sql_args[':uid'] = $this->uid;
     }
     $sql .= " GROUP BY date ORDER BY time_start ASC";
-    $days = $this->getLastDays($end);
     $results = db_query($sql, $sql_args);
-    $res_o = $results->fetch();
-    if (!is_object($res_o)) {
-      return FALSE;
+    if ($res_o = $results->fetchAll()) {
+      $chart = '<div id="date_vs_takeup_count" class="quiz-stats-chart-space">';
+      // wrapping the chart output with div for custom theming.
+      $chart .= theme('date_vs_takeup_count', array('takeup' => $res_o));
+      // generate date vs takeup count line chart
+      $chart .= '</div>';
+      return array(
+          'chart'       => $chart,
+          'title'       => t('Activity'),
+          'explanation' => t('This chart shows how many times the quiz has been taken the last !days days.', array('!days' => $end)),
+      );
     }
-    foreach ($days as $date => &$value) {
-      if (isset($res_o->date) && $date == $res_o->date) {
-        $value->value = $res_o->count;
-        if ($res_o->count) {
-          $valid_data = TRUE;
-        }
-        $res_o = $results->fetch();
-      }
-    }
-
-    if (!$valid_data) {
-      return FALSE;
-    }
-
-    // wrapping the chart output with div for custom theming.
-    $chart = theme('date_vs_takeup_count', array('takeup' => $days));
-
-    // generate date vs takeup count line chart
-    return array(
-        'chart'       => '<div id="date_vs_takeup_count" class="quiz-stats-chart-space">' . $chart . '</div>',
-        'title'       => t('Activity'),
-        'explanation' => t('This chart shows how many times the quiz has been taken each day over the last !days days.', array(
-            '!days' => $end
-        )),
-    );
   }
 
   /**
@@ -175,7 +157,7 @@ class RevisionStatsController {
     return array(
         'chart'       => '<div id="quiz_top_scorers" class="quiz-stats-chart-space">' . $chart . '</div>',
         'title'       => t('Top scorers'),
-        'explanation' => t('This chart shows what question takers have the highest scores'),
+        'explanation' => t('This chart shows which quiz takers have the highest scores.'),
     );
   }
 
@@ -214,28 +196,6 @@ class RevisionStatsController {
         'title'       => t('Distribution'),
         'explanation' => t('This chart shows the distribution of the scores on this quiz.'),
     );
-  }
-
-  /**
-   * Get the timestamps for the last days
-   *
-   * @param $num_days
-   *  How many of the last days we need timestamps for
-   * @return
-   *  Array of objects with timestamp and value. The value has '0' as its default value.
-   */
-  private function getLastDays($num_days) {
-    $to_return = array();
-    $now = REQUEST_TIME;
-    $one_day = 86400;
-    for ($i = 0; $i < $num_days; $i++) {
-      $timestamp = $now - ($one_day * $i);
-      $to_add = new stdClass();
-      $to_add->timestamp = $timestamp;
-      $to_add->value = '0';
-      $to_return[date('Y.m.j', $timestamp)] = $to_add;
-    }
-    return $to_return;
   }
 
 }
