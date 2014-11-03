@@ -48,7 +48,7 @@ class QuizReportForm {
       if (empty($_SESSION['quiz'][$quiz_id])) { // Quiz is done.
         $form['finish'] = array(
             '#type'   => 'submit',
-            '#submit' => array(array($this, formEndSubmit)),
+            '#submit' => array(array($this, 'formEndSubmit')),
             '#value'  => t('Finish'),
         );
       }
