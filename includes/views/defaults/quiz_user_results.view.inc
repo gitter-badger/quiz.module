@@ -47,12 +47,6 @@ $handler->display->display_options['fields']['time_end']['date_format'] = 'short
 $handler->display->display_options['fields']['score']['id'] = 'score';
 $handler->display->display_options['fields']['score']['table'] = 'quiz_results';
 $handler->display->display_options['fields']['score']['field'] = 'score';
-/* Field: Quiz result: Nid */
-$handler->display->display_options['fields']['nid']['id'] = 'nid';
-$handler->display->display_options['fields']['nid']['table'] = 'quiz_results';
-$handler->display->display_options['fields']['nid']['field'] = 'nid';
-$handler->display->display_options['fields']['nid']['exclude'] = TRUE;
-$handler->display->display_options['fields']['nid']['separator'] = '';
 /* Field: Quiz result: Quiz result ID */
 $handler->display->display_options['fields']['result_id']['id'] = 'result_id';
 $handler->display->display_options['fields']['result_id']['table'] = 'quiz_results';
@@ -65,8 +59,8 @@ $handler->display->display_options['fields']['nothing']['field'] = 'nothing';
 $handler->display->display_options['fields']['nothing']['label'] = 'Operations';
 $handler->display->display_options['fields']['nothing']['alter']['text'] = 'View';
 $handler->display->display_options['fields']['nothing']['alter']['make_link'] = TRUE;
-$handler->display->display_options['fields']['nothing']['alter']['path'] = 'node/[nid]/quiz-results/[result_id]/view';
-/* Contextual filter: Quiz result: Nid */
+$handler->display->display_options['fields']['nothing']['alter']['path'] = 'quiz-result/[result_id]';
+/* Contextual filter: Broken/missing handler */
 $handler->display->display_options['arguments']['nid']['id'] = 'nid';
 $handler->display->display_options['arguments']['nid']['table'] = 'quiz_results';
 $handler->display->display_options['arguments']['nid']['field'] = 'nid';
@@ -78,7 +72,7 @@ $handler->display->display_options['arguments']['nid']['summary_options']['items
 $handler->display->display_options['arguments']['nid']['specify_validation'] = TRUE;
 $handler->display->display_options['arguments']['nid']['validate']['type'] = 'node';
 $handler->display->display_options['arguments']['nid']['validate_options']['types'] = array(
-  'quiz' => 'quiz',
+    'quiz' => 'quiz',
 );
 $handler->display->display_options['arguments']['nid']['validate_options']['access'] = TRUE;
 $handler->display->display_options['arguments']['nid']['validate_options']['access_op'] = 'update';
@@ -101,7 +95,7 @@ $handler->display->display_options['filters']['is_evaluated']['value'] = '1';
 
 /* Display: Page */
 $handler = $view->new_display('page', 'Page', 'page');
-$handler->display->display_options['path'] = 'node/%/quiz-results';
+$handler->display->display_options['path'] = 'quiz/%/quiz-results';
 $handler->display->display_options['menu']['type'] = 'tab';
 $handler->display->display_options['menu']['title'] = 'My results';
 $handler->display->display_options['menu']['weight'] = '0';
