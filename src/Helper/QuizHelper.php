@@ -168,7 +168,7 @@ class QuizHelper {
    * This function should be used for question browsers and similiar... It should not be used to decide what questions
    * a user should answer when taking a quiz. quiz_build_question_list is written for that purpose.
    *
-   * @param $quiz_nid
+   * @param $quiz_qid
    *   Quiz entity id.
    * @param $quiz_vid
    *   Quiz entity version id.
@@ -176,7 +176,7 @@ class QuizHelper {
    * @return
    *   An array of questions.
    */
-  public function getQuestions($quiz_nid, $quiz_vid = NULL) {
+  public function getQuestions($quiz_qid, $quiz_vid = NULL) {
     $questions = array();
     $query = db_select('node', 'n');
     $query->fields('n', array('nid', 'type'));
@@ -186,7 +186,7 @@ class QuizHelper {
     $query->join('node_revision', 'nr', 'n.nid = nr.nid');
     $query->leftJoin('quiz_relationship', 'qnr', 'nr.vid = qnr.question_vid');
     $query->condition('n.status', 1);
-    $query->condition('qnr.quiz_qid', $quiz_nid);
+    $query->condition('qnr.quiz_qid', $quiz_qid);
     if ($quiz_vid) {
       $query->condition('qnr.quiz_vid', $quiz_vid);
     }

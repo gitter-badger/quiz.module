@@ -28,14 +28,18 @@ class QuizDirectionsQuestion extends QuizQuestion {
    *
    * @see QuizQuestion#validateNode($form)
    */
-  public function validateNode(array &$form) { }
+  public function validateNode(array &$form) {
+
+  }
 
   /**
    * Implementation of saveNodeProperties
    *
    * @see QuizQuestion#saveNodeProperties($is_new)
    */
-  public function saveNodeProperties($is_new = FALSE) { }
+  public function saveNodeProperties($is_new = FALSE) {
+
+  }
 
   /**
    * Implementation of getAnsweringForm
@@ -46,12 +50,12 @@ class QuizDirectionsQuestion extends QuizQuestion {
     $form = parent::getAnsweringForm($form_state, $result_id);
 
     $form['tries'] = array(
-      '#type' => 'hidden',
-      '#value' => 0,
+        '#type'  => 'hidden',
+        '#value' => 0,
     );
     $form['empty_space'] = array(
-      '#type' => 'markup',
-      '#value' => '<br/>',
+        '#type'  => 'markup',
+        '#value' => '<br/>',
     );
     return $form;
   }
@@ -86,6 +90,7 @@ class QuizDirectionsQuestion extends QuizQuestion {
   public function isGraded() {
     return FALSE;
   }
+
 }
 
 /**
@@ -98,14 +103,18 @@ class QuizDirectionsResponse extends QuizQuestionResponse {
    *
    * @see QuizQuestionResponse#save()
    */
-  public function save() { }
+  public function save() {
+
+  }
 
   /**
    * Implementation of delete
    *
    * @see QuizQuestionResponse#delete()
    */
-  public function delete() { }
+  public function delete() {
+
+  }
 
   /**
    * Implementation of score
@@ -115,19 +124,19 @@ class QuizDirectionsResponse extends QuizQuestionResponse {
   public function score() {
     // First, due to popular demand, if the directions are at the beginning of
     // the quiz, we restart the timer after the user has read the question.
-    $quiz_nid = arg(1);
-    $quiz_key = 'quiz_' . $quiz_nid;
+    $quiz_qid = arg(1);
+    $quiz_key = 'quiz_' . $quiz_qid;
     if (isset($_SESSION[$quiz_key]['previous_quiz_questions']) && count($_SESSION[$quiz_key]['previous_quiz_questions']) === 1) {
       // reset the timer.
       $sql = 'UPDATE {quiz_results} SET time_start=%d WHERE result_id = %d';
       // TODO Please review the conversion of this statement to the D7 database API syntax.
       /* db_query($sql, REQUEST_TIME, $this->result_id) */
       db_update('quiz_results')
-  ->fields(array(
-    'time_start' => REQUEST_TIME,
-  ))
-  ->condition('result_id', $this->result_id)
-  ->execute();
+        ->fields(array(
+            'time_start' => REQUEST_TIME,
+        ))
+        ->condition('result_id', $this->result_id)
+        ->execute();
     }
 
     // Set the score
@@ -160,11 +169,8 @@ class QuizDirectionsResponse extends QuizQuestionResponse {
    */
   public function getReportForm() {
     return array(
-      '#no_report' => TRUE,
+        '#no_report' => TRUE,
     );
   }
+
 }
-
-
-
-

@@ -30,12 +30,12 @@ function quiz_question_revision_actions($form, $form_state, $nid, $vid) {
   $form['q_vid'] = array('#type' => 'value', '#value' => intval($vid));
 
   // Fetch data for all the quizzes that was kept
-  $quiz_nids = array();
+  $quiz_qids = array();
   $quiz_vids = array();
   foreach ($_SESSION['quiz_question_kept'] as $nid_vid) {
     $temp = explode('-', $nid_vid);
     if (_quiz_is_int($temp[0], 0) && _quiz_is_int($temp[1], 0)) {
-      $quiz_nids[] = $temp[0];
+      $quiz_qids[] = $temp[0];
       $quiz_vids[] = $temp[1];
     }
   }
