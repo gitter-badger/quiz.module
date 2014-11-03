@@ -15,7 +15,9 @@ class QuizReportForm {
    *   FAPI form array
    */
   public function getForm($form, $form_state, $questions) {
+    $form['#theme'] = 'quiz_report_form'; # @TODO: Remove me
     $form['#tree'] = TRUE;
+    $form['#submit'][] = array($this, 'formSubmit');
 
     foreach ($questions as $question) {
       if (!$module = quiz_question_module_for_type($question->type)) {
@@ -26,13 +28,17 @@ class QuizReportForm {
       if (isset($form_to_add['submit'])) {
         $show_submit = TRUE;
       }
-      $form_to_add['#element_validate'][] = 'quiz_report_form_validate_element';
+      $form_to_add['#element_validate'][] = array($this, 'validateElement');
       $form[] = $form_to_add;
     }
 
     // The submit button is only shown if one or more of the questions has input elements
     if (!empty($show_submit)) {
-      $form['submit'] = array('#type' => 'submit', '#value' => t('Save Score'));
+      $form['submit'] = array(
+          '#type'   => 'submit',
+          '#submit' => array(array($this, 'formSubmit')),
+          '#value'  => t('Save Score'),
+      );
     }
 
     if (arg(4) === 'feedback') {
@@ -40,10 +46,18 @@ class QuizReportForm {
       $quiz = quiz_entity_single_load(__quiz_get_context_id());
       $quiz_id = $quiz->qid;
       if (empty($_SESSION['quiz'][$quiz_id])) { // Quiz is done.
-        $form['finish'] = array('#type' => 'submit', '#value' => t('Finish'));
+        $form['finish'] = array(
+            '#type'   => 'submit',
+            '#submit' => array(array($this, 'formEndSubmit')),
+            '#value'  => t('Finish'),
+        );
       }
       else {
-        $form['next'] = array('#type' => 'submit', '#value' => t('Next question'));
+        $form['next'] = array(
+            '#type'   => 'submit',
+            '#submit' => array(array($this, 'formSubmitFeedback')),
+            '#value'  => t('Next question'),
+        );
       }
     }
 
@@ -138,7 +152,7 @@ class QuizReportForm {
   /**
    * Submit handler to go to the quiz results from the last question's feedback.
    */
-  public function formFinishSubmit($form, &$form_state) {
+  public function formEndSubmit($form, &$form_state) {
     $result_id = $_SESSION['quiz']['temp']['result_id'];
     $form_state['redirect'] = "quiz-result/{$result_id}";
   }
