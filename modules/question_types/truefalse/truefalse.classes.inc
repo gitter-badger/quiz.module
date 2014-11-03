@@ -104,7 +104,7 @@ class TrueFalseQuestion extends QuizQuestion {
   public function getNodeView() {
     $content = parent::getNodeView();
     if ($this->viewCanRevealCorrect()) {
-      $answer = ($this->node->correct_answer) ? t('True') : t('False');
+      $answer = !empty($this->node->correct_answer) ? t('True') : t('False');
       $content['answers']['#markup'] = '<div class="quiz-solution">' . $answer . '</div>';
       $content['answers']['#weight'] = 2;
     }
@@ -277,38 +277,40 @@ class TrueFalseResponse extends QuizQuestionResponse {
    * Implementation of getCorrectAnswer
    */
   public function getUserAnswer() {
-    return db_query('SELECT answer, score FROM {quiz_truefalse_user_answers} WHERE question_vid = :qvid AND result_id = :rid', array(':qvid' => $this->question->vid, ':rid' => $this->result_id))->fetch();
+    return db_query('SELECT answer, score '
+        . ' FROM {quiz_truefalse_user_answers} '
+        . ' WHERE question_vid = :qvid AND result_id = :rid', array(
+          ':qvid' => $this->question->vid,
+          ':rid'  => $this->result_id
+      ))->fetch();
   }
 
   /**
    * Implementation of getReportFormResponse
    */
   public function getReportFormResponse() {
-
     $answer = $this->question->answers[0]['answer'];
-    $correct_answer = $this->question->correct_answer;
+    $correct_answer = !empty($this->question->correct_answer);
 
-    $data = array();
-    $data[] = array(
-        'choice'          => 'True',
-        'attempt'         => $answer ? quiz_icon('selected') : '',
-        'correct'         => $answer == 1 ? quiz_icon($correct_answer ? 'correct' : 'incorrect') : '',
-        'score'           => intval($correct_answer == 1 && $answer == 1),
-        'answer_feedback' => '',
-        'solution'        => $correct_answer == 1 ? quiz_icon('should') : '',
-        'quiz_feedback'   => "Quiz feedback",
+    return array(
+        array(
+            'choice'          => 'True',
+            'attempt'         => $answer ? quiz_icon('selected') : '',
+            'correct'         => $answer == 1 ? quiz_icon($correct_answer ? 'correct' : 'incorrect') : '',
+            'score'           => intval($correct_answer == 1 && $answer == 1),
+            'answer_feedback' => '',
+            'solution'        => $correct_answer == 1 ? quiz_icon('should') : '',
+            'quiz_feedback'   => "Quiz feedback",
+        ),
+        array(
+            'choice'          => 'False',
+            'attempt'         => !$answer ? quiz_icon('selected') : '',
+            'correct'         => $answer == 0 ? (quiz_icon(!$correct_answer ? 'correct' : 'incorrect')) : '',
+            'score'           => intval($correct_answer == 0 && $answer == 0),
+            'answer_feedback' => '',
+            'solution'        => $correct_answer == 0 ? quiz_icon('should') : '',
+        )
     );
-
-    $data[] = array(
-        'choice'          => 'False',
-        'attempt'         => !$answer ? quiz_icon('selected') : '',
-        'correct'         => $answer == 0 ? (quiz_icon(!$correct_answer ? 'correct' : 'incorrect')) : '',
-        'score'           => intval($correct_answer == 0 && $answer == 0),
-        'answer_feedback' => '',
-        'solution'        => $correct_answer == 0 ? quiz_icon('should') : '',
-    );
-
-    return $data;
   }
 
 }
