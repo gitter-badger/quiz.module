@@ -1,6 +1,6 @@
 <?php
 
-class QuizTimerTestCase extends QuizEntityTestCase {
+class QuizTimerTestCase extends QuizTestCase {
 
   protected $extraModules = array('truefalse');
 

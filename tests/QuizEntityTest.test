@@ -6,7 +6,7 @@ use Drupal\quiz\Entity\QuizEntityType;
 /**
  * Test aspects of quiz creation including global and user defaults.
  */
-class QuizEntityTestCase extends QuizEntityTestCase {
+class QuizEntityTestCase extends QuizTestCase {
 
   public static function getInfo() {
     return array(

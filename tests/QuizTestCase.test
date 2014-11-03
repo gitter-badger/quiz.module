@@ -5,7 +5,7 @@ use Drupal\quiz\Entity\QuizEntity;
 /**
  * Base test class for Quiz questions.
  */
-abstract class QuizEntityTestCase extends DrupalWebTestCase {
+abstract class QuizTestCase extends DrupalWebTestCase {
 
   protected $extraModules = array();
   protected $extraUserPermissions = array();

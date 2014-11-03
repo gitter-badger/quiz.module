@@ -3,7 +3,7 @@
 /**
  * Base test class for Quiz questions.
  */
-abstract class QuizQuestionTestCase extends QuizEntityTestCase {
+abstract class QuizQuestionTestCase extends QuizTestCase {
 
   var $question_node_type = 'quiz_question';
 

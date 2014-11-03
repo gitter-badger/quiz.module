@@ -3,7 +3,7 @@
 /**
  * Base test class for Quiz questions.
  */
-class QuizEntityNavigationTestCase extends QuizEntityTestCase {
+class QuizEntityNavigationTestCase extends QuizTestCase {
 
   protected $extraModules = array('truefalse');
 
