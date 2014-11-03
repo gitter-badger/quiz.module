@@ -430,8 +430,9 @@ abstract class QuizQuestion {
     }
 
     $answered = db_query_range('SELECT 1 '
-      . ' FROM {quiz_results} qnres JOIN {quiz_relationship} qnrel ON (qnres.vid = qnrel.quiz_vid) '
-      . ' WHERE qnrel.question_vid = :question_vid', 0, 1, array(':question_vid' => $this->node->vid))->fetch();
+      . ' FROM {quiz_results} qnres '
+      . ' JOIN {quiz_relationship} qrel ON (qnres.quiz_vid = qrel.quiz_vid) '
+      . ' WHERE qrel.question_vid = :question_vid', 0, 1, array(':question_vid' => $this->node->vid))->fetch();
 
     return $answered ? TRUE : FALSE;
   }
