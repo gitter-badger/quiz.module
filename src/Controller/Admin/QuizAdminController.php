@@ -92,45 +92,4 @@ class QuizAdminController {
     quiz()->getQuizHelper()->getSettingHelper()->updateUserDefaultSettings($quiz);
   }
 
-  /**
-   * Returns the users default settings.
-   *
-   * @param $node
-   *   Quiz entity.
-   * @param $uid
-   *   (optional) The uid of the user to get the settings for. Defaults to the
-   *   current user (NULL).
-   *
-   * @return
-   *   An array of settings. The array is empty in case no settings are available.
-   *
-   * @see https://www.drupal.org/node/2353181
-   */
-  private function loadUserSettings($uid = NULL) {
-    global $user;
-
-    // The def_uid property is the default user id. It is used if there are no
-    // settings store for the current user.
-    $query = db_select('quiz_user_settings', 'qus')
-      ->fields('qus')
-      ->condition('uid', isset($uid) ? $uid : $user->uid);
-
-    if (!$res = $query->execute()->fetchAssoc()) {
-      foreach ($res as $key => $value) {
-        if (!in_array($key, array('nid', 'vid', 'uid'))) {
-          $settings[$key] = $value;
-        }
-      }
-
-      $settings['resultoptions'][] = db_select('quiz_result_options', 'qnro')
-        ->fields('qnro')
-        ->condition('quiz_qid', $res['nid'])
-        ->condition('quiz_vid', $res['vid'])
-        ->execute()
-        ->fetchAll();
-      return $settings;
-    }
-    return array();
-  }
-
 }
