@@ -507,12 +507,12 @@ function quiz_update_7510() {
   db_change_field('quiz_relationship', 'child_vid', 'question_vid', array());
 
   db_rename_table('quiz_node_results', 'quiz_results');
-  db_change_field('quiz_results', 'nid', 'quiz_qid', array());
-  db_change_field('quiz_results', 'vid', 'quiz_vid', array());
+  db_change_field('quiz_results', 'nid', 'quiz_qid', array()); # @TODO: Missing specs
+  db_change_field('quiz_results', 'vid', 'quiz_vid', array()); # @TODO: Missing specs
 
   db_rename_table('quiz_node_result_options', 'quiz_result_options');
-  db_change_field('quiz_result_options', 'nid', 'quiz_qid', array());
-  db_change_field('quiz_result_options', 'vid', 'quiz_vid', array());
+  db_change_field('quiz_result_options', 'nid', 'quiz_qid', array()); # @TODO: Missing specs
+  db_change_field('quiz_result_options', 'vid', 'quiz_vid', array()); # @TODO: Missing specs
   db_rename_table('quiz_node_results_answers', 'quiz_results_answers');
 }
 
@@ -573,7 +573,7 @@ function _quiz_update_7511($row) {
  * Convet quiz-node fields data to quiz entity
  */
 function quiz_update_7512() {
-  // quiz node type is defined by quiz.module, but this modules no longer power
+  // quiz node type is defined by quiz.module, but this modules no longer powers
   // it. Reown to core 'node' module.
   db_update("UDPATE {node_type} set module = 'node' WHERE type='quiz'");
 

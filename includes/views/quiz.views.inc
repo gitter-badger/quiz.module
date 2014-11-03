@@ -42,7 +42,7 @@ function quiz_views_handlers() {
           'quiz_views_handler_filter_question_status'     => array(
               'parent' => 'views_handler_filter_in_operator',
           ),
-          'quiz_views_handler_filter_quiz_nid'            => array(
+          'quiz_views_handler_filter_quiz_qid'            => array(
               'parent' => 'views_handler_filter',
           ),
           'quiz_views_handler_filter_user_quiz_state'     => array(
@@ -56,7 +56,7 @@ function quiz_views_handlers() {
               'parent' => 'views_handler_relationship',
           ),
           // Arguments
-          'quiz_views_handler_argument_quiz_nid'          => array(
+          'quiz_views_handler_argument_quiz_qid'          => array(
               'parent' => 'views_handler_argument_numeric',
           ),
           'quiz_views_handler_argument_user_uid_nullable' => array(

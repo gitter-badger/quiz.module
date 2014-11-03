@@ -116,11 +116,11 @@ abstract class QuizQuestion {
     }
 
     // Store quiz id in the form
-    $form['quiz_nid'] = array('#type' => 'hidden');
+    $form['quiz_qid'] = array('#type' => 'hidden');
     $form['quiz_vid'] = array('#type' => 'hidden');
 
-    if (isset($_GET['quiz_nid']) && isset($_GET['quiz_vid'])) {
-      $form['quiz_nid']['#value'] = intval($_GET['quiz_nid']);
+    if (isset($_GET['quiz_qid']) && isset($_GET['quiz_vid'])) {
+      $form['quiz_qid']['#value'] = intval($_GET['quiz_qid']);
       $form['quiz_vid']['#value'] = intval($_GET['quiz_vid']);
     }
 
@@ -355,9 +355,9 @@ abstract class QuizQuestion {
    * Save this Question to the specified Quiz.
    */
   function saveRelationships() {
-    if (!empty($this->node->quiz_nid) && !empty($this->node->quiz_vid)) {
+    if (!empty($this->node->quiz_qid) && !empty($this->node->quiz_vid)) {
       /* @var $quiz QuizEntity */
-      $quiz = quiz_entity_single_load($this->node->quiz_nid, $this->node->quiz_vid);
+      $quiz = quiz_entity_single_load($this->node->quiz_qid, $this->node->quiz_vid);
       $quiz_id = $quiz->qid;
       $ids[0] = $quiz_id;
       $ids[1] = $quiz->vid;

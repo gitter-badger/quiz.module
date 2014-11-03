@@ -5,7 +5,7 @@
  * Handles argument quiz nid.
  */
 
-class quiz_views_handler_argument_quiz_nid extends views_handler_argument_numeric {
+class quiz_views_handler_argument_quiz_qid extends views_handler_argument_numeric {
 
   /**
    * An array that the subselect will fill with all the corresponding quiz entity,

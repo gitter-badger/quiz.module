@@ -249,10 +249,10 @@ function quiz_question_validate($node, &$form) {
 /**
  * Implements hook_insert().
  */
-function quiz_question_insert(stdClass $node) {
-  _quiz_question_get_instance($node)->save(TRUE);
-  if (isset($node->quiz_nid) && $node->quiz_nid > 0) {
-    quiz_question_refresh_latest_quizzes($node->quiz_nid);
+function quiz_question_insert(stdClass $question) {
+  _quiz_question_get_instance($question)->save(TRUE);
+  if (isset($question->quiz_qid) && $question->quiz_qid > 0) {
+    quiz_question_refresh_latest_quizzes($question->quiz_qid);
   }
 }
 
