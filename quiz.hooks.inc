@@ -226,7 +226,7 @@ function quiz_theme($existing, $type, $theme, $path) {
       ),
       'quiz_categorized_form'    => array(
           'render element' => 'form',
-          'file'           => 'quiz.admin.inc'
+          'file'           => 'quiz.pages.inc'
       ),
       'quiz_result'              => array(
           'variables' => array(
@@ -251,7 +251,7 @@ function quiz_theme($existing, $type, $theme, $path) {
           'variables' => array(),
       ),
       'question_selection_table' => array(
-          'file'           => 'quiz.admin.inc',
+          'file'           => 'quiz.pages.inc',
           'render element' => 'form',
       ),
       'quiz_answer_result'       => array(
@@ -265,7 +265,7 @@ function quiz_theme($existing, $type, $theme, $path) {
       ),
       'quiz_browser'             => array(
           'render element' => 'form',
-          'file'           => 'quiz.admin.inc',
+          'file'           => 'quiz.pages.inc',
       ),
       'quiz_question_score'      => array(
           'variables' => array('score' => NULL, 'max_score' => NULL),

@@ -30,7 +30,7 @@ class HookEntityInfo {
         'module'           => 'quiz',
         'admin ui'         => array(// Enable the entity API's admin UI.
             'path'             => 'admin/structure/quiz',
-            'file'             => 'quiz.admin.inc',
+            'file'             => 'quiz.pages.inc',
             'controller class' => 'Drupal\quiz\Entity\QuizTypeUIController',
         ),
     );
@@ -59,7 +59,7 @@ class HookEntityInfo {
         ),
         'admin ui'                  => array(// Enable the entity API's admin UI.
             'path'             => 'admin/content/quiz',
-            'file'             => 'quiz.admin.inc',
+            'file'             => 'quiz.pages.inc',
             'controller class' => 'Drupal\quiz\Entity\QuizUIController',
         ),
     );

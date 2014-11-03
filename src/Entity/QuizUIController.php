@@ -124,7 +124,7 @@ class QuizUiController extends EntityDefaultUIController {
             'page callback'    => 'Drupal\quiz\Form\QuizEntityForm::staticCallback',
             'page arguments'   => array('add', $name),
             'file path'        => drupal_get_path('module', 'quiz'),
-            'file'             => 'quiz.admin.inc',
+            'file'             => 'quiz.pages.inc',
         );
       }
     }

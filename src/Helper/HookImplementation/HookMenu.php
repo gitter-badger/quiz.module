@@ -58,7 +58,7 @@ class HookMenu {
       'page arguments'   => array('Drupal\quiz\Controller\Admin\QuizAdminSettingsController::staticFormCallback'),
       'access arguments' => array('administer quiz configuration'),
       'type'             => MENU_NORMAL_ITEM, // optional
-      'file'             => 'quiz.admin.inc',
+      'file'             => 'quiz.pages.inc',
     );
 
     $items['admin/quiz/settings/quiz_form'] = array(
@@ -69,7 +69,7 @@ class HookMenu {
       'page arguments'   => array('Drupal\quiz\Controller\Admin\QuizAdminController::staticFormCallback'),
       'access arguments' => array('administer quiz configuration'),
       'type'             => MENU_NORMAL_ITEM, // optional
-      'file'             => 'quiz.admin.inc',
+      'file'             => 'quiz.pages.inc',
     );
 
     $items['admin/quiz/reports'] = array(
