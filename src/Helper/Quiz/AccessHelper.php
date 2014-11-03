@@ -171,10 +171,10 @@ class AccessHelper {
   }
 
   public function canTakeQuiz($quiz, $account) {
-    if ($quiz->type !== 'quiz' || !quiz()->getQuizHelper()->isAvailable($quiz)) {
+    if (!quiz()->getQuizHelper()->isAvailable($quiz)) {
       return FALSE;
     }
-    return node_access('view', $quiz, $account) && user_access('access quiz', $account);
+    return entity_access('view', 'quiz_entity', $quiz, $account) && user_access('access quiz', $account);
   }
 
 }
