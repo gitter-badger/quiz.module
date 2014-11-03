@@ -23,18 +23,19 @@ class LongAnswerQuestion extends QuizQuestion {
     if (!isset($this->node->feedback)) {
       $this->node->feedback = '';
     }
+
     if ($is_new || $this->node->revision == 1) {
-      $id = db_insert('quiz_long_answer_node_properties')
+      db_insert('quiz_long_answer_node_properties')
         ->fields(array(
-          'nid' => $this->node->nid,
-          'vid' => $this->node->vid,
-          'rubric' => $this->node->rubric,
+            'nid'    => $this->node->nid,
+            'vid'    => $this->node->vid,
+            'rubric' => $this->node->rubric,
         ))
         ->execute();
     }
     else {
       db_update('quiz_long_answer_node_properties')
-        ->fields(array('rubric' => $this->node->rubric))
+        ->fields(array('rubric' => isset($this->node->rubric) ? $this->node->rubric : ''))
         ->condition('nid', $this->node->nid)
         ->condition('vid', $this->node->vid)
         ->execute();
@@ -106,18 +107,23 @@ class LongAnswerQuestion extends QuizQuestion {
    */
   public function getNodeView() {
     $content = parent::getNodeView();
+
     if ($this->viewCanRevealCorrect()) {
-      $content['answers'] = array(
-        '#type' => 'item',
-        '#title' => t('Rubric'),
-        '#markup' => '<div class="quiz-solution">' . check_markup($this->node->rubric, $this->getFormat()) . '</div>',
-        '#weight' => 1,
-      );
+      if (!empty($this->node->rubric)) {
+        $content['answers'] = array(
+            '#type'   => 'item',
+            '#title'  => t('Rubric'),
+            '#prefix' => '<div class="quiz-solution">',
+            '#suffix' => '</div>',
+            '#markup' => check_markup($this->node->rubric, $this->getFormat()),
+            '#weight' => 1,
+        );
+      }
     }
     else {
       $content['answers'] = array(
-        '#markup' => '<div class="quiz-answer-hidden">Answer hidden</div>',
-        '#weight' => 1,
+          '#markup' => '<div class="quiz-answer-hidden">Answer hidden</div>',
+          '#weight' => 1,
       );
     }
     return $content;
@@ -132,11 +138,11 @@ class LongAnswerQuestion extends QuizQuestion {
     $element = parent::getAnsweringForm($form_state, $result_id);
 
     $element += array(
-      '#type' => 'textarea',
-      '#title' => t('Answer'),
-      '#description' => t('Enter your answer here. If you need more space, click on the grey bar at the bottom of this area and drag it down.'),
-      '#rows' => 15,
-      '#cols' => 60,
+        '#type'        => 'textarea',
+        '#title'       => t('Answer'),
+        '#description' => t('Enter your answer here. If you need more space, click on the grey bar at the bottom of this area and drag it down.'),
+        '#rows'        => 15,
+        '#cols'        => 60,
       //'#theme' =>'long_answer_answering_form',
     );
     if (isset($result_id)) {
@@ -162,13 +168,13 @@ class LongAnswerQuestion extends QuizQuestion {
    */
   public function getCreationForm(array &$form_state = NULL) {
     $form['rubric'] = array(
-      '#type' => 'textarea',
-      '#title' => t('Rubric'),
-      '#description' => t('Specify the criteria for grading the response.'),
-      '#default_value' => isset($this->node->rubric) ? $this->node->rubric : '',
-      '#size' => 60,
-      '#maxlength' => 2048,
-      '#required' => FALSE,
+        '#type'          => 'textarea',
+        '#title'         => t('Rubric'),
+        '#description'   => t('Specify the criteria for grading the response.'),
+        '#default_value' => isset($this->node->rubric) ? $this->node->rubric : '',
+        '#size'          => 60,
+        '#maxlength'     => 2048,
+        '#required'      => FALSE,
     );
     return $form;
   }
@@ -294,10 +300,10 @@ class LongAnswerResponse extends QuizQuestionResponse {
   public function save() {
     $this->answer_id = db_insert('quiz_long_answer_user_answers')
       ->fields(array(
-        'answer' => $this->answer,
-        'question_nid' => $this->question->nid,
-        'question_vid' => $this->question->vid,
-        'result_id' => $this->result_id,
+          'answer'       => $this->answer,
+          'question_nid' => $this->question->nid,
+          'question_vid' => $this->question->vid,
+          'result_id'    => $this->result_id,
       ))
       ->execute();
   }
@@ -341,13 +347,13 @@ class LongAnswerResponse extends QuizQuestionResponse {
     $data = array();
 
     $data[] = array(
-      'choice' => '',
-      'attempt' => $this->answer,
-      'correct' => !$this->evaluated ? t('This answer has not yet been scored.') : '',
-      'score' => $this->getScore(),
-      'answer_feedback' => check_markup($this->answer_feedback, $this->answer_feedback_format),
-      'question_feedback' => '',
-      'solution' => $this->question->rubric,
+        'choice'            => '',
+        'attempt'           => $this->answer,
+        'correct'           => !$this->evaluated ? t('This answer has not yet been scored.') : '',
+        'score'             => $this->getScore(),
+        'answer_feedback'   => check_markup($this->answer_feedback, $this->answer_feedback_format),
+        'question_feedback' => '',
+        'solution'          => $this->question->rubric,
     );
 
     return $data;
@@ -355,11 +361,11 @@ class LongAnswerResponse extends QuizQuestionResponse {
 
   public function getReportFormAnswerFeedback() {
     return array(
-      '#title' => t('Enter feedback'),
-      '#type' => 'text_format',
-      '#default_value' => isset($this->answer_feedback) ? check_markup($this->answer_feedback, $this->answer_feedback_format) : '',
-      '#format' => isset($this->answer_feedback_format) ? $this->answer_feedback_format : filter_default_format(),
-      '#attributes' => array('class' => array('quiz-report-score')),
+        '#title'         => t('Enter feedback'),
+        '#type'          => 'text_format',
+        '#default_value' => isset($this->answer_feedback) ? check_markup($this->answer_feedback, $this->answer_feedback_format) : '',
+        '#format'        => isset($this->answer_feedback_format) ? $this->answer_feedback_format : filter_default_format(),
+        '#attributes'    => array('class' => array('quiz-report-score')),
     );
   }
 

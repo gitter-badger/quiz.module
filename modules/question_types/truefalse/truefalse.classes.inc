@@ -129,10 +129,7 @@ class TrueFalseQuestion extends QuizQuestion {
     $element += array(
         '#type'          => 'radios',
         '#title'         => t('Choose one'),
-        '#options'       => array(
-            1 => t('True'),
-            0 => t('False')
-        ),
+        '#options'       => array(1 => t('True'), 0 => t('False')),
         '#default_value' => NULL, // prevent default value set to NULL
     );
 
