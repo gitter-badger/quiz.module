@@ -490,8 +490,8 @@ function quiz_take_access($quiz) {
 /**
  * Menu check to see if user has access to take this question.
  */
-function quiz_access_question($quiz, $question_number) {
-  return quiz()->getQuizHelper()->getAccessHelper()->canAccessQuestion($quiz, $question_number);
+function quiz_access_question($quiz, $page_number) {
+  return quiz()->getQuizHelper()->getAccessHelper()->canAccessQuestion($quiz, $page_number);
 }
 
 /**
