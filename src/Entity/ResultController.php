@@ -33,8 +33,8 @@ class ResultController extends EntityAPIController {
       // current version to get the hieararchy.
       $sql = "SELECT n.type, qnr.qr_id, qnr.qr_pid
         FROM {quiz_results} result
-          INNER JOIN {quiz_relationship} qnr ON (result.quiz_qid = qnr.quiz_qid AND result.quiz_vid = qnr.quiz_vid)
-          INNER JOIN {node} n ON (qnr.question_nid = n.nid AND qnr.question_vid = n.vid)
+          INNER JOIN {quiz_relationship} qnr ON result.quiz_vid = qnr.quiz_vid
+          INNER JOIN {node} n ON qnr.question_nid = n.nid
         WHERE result.result_id = :result_id AND n.vid = :vid";
       $query = db_query($sql, array(':result_id' => $result->result_id, ':vid' => $question->question_vid));
       $extra = $query->fetch();
