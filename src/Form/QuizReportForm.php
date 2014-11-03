@@ -4,11 +4,6 @@ namespace Drupal\quiz\Form;
 
 class QuizReportForm {
 
-  public static function staticCallback($form, $form_state, $questions) {
-    $obj = new self();
-    return $obj->getForm($form, $form_state, $questions);
-  }
-
   /**
    * Form for showing feedback, and for editing the feedback if necessary...
    *

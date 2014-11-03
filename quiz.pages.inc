@@ -213,9 +213,18 @@ function theme_quiz_result($variables) {
     }
   }
 
-  $report_form = @drupal_get_form('Drupal\quiz\Form\QuizReportForm::staticCallback', $questions);
-
+  $report_form = drupal_get_form('quiz_report_form', $questions);
   return $output . drupal_render($report_form);
+}
+
+function quiz_report_form($form, $form_state, $questions) {
+  $obj = new \Drupal\quiz\Form\QuizReportForm();
+  return $obj->getForm($form, $form_state, $questions);
+}
+
+function quiz_report_form_submit($form, $form_state) {
+  $obj = new \Drupal\quiz\Form\QuizReportForm();
+  return $obj->formSubmit($form, $form_state);
 }
 
 /**
