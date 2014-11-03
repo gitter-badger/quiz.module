@@ -3,7 +3,7 @@
 /**
  * Test class for long answer.
  */
-class LongAnswerUnitTest extends QuizQuestionTestCase {
+class LongAnswerTestCase extends QuizQuestionTestCase {
 
   var $question_node_type = 'long_answer';
 

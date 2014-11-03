@@ -14,9 +14,9 @@ class ScaleTestCase extends QuizQuestionTestCase {
    */
   public static function getInfo() {
     return array(
-      'name'        => t('Scale'),
-      'description' => t('Unit test for scale question type.'),
-      'group'       => t('Quiz'),
+        'name'        => t('Scale'),
+        'description' => t('Unit test for scale question type.'),
+        'group'       => t('Quiz'),
     );
   }
 
@@ -38,14 +38,14 @@ class ScaleTestCase extends QuizQuestionTestCase {
     $settings['type'] = 'scale';
 
     $question_node = $this->drupalCreateNode(array(
-      'type'         => 'scale',
-      'title'        => 'Scale 1 title',
-      'alternative0' => 'This is alternative 1',
-      'alternative1' => 'This is alternative 2',
-      'alternative2' => 'This is alternative 3',
-      'alternative3' => 'This is alternative 4',
-      'alternative4' => 'This is alternative 5',
-      'body'         => array(LANGUAGE_NONE => array(array('value' => 'Scale 1 body text'))),
+        'type'         => 'scale',
+        'title'        => 'Scale 1 title',
+        'alternative0' => 'This is alternative 1',
+        'alternative1' => 'This is alternative 2',
+        'alternative2' => 'This is alternative 3',
+        'alternative3' => 'This is alternative 4',
+        'alternative4' => 'This is alternative 5',
+        'body'         => array(LANGUAGE_NONE => array(array('value' => 'Scale 1 body text'))),
     ));
 
     return $question_node;

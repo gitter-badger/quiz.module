@@ -3,15 +3,15 @@
 /**
  * Test class for short answer.
  */
-class ShortAnswerUnitTest extends QuizQuestionTestCase {
+class ShortAnswerTestCase extends QuizQuestionTestCase {
 
   var $question_node_type = 'short_answer';
 
   public static function getInfo() {
     return array(
-      'name'        => t('Short answer'),
-      'description' => t('Unit test for Short answers question type.'),
-      'group'       => t('Quiz'),
+        'name'        => t('Short answer'),
+        'description' => t('Unit test for Short answers question type.'),
+        'group'       => t('Quiz'),
     );
   }
 
@@ -27,8 +27,8 @@ class ShortAnswerUnitTest extends QuizQuestionTestCase {
     $this->drupalLogin($this->admin);
 
     $question_node = $this->testCreateQuizQuestion(array(
-      'correct_answer_evaluation' => ShortAnswerQuestion::ANSWER_INSENSITIVE_MATCH,
-      'correct_answer'            => 'the Zero One Infinity rule',
+        'correct_answer_evaluation' => ShortAnswerQuestion::ANSWER_INSENSITIVE_MATCH,
+        'correct_answer'            => 'the Zero One Infinity rule',
     ));
     $quiz = $this->linkQuestionToQuiz($question_node);
 
@@ -56,12 +56,12 @@ class ShortAnswerUnitTest extends QuizQuestionTestCase {
     $this->drupalLogin($this->admin);
 
     $quiz = $this->drupalCreateQuiz(array(
-      'review_options' => array('end' => array('score' => 'score')),
+        'review_options' => array('end' => array('score' => 'score')),
     ));
 
     $question_node = $this->testCreateQuizQuestion(array(
-      'correct_answer_evaluation' => ShortAnswerQuestion::ANSWER_MATCH,
-      'correct_answer'            => 'the Zero One Infinity rule',
+        'correct_answer_evaluation' => ShortAnswerQuestion::ANSWER_MATCH,
+        'correct_answer'            => 'the Zero One Infinity rule',
     ));
     $this->linkQuestionToQuiz($question_node, $quiz);
 
@@ -85,8 +85,8 @@ class ShortAnswerUnitTest extends QuizQuestionTestCase {
     $quiz = $this->drupalCreateQuiz();
 
     $question_node = $this->testCreateQuizQuestion(array(
-      'correct_answer_evaluation' => ShortAnswerQuestion::ANSWER_REGEX,
-      'correct_answer'            => '/Zero One Infinity/i',
+        'correct_answer_evaluation' => ShortAnswerQuestion::ANSWER_REGEX,
+        'correct_answer'            => '/Zero One Infinity/i',
     ));
     $this->linkQuestionToQuiz($question_node, $quiz);
 
@@ -114,14 +114,14 @@ class ShortAnswerUnitTest extends QuizQuestionTestCase {
     $quiz = $this->drupalCreateQuiz();
 
     $question_node1 = $this->testCreateQuizQuestion(array(
-      'correct_answer_evaluation' => ShortAnswerQuestion::ANSWER_MANUAL,
-      'correct_answer'            => 'the Zero One Infinity rule',
+        'correct_answer_evaluation' => ShortAnswerQuestion::ANSWER_MANUAL,
+        'correct_answer'            => 'the Zero One Infinity rule',
     ));
     $this->linkQuestionToQuiz($question_node1, $quiz);
 
     $question_node2 = $this->testCreateQuizQuestion(array(
-      'correct_answer_evaluation' => ShortAnswerQuestion::ANSWER_MANUAL,
-      'correct_answer'            => 'The number two is ridiculous and cannot exist',
+        'correct_answer_evaluation' => ShortAnswerQuestion::ANSWER_MANUAL,
+        'correct_answer'            => 'The number two is ridiculous and cannot exist',
     ));
     $this->linkQuestionToQuiz($question_node2, $quiz);
 
@@ -147,12 +147,12 @@ class ShortAnswerUnitTest extends QuizQuestionTestCase {
     $this->drupalLogin($this->admin);
     $this->drupalGet($url_of_result);
     $this->drupalPost(NULL, array(
-      "0[score]"                   => 2,
-      "1[score]"                   => 3,
-      "0[answer_feedback][value]"  => 'Feedback for answer 1.',
-      "1[answer_feedback][value]"  => 'Feedback for answer 2.',
-      "0[answer_feedback][format]" => 'filtered_html',
-      "1[answer_feedback][format]" => 'filtered_html',
+        "0[score]"                   => 2,
+        "1[score]"                   => 3,
+        "0[answer_feedback][value]"  => 'Feedback for answer 1.',
+        "1[answer_feedback][value]"  => 'Feedback for answer 2.',
+        "0[answer_feedback][format]" => 'filtered_html',
+        "1[answer_feedback][format]" => 'filtered_html',
       ), t('Save Score'));
     $this->assertText('The scoring data you provided has been saved.');
 
@@ -174,8 +174,8 @@ class ShortAnswerUnitTest extends QuizQuestionTestCase {
   function testCreateQuizQuestion($settings = NULL) {
     if (!$settings) {
       $settings = array(
-        'correct_answer_evaluation' => ShortAnswerQuestion::ANSWER_INSENSITIVE_MATCH,
-        'correct_answer'            => 'SA 1 correct answer.',
+          'correct_answer_evaluation' => ShortAnswerQuestion::ANSWER_INSENSITIVE_MATCH,
+          'correct_answer'            => 'SA 1 correct answer.',
       );
     }
 
@@ -183,9 +183,9 @@ class ShortAnswerUnitTest extends QuizQuestionTestCase {
     $this->drupalLogin($this->admin);
 
     $question_node = $this->drupalCreateNode(array(
-      'type'  => $this->question_node_type,
-      'title' => 'SA 1 title',
-      'body'  => array(LANGUAGE_NONE => array(array('value' => 'SA 1 body text.'))),
+        'type'  => $this->question_node_type,
+        'title' => 'SA 1 title',
+        'body'  => array(LANGUAGE_NONE => array(array('value' => 'SA 1 body text.'))),
       ) + $settings);
 
     return $question_node;

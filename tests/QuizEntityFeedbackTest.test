@@ -5,16 +5,16 @@ use Drupal\quiz\Entity\QuizEntity;
 /**
  * Base test class for Quiz questions.
  */
-class QuizEntityFeedbackTest extends QuizEntityTestCase {
+class QuizEntityFeedbackTestCase extends QuizEntityTestCase {
 
   protected $extraModules = array('truefalse');
   protected $extraUserPermissions = array('view any quiz question correct response');
 
   public static function getInfo() {
     return array(
-      'name'        => t('Quiz feedback'),
-      'description' => t('Unit test for Quiz feedback.'),
-      'group'       => t('Quiz'),
+        'name'        => t('Quiz feedback'),
+        'description' => t('Unit test for Quiz feedback.'),
+        'group'       => t('Quiz'),
     );
   }
 
@@ -37,11 +37,11 @@ class QuizEntityFeedbackTest extends QuizEntityTestCase {
     variable_set('quiz_auto_revisioning', 0);
 
     $review_options = array(
-      'attempt'         => t('Your answer'),
-      'correct'         => t('Correct?'),
-      'score'           => t('Score'),
-      'answer_feedback' => t('Feedback'),
-      'solution'        => t('Correct answer'),
+        'attempt'         => t('Your answer'),
+        'correct'         => t('Correct?'),
+        'score'           => t('Score'),
+        'answer_feedback' => t('Feedback'),
+        'solution'        => t('Correct answer'),
     );
 
     $this->drupalLogin($this->user);
@@ -101,7 +101,7 @@ class QuizEntityFeedbackTest extends QuizEntityTestCase {
     // Turn on question feedback at the end.
     $quiz = $this->drupalCreateQuiz(
       array(
-        'review_options' => array('end' => array('question_feedback' => 'question_feedback')),
+          'review_options' => array('end' => array('question_feedback' => 'question_feedback')),
       )
     );
 

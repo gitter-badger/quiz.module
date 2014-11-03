@@ -9,9 +9,9 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
 
   public static function getInfo() {
     return array(
-      'name'        => t('Multichoice'),
-      'description' => t('Unit test for the multichoice question type.'),
-      'group'       => t('Quiz'),
+        'name'        => t('Multichoice'),
+        'description' => t('Unit test for the multichoice question type.'),
+        'group'       => t('Quiz'),
     );
   }
 
@@ -24,12 +24,12 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
    */
   public function testCreateQuizQuestion($settings = array()) {
     $settings += array(
-      'title'          => 'MCQ 1 Title',
-      'type'           => 'multichoice',
-      'choice_multi'   => 0,
-      'choice_random'  => 0,
-      'choice_boolean' => 0,
-      'body'           => array(LANGUAGE_NONE => array(array('value' => 'MCQ 1 body text'))),
+        'title'          => 'MCQ 1 Title',
+        'type'           => 'multichoice',
+        'choice_multi'   => 0,
+        'choice_random'  => 0,
+        'choice_boolean' => 0,
+        'body'           => array(LANGUAGE_NONE => array(array('value' => 'MCQ 1 body text'))),
     );
 
     // Set up some alternatives.
@@ -90,7 +90,7 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
     // Test incorrect question. Feedback, answer.
     $this->drupalGet("quiz/$quiz->qid/take");
     $this->drupalPost(NULL, array(
-      "question[$question->nid][user_answer]" => $question->alternatives[1]['id'],
+        "question[$question->nid][user_answer]" => $question->alternatives[1]['id'],
       ), t('Finish'));
     $this->assertPattern('/quiz-score-icon selected/', 'Found selected answer.');
     $this->assertPattern('/quiz-score-icon should/', 'Found should answer.');
@@ -111,8 +111,8 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
     $this->drupalLogin($this->user);
     $this->drupalGet("quiz/$quiz->qid/take");
     $this->drupalPost(NULL, array(
-      "question[$question->nid][user_answer][1]" => 1,
-      "question[$question->nid][user_answer][3]" => 3,
+        "question[$question->nid][user_answer][1]" => 1,
+        "question[$question->nid][user_answer][3]" => 3,
       ), t('Finish'));
     // 0 of 1, because user picked a correct answer and an incorrect answer.
     $this->assertText('You got 0 of 1 possible points.');
@@ -138,7 +138,7 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
 
     $this->drupalGet("quiz/$quiz->qid/take");
     $this->drupalPost(NULL, array(
-      "question[$question->nid][user_answer]" => $question->alternatives[0]['id'],
+        "question[$question->nid][user_answer]" => $question->alternatives[0]['id'],
       ), t('Finish'));
   }
 
@@ -160,8 +160,8 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
 
     $this->drupalGet("quiz/$quiz->qid/take");
     $this->drupalPost(NULL, array(
-      "question[$question->nid][user_answer][1]" => 1,
-      "question[$question->nid][user_answer][3]" => 3,
+        "question[$question->nid][user_answer][1]" => 1,
+        "question[$question->nid][user_answer][3]" => 3,
       ), t('Finish'));
     $this->assertText('You got 0 of 1 possible points.');
     $this->assertText('Your score: 0%');
