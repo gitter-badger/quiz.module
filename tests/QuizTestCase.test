@@ -31,6 +31,8 @@ abstract class QuizTestCase extends DrupalWebTestCase {
     }
     parent::setUp($modules);
 
+    $this->setUpFilters();
+
     $admin_permissions[] = 'administer quiz configuration';
     $admin_permissions[] = 'create quiz content';
     $admin_permissions[] = 'edit any quiz content';
@@ -46,6 +48,41 @@ abstract class QuizTestCase extends DrupalWebTestCase {
 
     $this->admin = $this->drupalCreateUser(array_unique($admin_permissions));
     $this->user = $this->drupalCreateUser(array_unique($user_permissions));
+  }
+
+  /**
+   * Add text formats.
+   */
+  private function setUpFilters() {
+    $filtered_html_format = (object) array(
+          'format'  => 'filtered_html',
+          'name'    => 'Filtered HTML',
+          'weight'  => 0,
+          'filters' => array(
+              'filter_url'           => array('weight' => 0, 'status' => 1), // URL filter
+              'filter_html'          => array('weight' => 1, 'status' => 1), // HTML filter
+              'filter_autop'         => array('weight' => 2, 'status' => 1), // Line break filter
+              'filter_htmlcorrector' => array('weight' => 10, 'status' => 1), // HTML corrector filter
+          ),
+    );
+    filter_format_save($filtered_html_format);
+
+    $full_html_format = (object) array(
+          'format'  => 'full_html',
+          'name'    => 'Full HTML',
+          'weight'  => 1,
+          'filters' => array(
+              'filter_url'           => array('weight' => 0, 'status' => 1), // URL filter
+              'filter_autop'         => array('weight' => 1, 'status' => 1), // Line break filter
+              'filter_htmlcorrector' => array('weight' => 10, 'status' => 1), // HTML corrector filter
+          ),
+    );
+    filter_format_save($full_html_format);
+
+    // Enable default permissions for system roles.
+    $filtered_html_permission = filter_permission_name($filtered_html_format);
+    user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array($filtered_html_permission));
+    user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array($filtered_html_permission));
   }
 
   /**
