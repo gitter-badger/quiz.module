@@ -219,12 +219,41 @@ function theme_quiz_result($variables) {
 
 function quiz_report_form($form, $form_state, $questions) {
   $obj = new \Drupal\quiz\Form\QuizReportForm();
-  return $obj->getForm($form, $form_state, $questions);
+  $array = $obj->getForm($form, $form_state, $questions);
+
+  if (isset($array['next'])) {
+    $array['next']['#submit'] = 'quiz_report_form_submit_next';
+  }
+
+  if (isset($array['finish'])) {
+    $array['finish']['#submit'] = 'quiz_report_form_submit_finish';
+  }
+
+  if (!empty($array['submit'])) {
+    $array['finish']['#submit'] = 'quiz_report_form_submit';
+  }
+
+  return $array;
 }
 
-function quiz_report_form_submit($form, $form_state) {
+function quiz_report_form_validate_element(&$element, &$form_state) {
+  $obj = new \Drupal\quiz\Form\QuizReportForm();
+  return $obj->validateElement($element, $form_state);
+}
+
+function quiz_report_form_submit($form, &$form_state) {
   $obj = new \Drupal\quiz\Form\QuizReportForm();
   return $obj->formSubmit($form, $form_state);
+}
+
+function quiz_report_form_submit_next($form, &$form_state) {
+  $obj = new \Drupal\quiz\Form\QuizReportForm();
+  return $obj->formSubmitFeedback($form, $form_state);
+}
+
+function quiz_report_form_submit_finish($form, &$form_state) {
+  $obj = new \Drupal\quiz\Form\QuizReportForm();
+  return $obj->formFinishSubmit($form, $form_state);
 }
 
 /**
