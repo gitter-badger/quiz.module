@@ -22,9 +22,6 @@ class QuizQuestionsForm extends BaseForm {
    *  HTML output to create page.
    */
   public function formGet($form, $form_state, $quiz) {
-    $form['#submit'][] = array($this, 'formSubmit');
-    $form['#validate'][] = array($this, 'formValidate');
-
     // Display questions in this quiz.
     $form['question_list'] = array(
         '#type'           => 'fieldset',

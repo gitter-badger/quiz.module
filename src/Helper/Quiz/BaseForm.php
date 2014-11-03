@@ -5,7 +5,7 @@ namespace Drupal\quiz\Helper\Quiz;
 abstract class BaseForm {
 
   public static function staticGet($form, $form_state, $quiz) {
-    module_load_include('admin.inc', 'quiz', 'quiz');
+    module_load_include('pages.inc', 'quiz', 'quiz');
     $obj = new static();
     return $obj->formGet($form, $form_state, $quiz);
   }

@@ -1,6 +1,8 @@
 <?php
 
 use Drupal\quiz\Form\QuizEntityForm;
+use Drupal\quiz\Form\QuizQuestionsForm;
+use Drupal\quiz\Form\QuizReportForm;
 use Drupal\quiz\Form\QuizTypeForm;
 
 /**
@@ -17,6 +19,23 @@ function quiz_type_form($form, &$form_state, $quiz_type, $op = 'edit') {
 function quiz_entity_form($form, &$form_state, $quiz, $op = 'edit') {
   $obj = new QuizEntityForm($quiz);
   return $obj->get($form, $form_state, $op);
+}
+
+function quiz_questions_form($form, $form_state, $quiz) {
+  $obj = new QuizQuestionsForm();
+  $array = $obj->formGet($form, $form_state, $quiz);
+  $array['#validate'][] = 'quiz_questions_form_validate';
+  return $array;
+}
+
+function quiz_questions_form_validate($form, $form_state) {
+  $obj = new QuizQuestionsForm();
+  return $obj->formValidate($form, $form_state);
+}
+
+function quiz_questions_form_submit($form, $form_state) {
+  $obj = new QuizQuestionsForm();
+  return $obj->formSubmit($form, $form_state);
 }
 
 /**
@@ -218,12 +237,12 @@ function theme_quiz_result($variables) {
 }
 
 function quiz_report_form($form, $form_state, $questions) {
-  $obj = new \Drupal\quiz\Form\QuizReportForm();
+  $obj = new QuizReportForm();
   return $obj->getForm($form, $form_state, $questions);
 }
 
 function quiz_report_form_submit($form, $form_state) {
-  $obj = new \Drupal\quiz\Form\QuizReportForm();
+  $obj = new QuizReportForm();
   return $obj->formSubmit($form, $form_state);
 }
 
