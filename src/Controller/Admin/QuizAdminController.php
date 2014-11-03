@@ -2,9 +2,6 @@
 
 namespace Drupal\quiz\Controller\Admin;
 
-use Drupal\quiz\Entity\QuizEntity;
-use stdClass;
-
 class QuizAdminController {
 
   /**
@@ -23,7 +20,9 @@ class QuizAdminController {
   public function getForm($form, &$form_state) {
     // Create a dummy node to use as input for quiz_form
     $dummy_quiz = new stdClass();
-    // def_uid is the uid of the default user holding the default values for the node form(no real user with this uid exists)
+
+    // def_uid is the uid of the default user holding the default values for the
+    // node form (no real user with this uid exists)
     foreach (quiz_get_defaults() as $key => $value) {
       if (!isset($dummy_quiz->$key)) {
         $dummy_quiz->{$key} = $value;
