@@ -70,7 +70,7 @@ class RevisionStatsController {
       $sql .= " AND uid = :uid";
       $sql_args[':uid'] = $this->uid;
     }
-    $sql .= " GROUP BY date ORDER BY time_start DESC";
+    $sql .= " GROUP BY date ORDER BY time_start ASC";
     $days = $this->getLastDays($end);
     $results = db_query($sql, $sql_args);
     $res_o = $results->fetch();
@@ -98,7 +98,7 @@ class RevisionStatsController {
     return array(
         'chart'       => '<div id="date_vs_takeup_count" class="quiz-stats-chart-space">' . $chart . '</div>',
         'title'       => t('Activity'),
-        'explanation' => t('This chart shows how many times the quiz has been taken the last !days days.', array(
+        'explanation' => t('This chart shows how many times the quiz has been taken each day over the last !days days.', array(
             '!days' => $end
         )),
     );
@@ -160,7 +160,7 @@ class RevisionStatsController {
       $sql .= ' AND qnr.uid = :uid';
       $arg[':uid'] = $this->uid;
     }
-    $sql .= ' ORDER by score DESC';
+    $sql .= ' ORDER by score DESC LIMIT 10';
     $results = db_query($sql, $arg);
     while ($result = $results->fetchAssoc()) {
       $key = $result['name'] . '-' . $result['score'];
