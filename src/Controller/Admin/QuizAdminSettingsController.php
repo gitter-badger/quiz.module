@@ -5,19 +5,9 @@ namespace Drupal\quiz\Controller\Admin;
 class QuizAdminSettingsController {
 
   /**
-   * Main callback for admin/quiz/settings/config
-   */
-  public static function staticFormCallback($form, &$form_state) {
-    $controller = new static();
-    return $controller->getForm($form, $form_state);
-  }
-
-  /**
    * This builds the main settings form for the quiz module.
    */
   public function getForm($form, &$form_state) {
-    $form = array();
-
     $form['quiz_global_settings'] = array(
         '#type'        => 'fieldset',
         '#title'       => t('Global Configuration'),
@@ -108,11 +98,7 @@ class QuizAdminSettingsController {
         '#default_value' => variable_get('quiz_pager_siblings', 5),
     );
 
-    $target = array(
-        'attributes' => array(
-            'target' => '_blank'
-        ),
-    );
+    $target = array('attributes' => array('target' => '_blank'));
 
     $links = array(
         '!views'            => l(t('Views'), 'http://drupal.org/project/views', $target),
@@ -228,9 +214,6 @@ class QuizAdminSettingsController {
         '#markup' => '<p>' . t('Default values for the quiz creation form can be edited <a href="!url">here</a>', array('!url' => url('admin/quiz/settings/quiz_form'))) . '</p>',
     );
 
-    $form['#validate'][] = array($this, 'validate');
-    $form['#submit'][] = array($this, 'submit');
-
     return system_settings_form($form);
   }
 
@@ -261,7 +244,7 @@ class QuizAdminSettingsController {
    * Submit the admin settings form
    */
   public function submit($form, &$form_state) {
-    if (QUIZ_NAME != $form_state['values']['quiz_name']) {
+    if (QUIZ_NAME !== $form_state['values']['quiz_name']) {
       variable_set('quiz_name', $form_state['values']['quiz_name']);
       define(QUIZ_NAME, $form_state['values']['quiz_name']);
       menu_rebuild();

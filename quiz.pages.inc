@@ -1,9 +1,28 @@
 <?php
 
+use Drupal\quiz\Controller\Admin\QuizAdminSettingsController;
 use Drupal\quiz\Form\QuizEntityForm;
 use Drupal\quiz\Form\QuizQuestionsForm;
 use Drupal\quiz\Form\QuizReportForm;
 use Drupal\quiz\Form\QuizTypeForm;
+
+/**
+ * Form for /admin/quiz/settings/config.
+ */
+function quiz_admin_settings_form($form, $form_state) {
+  $obj = new QuizAdminSettingsController();
+  return $obj->getForm($form, $form_state);
+}
+
+function quiz_admin_settings_form_validate($form, $form_state) {
+  $obj = new QuizAdminSettingsController();
+  return $obj->validate($form, $form_state);
+}
+
+function quiz_admin_settings_form_submit($form, $form_state) {
+  $obj = new QuizAdminSettingsController();
+  return $obj->submit($form, $form_state);
+}
 
 /**
  * Define quiz-type editing form.
