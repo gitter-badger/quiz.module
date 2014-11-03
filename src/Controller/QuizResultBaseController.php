@@ -2,6 +2,9 @@
 
 namespace Drupal\quiz\Controller;
 
+use Drupal\quiz\Entity\QuizEntity;
+use Drupal\quiz\Entity\Result;
+
 abstract class QuizResultBaseController {
 
   /** @var QuizEntity */
@@ -150,6 +153,25 @@ abstract class QuizResultBaseController {
       }
     }
     return $summary;
+  }
+
+  /**
+   * Get summary text for a particular score from a set of result options.
+   *
+   * @param QuizEntity $quiz
+   * @param int $score
+   *   The user's final score.
+   *
+   * @return string
+   *   Summary text for the user's score.
+   */
+  private function pickResultOption(QuizEntity $quiz, $score) {
+    foreach ($quiz->resultoptions as $option) {
+      if ($score < $option['option_start'] || $score > $option['option_end']) {
+        continue;
+      }
+      return (object) array('option_summary' => $option['option_summary'], 'option_summary_format' => $option['option_summary_format']);
+    }
   }
 
 }

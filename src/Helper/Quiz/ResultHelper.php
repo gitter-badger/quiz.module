@@ -238,23 +238,4 @@ class ResultHelper {
     entity_delete_multiple('quiz_result', $result_ids);
   }
 
-  /**
-   * Get summary text for a particular score from a set of result options.
-   *
-   * @param QuizEntity $quiz_id
-   * @param int $score
-   *   The user's final score.
-   *
-   * @return
-   *   Summary text for the user's score.
-   */
-  private function pickResultOption(QuizEntity $quiz, $score) {
-    foreach ($quiz->resultoptions as $option) {
-      if ($score < $option['option_start'] || $score > $option['option_end']) {
-        continue;
-      }
-      return (object) array('option_summary' => $option['option_summary'], 'option_summary_format' => $option['option_summary_format']);
-    }
-  }
-
 }
