@@ -211,11 +211,9 @@ class TrueFalseResponse extends QuizQuestionResponse {
   public function __construct($result_id, stdClass $question_node, $answer = NULL) {
     parent::__construct($result_id, $question_node, $answer);
     if (!isset($answer)) {
-      // Get from DB
-      $r = $this->getUserAnswer();
-      if (!empty($r)) {
-        $this->answer = $r->answer;
-        $this->score = $r->score;
+      if ($response = $this->getUserAnswer()) {
+        $this->answer = $response->answer;
+        $this->score = $response->score;
       }
     }
     else {
