@@ -138,7 +138,7 @@ class AccessHelper {
     }
 
     // User maybe revisiting the quiz, trying to resume
-    if (!isset($_SESSION['quiz'][$quiz->qid])) {
+    if (!isset($_SESSION['quiz'][$quiz->qid]) && !user_is_anonymous()) {
       $controller = new QuizTakeController($quiz, $user, FALSE);
       if (FALSE === $controller->initQuizResume()) {
         return FALSE;
