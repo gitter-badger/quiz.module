@@ -57,6 +57,21 @@ function quiz_questions_form_submit($form, $form_state) {
   return $obj->formSubmit($form, $form_state);
 }
 
+function quiz_categorized_form($form, $form_state, \Drupal\quiz\Entity\QuizEntity $quiz) {
+  $obj = new \Drupal\quiz\Form\QuizCategorizedForm();
+  return $obj->getForm($form, $form_state, $quiz);
+}
+
+function quiz_categorized_form_validate($form, &$form_state) {
+  $obj = new \Drupal\quiz\Form\QuizCategorizedForm();
+  return $obj->formValidate($form, $form_state);
+}
+
+function quiz_categorized_form_submit($form, &$form_state) {
+  $obj = new \Drupal\quiz\Form\QuizCategorizedForm();
+  return $obj->formSubmit($form, $form_state);
+}
+
 /**
  * Jumper form.
  */

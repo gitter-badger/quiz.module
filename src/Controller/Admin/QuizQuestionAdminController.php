@@ -18,7 +18,7 @@ class QuizQuestionAdminController {
     module_load_include('pages.inc', 'quiz');
 
     if ($quiz->randomization >= 3) {
-      # return drupal_get_form('Drupal\quiz\Form\QuizCategorizedForm::staticGet', $quiz);
+      return drupal_get_form('quiz_categorized_form', $quiz);
     }
 
     return array(

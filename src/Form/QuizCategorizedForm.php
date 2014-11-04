@@ -11,16 +11,12 @@ class QuizCategorizedForm extends BaseForm {
    * Form for managing what questions should be added to a quiz with categorized random questions.
    *
    * @param array $form_state
-   *  The form state array
-   * @param object $quiz
+   * @param \Drupal\quiz\Entity\QuizEntity $quiz
    *  The quiz entity
    */
-  public function getForm($form, $form_state, $quiz) {
+  public function getForm($form, $form_state, \Drupal\quiz\Entity\QuizEntity $quiz) {
     $form['#tree'] = TRUE;
-
     $form['#theme'] = 'quiz_categorized_form';
-    $form['#validate'][] = array($this, 'formValidate');
-    $form['#submit'][] = array($this, 'formSubmit');
 
     $this->existingTermsForm($form, $form_state, $quiz);
     $this->categorizedNewTermForm($form, $form_state, $quiz);
@@ -47,23 +43,10 @@ class QuizCategorizedForm extends BaseForm {
     }
 
     foreach ($terms as $term) {
-      $form[$term->tid]['name'] = array(
-          '#markup' => check_plain($term->name),
-      );
-      $form[$term->tid]['number'] = array(
-          '#type'          => 'textfield',
-          '#size'          => 3,
-          '#default_value' => $term->number,
-      );
-      $form[$term->tid]['max_score'] = array(
-          '#type'          => 'textfield',
-          '#size'          => 3,
-          '#default_value' => $term->max_score,
-      );
-      $form[$term->tid]['remove'] = array(
-          '#type'          => 'checkbox',
-          '#default_value' => 0,
-      );
+      $form[$term->tid]['name'] = array('#markup' => check_plain($term->name));
+      $form[$term->tid]['number'] = array('#type' => 'textfield', '#size' => 3, '#default_value' => $term->number);
+      $form[$term->tid]['max_score'] = array('#type' => 'textfield', '#size' => 3, '#default_value' => $term->max_score);
+      $form[$term->tid]['remove'] = array('#type' => 'checkbox', '#default_value' => 0);
       $form[$term->tid]['weight'] = array(
           '#type'          => 'textfield',
           '#size'          => 3,
