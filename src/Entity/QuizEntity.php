@@ -13,6 +13,9 @@ class QuizEntity extends Entity {
   /** @var int Quiz Revision ID */
   public $vid;
 
+  /** @var int */
+  public $status;
+
   /** @var string The name of the quiz type. */
   public $type = 'quiz';
 
