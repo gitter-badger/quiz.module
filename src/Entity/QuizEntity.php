@@ -75,7 +75,7 @@ class QuizEntity extends Entity {
   }
 
   /**
-   * @return \Drupal\quiz\Entity\QuizEntity\QuestionLoader
+   * @return QuestionLoader
    */
   public function getQuestionLoader() {
     if (NULL === $this->question_loader) {
@@ -95,7 +95,7 @@ class QuizEntity extends Entity {
         FROM {quiz_terms} qt
         JOIN {taxonomy_term_data} td ON qt.tid = td.tid
         WHERE qt.vid = :vid ORDER BY qt.weight', array(
-          ':vid' => $this->quiz->vid
+          ':vid' => $this->vid
       ))->fetchAll();
   }
 

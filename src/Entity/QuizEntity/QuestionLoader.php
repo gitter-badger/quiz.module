@@ -13,45 +13,6 @@ class QuestionLoader {
   }
 
   /**
-   * Get an array list of random questions for a quiz.
-   *
-   * @return array[] Array of nid/vid combos for quiz questions.
-   */
-  public function getRandomQuestions() {
-    $num_random = $this->quiz->number_of_random_questions;
-    $tid = $this->quiz->tid;
-    $questions = array();
-    if ($num_random > 0) {
-      if ($tid > 0) {
-        $questions = $this->getRandomTaxonomyQuestionIds($tid, $num_random);
-      }
-      else {
-        // Select random question from assigned pool.
-        $result = db_query_range(
-          "SELECT question_nid as nid, question_vid as vid, n.type
-          FROM {quiz_relationship} qnr
-          JOIN {node} n on qnr.question_nid = n.nid
-          WHERE qnr.quiz_vid = :quiz_vid
-          AND qnr.quiz_qid = :quiz_qid
-          AND qnr.question_status = :question_status
-          AND n.status = 1
-          ORDER BY RAND()", 0, $this->quiz->number_of_random_questions, array(
-            ':quiz_vid'        => $this->quiz->vid,
-            ':quiz_qid'        => $this->quiz->qid,
-            ':question_status' => QUESTION_RANDOM
-          )
-        );
-        while ($question_node = $result->fetchAssoc()) {
-          $question_node['random'] = TRUE;
-          $question_node['relative_max_score'] = $this->quiz->max_score_for_random;
-          $questions[] = $question_node;
-        }
-      }
-    }
-    return $questions;
-  }
-
-  /**
    * Builds the questionlist for quizzes with categorized random questions
    */
   public function buildCategoziedQuestionList() {
@@ -105,8 +66,7 @@ class QuestionLoader {
    * for a quiz attempt and NOT used to do operations on the questions inside of
    * a quiz.
    *
-   * @return
-   *   Array of question node IDs.
+   * @return array[] Array of question info.
    */
   public function getQuestionList() {
     if ($this->quiz->randomization == 3) {
@@ -120,11 +80,9 @@ class QuestionLoader {
     $display_count = 0;
     $questions_out = array();
     foreach ($questions as &$question) {
-      $question_node = node_load($question['nid'], $question['vid']);
-      $count++;
       $display_count++;
-      $question['number'] = $count;
-      if ($question['type'] != 'quiz_page') {
+      $question['number'] = ++$count;
+      if ($question['type'] !== 'quiz_page') {
         $question['display_number'] = $display_count;
       }
       $questions_out[$count] = $question;
@@ -156,7 +114,7 @@ class QuestionLoader {
 
     // Get random questions for the remainder.
     if ($this->quiz->number_of_random_questions > 0) {
-      $random_questions = $this->quiz->getQuestionLoader()->getRandomQuestions();
+      $random_questions = $this->getRandomQuestions();
       $questions = array_merge($questions, $random_questions);
       if ($this->quiz->number_of_random_questions > count($random_questions)) {
         // Unable to find enough requested random questions.
@@ -169,6 +127,45 @@ class QuestionLoader {
       shuffle($questions);
     }
 
+    return $questions;
+  }
+
+  /**
+   * Get an array list of random questions for a quiz.
+   *
+   * @return array[] Array of nid/vid combos for quiz questions.
+   */
+  private function getRandomQuestions() {
+    $num_random = $this->quiz->number_of_random_questions;
+    $tid = $this->quiz->tid;
+    $questions = array();
+    if ($num_random > 0) {
+      if ($tid > 0) {
+        $questions = quiz()->getQuizHelper()->getRandomTaxonomyQuestionIds($tid, $num_random);
+      }
+      else {
+        // Select random question from assigned pool.
+        $result = db_query_range(
+          "SELECT question_nid as nid, question_vid as vid, n.type
+          FROM {quiz_relationship} qnr
+          JOIN {node} n on qnr.question_nid = n.nid
+          WHERE qnr.quiz_vid = :quiz_vid
+          AND qnr.quiz_qid = :quiz_qid
+          AND qnr.question_status = :question_status
+          AND n.status = 1
+          ORDER BY RAND()", 0, $this->quiz->number_of_random_questions, array(
+            ':quiz_vid'        => $this->quiz->vid,
+            ':quiz_qid'        => $this->quiz->qid,
+            ':question_status' => QUESTION_RANDOM
+          )
+        );
+        while ($question_node = $result->fetchAssoc()) {
+          $question_node['random'] = TRUE;
+          $question_node['relative_max_score'] = $this->quiz->max_score_for_random;
+          $questions[] = $question_node;
+        }
+      }
+    }
     return $questions;
   }
 
