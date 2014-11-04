@@ -36,7 +36,7 @@ class QuizCategorizedForm extends BaseForm {
   }
 
   private function existingTermsForm(&$form, $form_state, $quiz) {
-    if ($terms = quiz()->getQuizHelper()->getQuizTermsByVocabularyId($quiz->vid)) {
+    if ($terms = quiz()->getQuizHelper()->getQuizTermsByQuizVersionId($quiz->vid)) {
       if (empty($form_state['input']) && !quiz()->getQuizHelper()->buildCategoziedQuestionList($quiz)) {
         drupal_set_message(t('There are not enough questions in the requested categories.'), 'error');
       }

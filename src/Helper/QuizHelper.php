@@ -479,17 +479,17 @@ class QuizHelper {
   /**
    * Get data for all terms belonging to a Quiz with categorized random questions
    *
-   * @param int $vid
-   *  version id for the quiz
+   * @param int $quiz_vid
+   *  version id for the quiz revision
    * @return array
    *  Array with all terms that belongs to the quiz as objects
    */
-  public function getQuizTermsByVocabularyId($vid) {
+  public function getQuizTermsByQuizVersionId($quiz_vid) {
     return db_query('SELECT td.name, qt.*
         FROM {quiz_terms} qt
         JOIN {taxonomy_term_data} td ON qt.tid = td.tid
         WHERE qt.vid = :vid ORDER BY qt.weight', array(
-          ':vid' => $vid
+          ':vid' => $quiz_vid
       ))->fetchAll();
   }
 
@@ -504,7 +504,7 @@ class QuizHelper {
     $questions = array();
     $nids = array();
     $total_count = 0;
-    foreach ($this->getQuizTermsByVocabularyId($quiz->vid) as $term) {
+    foreach ($this->getQuizTermsByQuizVersionId($quiz->vid) as $term) {
       $query = db_select('node', 'n');
       $query->join('taxonomy_index', 'tn', 'n.nid = tn.nid');
       $query->fields('n', array('nid', 'vid'));
