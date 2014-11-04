@@ -370,8 +370,7 @@ class QuizHelper {
    * for a quiz attempt and NOT used to do operations on the questions inside of
    * a quiz.
    *
-   * @param $quiz
-   *   Quiz entity.
+   * @param \Drupal\quiz\Entity\QuizEntity $quiz
    * @return
    *   Array of question node IDs.
    */
@@ -403,8 +402,7 @@ class QuizHelper {
 
       // Get random questions for the remainder.
       if ($quiz->number_of_random_questions > 0) {
-        $question_loader = new \Drupal\quiz\Entity\QuizEntity\QuestionLoader($quiz);
-        $random_questions = $question_loader->getRandomQuestions();
+        $random_questions = $quiz->getQuestionLoader()->getRandomQuestions();
         $questions = array_merge($questions, $random_questions);
         if ($quiz->number_of_random_questions > count($random_questions)) {
           // Unable to find enough requested random questions.
