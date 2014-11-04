@@ -58,6 +58,18 @@ function quiz_entity_form($form, &$form_state, $quiz, $op = 'edit') {
   return $obj->get($form, $form_state, $op);
 }
 
+function quiz_entity_form_validate($form, $form_state) {
+  $quiz = $form_state['quiz_entity'];
+  $obj = new QuizEntityForm($quiz);
+  return $obj->validate($form, $form_state);
+}
+
+function quiz_entity_form_submit($form, $form_state) {
+  $quiz = $form_state['quiz_entity'];
+  $obj = new QuizEntityForm($quiz);
+  return $obj->submit($form, $form_state);
+}
+
 function quiz_questions_form($form, $form_state, $quiz) {
   $obj = new QuizQuestionsForm();
   $array = $obj->formGet($form, $form_state, $quiz);
