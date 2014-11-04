@@ -460,10 +460,7 @@ function theme_quiz_categorized_form($variables) {
  * Some systems don't support all the dates the forms api lets you choose from.
  * This function limits the options to dates most systems support.
  */
-function _quiz_after_build_fix_year_options() {
-  return array(
-      'year' => array(
-          '#options' => drupal_map_assoc(range(1970, 2030))
-      )
-  );
+function _quiz_after_build_fix_year_options($element) {
+  $element['year']['#options'] = drupal_map_assoc(range(1970, 2030));
+  return $element;
 }
