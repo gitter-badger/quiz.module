@@ -201,23 +201,19 @@ function quiz_result_is_question_answered($result, $question) {
 function _quiz_is_int($value, $min = 1, $max = NULL) {
   $to_return = ((string) $value === (string) (int) $value);
 
-  // $value is not an integer.
-  if (!$to_return) {
+  if (!$to_return) { // $value is not an integer.
     return FALSE;
   }
 
-  // $value is too small.
-  if ($value < $min) {
+  if ($value < $min) { // $value is too small.
     return FALSE;
   }
 
-  // $value is too big.
-  if (isset($max) && $value > $max) {
+  if (isset($max) && $value > $max) { // $value is too big.
     return FALSE;
   }
 
-  // $value is an integer in the allowed range.
-  return TRUE;
+  return TRUE; // $value is an integer in the allowed range.
 }
 
 /**

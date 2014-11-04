@@ -40,12 +40,12 @@ class QuizCategorizedForm extends BaseForm {
   }
 
   private function existingTermsForm(&$form, $form_state, $quiz) {
-    $terms = quiz()->getQuizHelper()->getQuizTermsByVocabularyId($quiz->vid);
-    if ($terms) {
+    if ($terms = quiz()->getQuizHelper()->getQuizTermsByVocabularyId($quiz->vid)) {
       if (empty($form_state['input']) && !quiz()->getQuizHelper()->buildCategoziedQuestionList($quiz)) {
         drupal_set_message(t('There are not enough questions in the requested categories.'), 'error');
       }
     }
+
     foreach ($terms as $term) {
       $form[$term->tid]['name'] = array(
           '#markup' => check_plain($term->name),
@@ -68,9 +68,7 @@ class QuizCategorizedForm extends BaseForm {
           '#type'          => 'textfield',
           '#size'          => 3,
           '#default_value' => $term->weight,
-          '#attributes'    => array(
-              'class' => array('term-weight')
-          ),
+          '#attributes'    => array('class' => array('term-weight')),
       );
     }
   }
@@ -121,6 +119,7 @@ class QuizCategorizedForm extends BaseForm {
       form_set_error('changed', t('A critical error has occured. Please report error code 28 on the quiz project page.'));
       return;
     }
+
     if (!empty($form_state['values']['term'])) {
       $tid = $this->getIdFromString($form_state['values']['term']);
       if ($tid === FALSE) {
@@ -136,6 +135,7 @@ class QuizCategorizedForm extends BaseForm {
           form_set_error('term', t("The term name you entered doesn't match any registered question terms."));
         }
       }
+
       if (in_array($tid, array_keys($form))) {
         form_set_error('term', t('The category you are trying to add has already been added to this quiz.'));
       }
@@ -146,6 +146,7 @@ class QuizCategorizedForm extends BaseForm {
       if (!_quiz_is_int($form_state['values']['number'])) {
         form_set_error('number', t('The number of questions needs to be a positive integer'));
       }
+
       if (!_quiz_is_int($form_state['values']['max_score'], 0)) {
         form_set_error('max_score', t('The max score needs to be a positive integer or 0'));
       }

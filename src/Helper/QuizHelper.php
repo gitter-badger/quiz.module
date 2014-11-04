@@ -427,13 +427,16 @@ class QuizHelper {
     else {
       // Get required questions first.
       $query = db_query('SELECT n.nid, n.vid, n.type, qnr.qr_id, qnr.qr_pid
-    FROM {quiz_relationship} qnr
-    JOIN {node} n ON qnr.question_nid = n.nid
-    LEFT JOIN {quiz_relationship} qnr2 ON (qnr.qr_pid = qnr2.qr_id OR (qnr.qr_pid IS NULL AND qnr.qr_id = qnr2.qr_id))
-    WHERE qnr.quiz_vid = :quiz_vid
-    AND qnr.question_status = :question_status
-    AND n.status = 1
-    ORDER BY qnr2.weight, qnr.weight', array(':quiz_vid' => $quiz->vid, ':question_status' => QUESTION_ALWAYS));
+        FROM {quiz_relationship} qnr
+          JOIN {node} n ON qnr.question_nid = n.nid
+          LEFT JOIN {quiz_relationship} qnr2 ON (qnr.qr_pid = qnr2.qr_id OR (qnr.qr_pid IS NULL AND qnr.qr_id = qnr2.qr_id))
+        WHERE qnr.quiz_vid = :quiz_vid
+        AND qnr.question_status = :question_status
+        AND n.status = 1
+        ORDER BY qnr2.weight, qnr.weight', array(
+          ':quiz_vid'        => $quiz->vid,
+          ':question_status' => QUESTION_ALWAYS
+      ));
       $i = 0;
       while ($question_node = $query->fetchAssoc()) {
         // Just to make it easier on us, let's use a 1-based index.
@@ -482,34 +485,33 @@ class QuizHelper {
    *  Array with all terms that belongs to the quiz as objects
    */
   public function getQuizTermsByVocabularyId($vid) {
-    $sql = 'SELECT td.name, qt.*
-    FROM {quiz_terms} qt
-    JOIN {taxonomy_term_data} td ON qt.tid = td.tid
-    WHERE qt.vid = :vid
-    ORDER BY qt.weight';
-    return db_query($sql, array(':vid' => $vid))->fetchAll();
+    return db_query('SELECT td.name, qt.*
+        FROM {quiz_terms} qt
+        JOIN {taxonomy_term_data} td ON qt.tid = td.tid
+        WHERE qt.vid = :vid ORDER BY qt.weight', array(
+          ':vid' => $vid
+      ))->fetchAll();
   }
 
   /**
    * Builds the questionlist for quizzes with categorized random questions
    */
   public function buildCategoziedQuestionList($quiz) {
-    $terms = $this->getQuizTermsByVocabularyId($quiz->vid);
-    $questions = array();
-    $nids = array();
-    $question_types = array_keys(quiz_get_question_types());
-    if (empty($question_types)) {
+    if (!$question_types = array_keys(quiz_get_question_types())) {
       return array();
     }
+
+    $questions = array();
+    $nids = array();
     $total_count = 0;
-    foreach ($terms as $term) {
+    foreach ($this->getQuizTermsByVocabularyId($quiz->vid) as $term) {
       $query = db_select('node', 'n');
       $query->join('taxonomy_index', 'tn', 'n.nid = tn.nid');
       $query->fields('n', array('nid', 'vid'));
       $query->fields('tn', array('tid'));
-      $query->condition('n.status', 1, '=');
-      $query->condition('n.type', $question_types, 'IN');
-      $query->condition('tn.tid', $term->tid, '=');
+      $query->condition('n.status', 1);
+      $query->condition('n.type', $question_types);
+      $query->condition('tn.tid', $term->tid);
       if (!empty($nids)) {
         $query->condition('n.nid', $nids, 'NOT IN');
       }
