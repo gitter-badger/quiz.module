@@ -17,6 +17,10 @@ class QuizQuestionAdminController {
 
     module_load_include('pages.inc', 'quiz');
 
+    if ($quiz->randomization >= 3) {
+      # return drupal_get_form('Drupal\quiz\Form\QuizCategorizedForm::staticGet', $quiz);
+    }
+
     return array(
         '#type'            => 'vertical_tabs',
         'question_admin'   => array(
