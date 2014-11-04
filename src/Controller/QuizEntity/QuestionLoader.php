@@ -51,4 +51,46 @@ class QuestionLoader {
     return $questions;
   }
 
+  /**
+   * Builds the questionlist for quizzes with categorized random questions
+   */
+  public function buildCategoziedQuestionList() {
+    if (!$question_types = array_keys(quiz_get_question_types())) {
+      return array();
+    }
+
+    $questions = array();
+    $nids = array();
+    $total_count = 0;
+    foreach ($this->quiz->getTermsByVid() as $term) {
+      $query = db_select('node', 'n');
+      $query->join('taxonomy_index', 'tn', 'n.nid = tn.nid');
+      $query->fields('n', array('nid', 'vid'));
+      $query->fields('tn', array('tid'));
+      $query->condition('n.status', 1);
+      $query->condition('n.type', $question_types);
+      $query->condition('tn.tid', $term->tid);
+      if (!empty($nids)) {
+        $query->condition('n.nid', $nids, 'NOT IN');
+      }
+      $query->range(0, $term->number);
+      $query->orderBy('RAND()');
+
+      $result = $query->execute();
+      $count = 0;
+      while ($question = $result->fetchAssoc()) {
+        $count++;
+        $question['tid'] = $term->tid;
+        $question['number'] = $count + $total_count;
+        $questions[] = $question;
+        $nids[] = $question['nid'];
+      }
+      $total_count += $count;
+      if ($count < $term->number) {
+        return array(); // Not enough questions
+      }
+    }
+    return $questions;
+  }
+
 }
