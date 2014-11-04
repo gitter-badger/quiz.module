@@ -51,19 +51,4 @@ class QuestionLoader {
     return $questions;
   }
 
-  /**
-   * Get data for all terms belonging to a Quiz with categorized random questions
-   *
-   * @return array
-   *  Array with all terms that belongs to the quiz as objects
-   */
-  public function getTermsByVid() {
-    return db_query('SELECT td.name, qt.*
-        FROM {quiz_terms} qt
-        JOIN {taxonomy_term_data} td ON qt.tid = td.tid
-        WHERE qt.vid = :vid ORDER BY qt.weight', array(
-          ':vid' => $this->quiz->vid
-      ))->fetchAll();
-  }
-
 }

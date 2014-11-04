@@ -443,7 +443,7 @@ class QuizHelper {
     $questions = array();
     $nids = array();
     $total_count = 0;
-    foreach ($quiz->getQuestionLoader()->getTermsByVid() as $term) {
+    foreach ($quiz->getTermsByVid() as $term) {
       $query = db_select('node', 'n');
       $query->join('taxonomy_index', 'tn', 'n.nid = tn.nid');
       $query->fields('n', array('nid', 'vid'));
