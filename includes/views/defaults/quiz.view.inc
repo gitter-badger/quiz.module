@@ -153,6 +153,12 @@ $handler->display->display_options['filters']['type']['expose']['operator_id'] =
 $handler->display->display_options['filters']['type']['expose']['label'] = 'Quiz Type';
 $handler->display->display_options['filters']['type']['expose']['operator'] = 'type_op';
 $handler->display->display_options['filters']['type']['expose']['identifier'] = 'type';
+/* Filter criterion: Quiz properties: Status */
+$handler->display->display_options['filters']['status']['id'] = 'status';
+$handler->display->display_options['filters']['status']['table'] = 'quiz_entity';
+$handler->display->display_options['filters']['status']['field'] = 'status';
+$handler->display->display_options['filters']['status']['operator'] = '>=';
+$handler->display->display_options['filters']['status']['value']['value'] = '0';
 
 /* Display: Page */
 $handler = $view->new_display('page', 'Page', 'page');
