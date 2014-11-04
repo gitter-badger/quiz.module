@@ -237,49 +237,6 @@ class QuizHelper {
   }
 
   /**
-   * Get an array list of random questions for a quiz.
-   *
-   * @param $quiz
-   *   The quiz entity.
-   *
-   * @return
-   *   Array of nid/vid combos for quiz questions.
-   */
-  public function getRandomQuestions($quiz) {
-    $num_random = $quiz->number_of_random_questions;
-    $tid = $quiz->tid;
-    $questions = array();
-    if ($num_random > 0) {
-      if ($tid > 0) {
-        $questions = $this->getRandomTaxonomyQuestionIds($tid, $num_random);
-      }
-      else {
-        // Select random question from assigned pool.
-        $result = db_query_range(
-          "SELECT question_nid as nid, question_vid as vid, n.type
-        FROM {quiz_relationship} qnr
-        JOIN {node} n on qnr.question_nid = n.nid
-        WHERE qnr.quiz_vid = :quiz_vid
-        AND qnr.quiz_qid = :quiz_qid
-        AND qnr.question_status = :question_status
-        AND n.status = 1
-        ORDER BY RAND()", 0, $quiz->number_of_random_questions, array(
-            ':quiz_vid'        => $quiz->vid,
-            ':quiz_qid'        => $quiz->qid,
-            ':question_status' => QUESTION_RANDOM
-          )
-        );
-        while ($question_node = $result->fetchAssoc()) {
-          $question_node['random'] = TRUE;
-          $question_node['relative_max_score'] = $quiz->max_score_for_random;
-          $questions[] = $question_node;
-        }
-      }
-    }
-    return $questions;
-  }
-
-  /**
    * Given a term ID, get all of the question nid/vids that have that ID.
    *
    * @param $tid
@@ -446,7 +403,8 @@ class QuizHelper {
 
       // Get random questions for the remainder.
       if ($quiz->number_of_random_questions > 0) {
-        $random_questions = $this->getRandomQuestions($quiz);
+        $question_loader = new \Drupal\quiz\Entity\QuizEntity\QuestionLoader($quiz);
+        $random_questions = $question_loader->getRandomQuestions();
         $questions = array_merge($questions, $random_questions);
         if ($quiz->number_of_random_questions > count($random_questions)) {
           // Unable to find enough requested random questions.
