@@ -102,10 +102,10 @@ class QuizUiController extends EntityDefaultUIController {
     );
 
     $items['quiz/%entity_object/questions/term_ahah'] = array(
-        'page callback'    => 'Drupal\quiz\Form\QuizCategorizedForm::categorizedTermAhah',
         'type'             => MENU_CALLBACK,
         'access callback'  => 'entity_access',
         'access arguments' => array('create', 'quiz_entity', 1),
+        'page callback'    => 'Drupal\quiz\Form\QuizCategorizedForm::categorizedTermAhah',
         'load arguments'   => array('quiz_entity'),
     );
   }

@@ -2,7 +2,7 @@
 
 namespace Drupal\quiz\Form;
 
-use Drupal\quiz\Controller\QuizQuestionManagementController;
+use Drupal\quiz\Entity\QuizEntity;
 use Drupal\quiz\Helper\Quiz\BaseForm;
 
 class QuizCategorizedForm extends BaseForm {
@@ -11,10 +11,10 @@ class QuizCategorizedForm extends BaseForm {
    * Form for managing what questions should be added to a quiz with categorized random questions.
    *
    * @param array $form_state
-   * @param \Drupal\quiz\Entity\QuizEntity $quiz
+   * @param QuizEntity $quiz
    *  The quiz entity
    */
-  public function getForm($form, $form_state, \Drupal\quiz\Entity\QuizEntity $quiz) {
+  public function getForm($form, $form_state, QuizEntity $quiz) {
     $form['#tree'] = TRUE;
     $form['#theme'] = 'quiz_categorized_form';
     $form['#quiz'] = $quiz;
@@ -39,7 +39,7 @@ class QuizCategorizedForm extends BaseForm {
   /**
    * @param array $form
    * @param array $form_state
-   * @param \Drupal\quiz\Entity\QuizEntity $quiz
+   * @param QuizEntity $quiz
    */
   private function existingTermsForm(&$form, $form_state, $quiz) {
     if ($terms = $quiz->getTermsByVid()) {
@@ -99,7 +99,7 @@ class QuizCategorizedForm extends BaseForm {
    * Validate the categorized form
    */
   function formValidate($form, &$form_state) {
-    /* @var $quiz \Drupal\quiz\Entity\QuizEntity */
+    /* @var $quiz QuizEntity */
     $quiz = $form['#quiz'];
 
     if (!_quiz_is_int($quiz->qid)) {
@@ -166,9 +166,6 @@ class QuizCategorizedForm extends BaseForm {
    * Submit the categorized form
    */
   public function formSubmit($form, $form_state) {
-    kpr($form_state['values']);
-    exit;
-
     $quiz = quiz_entity_single_load($form_state['values']['qid'], $form_state['values']['vid']);
     $quiz->number_of_random_questions = 0;
 
@@ -184,12 +181,12 @@ class QuizCategorizedForm extends BaseForm {
     }
     $quiz->number_of_random_questions += $this->categorizedUpdateTerms($form, $form_state);
     if ($is_new_revision) {
-      $quiz->revision = 1;
+      $quiz->is_new_revision = 1;
     }
 
     // We save the node to update its timestamp and let other modules react to the update.
-    // We also do this in case a new revision is required...
-    node_save($quiz);
+    // We also do this in case a new revision is required…
+    entity_save('quiz_entity', $quiz);
   }
 
   /**
@@ -199,6 +196,7 @@ class QuizCategorizedForm extends BaseForm {
    */
   private function categorizedAddTerm($form, $form_state) {
     drupal_set_message(t('The term was added'));
+
     // Needs to be set to avoid error-message from db:
     $form_state['values']['weight'] = 0;
     drupal_write_record('quiz_terms', $form_state['values']);
@@ -211,46 +209,54 @@ class QuizCategorizedForm extends BaseForm {
    * Helper function for quiz_categorized_form_submit
    */
   private function categorizedUpdateTerms(&$form, &$form_state) {
-    $ids = array('weight', 'max_score', 'number');
     $changed = array();
     $removed = array();
     $num_questions = 0;
     foreach ($form_state['values'] as $key => $existing) {
-      if (!is_numeric($key)) {
-        continue;
-      }
-      if (!$existing['remove']) {
-        $num_questions += $existing['number'];
-      }
-      foreach ($ids as $id) {
-        if ($existing[$id] != $form[$key][$id]['#default_value'] && !$existing['remove']) {
-          $existing['qid'] = $form_state['values']['qid'];
-          $existing['vid'] = $form_state['values']['vid'];
-          $existing['tid'] = $key;
-          if (empty($existing['weight'])) {
-            $existing['weight'] = 1;
-          }
-          $changed[] = $form[$key]['name']['#markup'];
-          drupal_write_record('quiz_terms', $existing, array('vid', 'tid'));
-          break;
-        }
-        elseif ($existing['remove']) {
-          db_delete('quiz_terms')
-            ->condition('tid', $key)
-            ->condition('vid', $form_state['values']['vid'])
-            ->execute();
-          $removed[] = $form[$key]['name']['#markup'];
-          break;
-        }
+      if (is_numeric($key)) {
+        $this->categorizedUpdateTerm($form, $form_state, $key, $existing, $num_questions, $changed, $removed);
       }
     }
+
     if (!empty($changed)) {
-      drupal_set_message(t('Updates were made for the following terms: %terms', array('%terms' => implode(', ', $changed))));
+      $msg = t('Updates were made for the following terms: %terms', array('%terms' => implode(', ', $changed)));
+      drupal_set_message($msg);
     }
+
     if (!empty($removed)) {
-      drupal_set_message(t('The following terms were removed: %terms', array('%terms' => implode(', ', $removed))));
+      $msg = t('The following terms were removed: %terms', array('%terms' => implode(', ', $removed)));
+      drupal_set_message($msg);
     }
+
     return $num_questions;
+  }
+
+  private function categorizedUpdateTerm($form, $form_state, $key, $existing, &$num_questions, &$changed, &$removed) {
+    if (!$existing['remove']) {
+      $num_questions += $existing['number'];
+    }
+
+    foreach (array('weight', 'max_score', 'number') as $id) {
+      if ($existing[$id] != $form[$key][$id]['#default_value'] && !$existing['remove']) {
+        $existing['qid'] = $form_state['values']['qid'];
+        $existing['vid'] = $form_state['values']['vid'];
+        $existing['tid'] = $key;
+        if (empty($existing['weight'])) {
+          $existing['weight'] = 1;
+        }
+        $changed[] = $form[$key]['name']['#markup'];
+        drupal_write_record('quiz_terms', $existing, array('vid', 'tid'));
+        break;
+      }
+      elseif ($existing['remove']) {
+        db_delete('quiz_terms')
+          ->condition('tid', $key)
+          ->condition('vid', $form_state['values']['vid'])
+          ->execute();
+        $removed[] = $form[$key]['name']['#markup'];
+        break;
+      }
+    }
   }
 
   /**
