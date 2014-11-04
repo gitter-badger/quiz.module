@@ -1,6 +1,8 @@
 <?php
 
 use Drupal\quiz\Controller\Admin\QuizAdminSettingsController;
+use Drupal\quiz\Entity\QuizEntity;
+use Drupal\quiz\Form\QuizCategorizedForm;
 use Drupal\quiz\Form\QuizEntityForm;
 use Drupal\quiz\Form\QuizQuestionsForm;
 use Drupal\quiz\Form\QuizReportForm;
@@ -57,18 +59,18 @@ function quiz_questions_form_submit($form, $form_state) {
   return $obj->formSubmit($form, $form_state);
 }
 
-function quiz_categorized_form($form, $form_state, \Drupal\quiz\Entity\QuizEntity $quiz) {
-  $obj = new \Drupal\quiz\Form\QuizCategorizedForm();
+function quiz_categorized_form($form, $form_state, QuizEntity $quiz) {
+  $obj = new QuizCategorizedForm();
   return $obj->getForm($form, $form_state, $quiz);
 }
 
 function quiz_categorized_form_validate($form, &$form_state) {
-  $obj = new \Drupal\quiz\Form\QuizCategorizedForm();
+  $obj = new QuizCategorizedForm();
   return $obj->formValidate($form, $form_state);
 }
 
 function quiz_categorized_form_submit($form, &$form_state) {
-  $obj = new \Drupal\quiz\Form\QuizCategorizedForm();
+  $obj = new QuizCategorizedForm();
   return $obj->formSubmit($form, $form_state);
 }
 
