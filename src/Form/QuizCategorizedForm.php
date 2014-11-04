@@ -116,7 +116,7 @@ class QuizCategorizedForm extends BaseForm {
     if (!empty($form_state['values']['term'])) {
       $tid = $this->getIdFromString($form_state['values']['term']);
       if ($tid === FALSE) {
-        $terms = QuizQuestionManagementController::searchTerms($form_state['values']['term']);
+        $terms = static::searchTerms($form_state['values']['term']);
         $num_terms = count($terms);
         if ($num_terms == 1) {
           $tid = key($terms);
@@ -251,6 +251,47 @@ class QuizCategorizedForm extends BaseForm {
       drupal_set_message(t('The following terms were removed: %terms', array('%terms' => implode(', ', $removed))));
     }
     return $num_questions;
+  }
+
+  /**
+   * Helper function for finding terms...
+   *
+   * @param string $start
+   *  The start of the string we are looking for
+   */
+  public static function searchTerms($start, $all = FALSE) {
+    if (!$sql_args = array_keys(quiz()->getVocabularies())) {
+      return array();
+    }
+
+    $query = db_select('taxonomy_term_data', 't')
+      ->fields('t', array('name', 'tid'))
+      ->condition('t.vid', $sql_args);
+    if (!$all) {
+      $query->condition('t.name', '%' . $start . '%', 'LIKE');
+    }
+    $result = $query->execute();
+
+    // @TODO: Don't user db_fetch_object
+    $terms = array();
+    while ($row = $result->fetch()) {
+      $terms[$row->tid] = $row->name;
+    }
+
+    return $terms;
+  }
+
+  /**
+   * Callback for quiz/%/questions/term_ahah. Ahah function for finding terms…
+   *
+   * @param string $start
+   *  The start of the string we are looking for
+   */
+  public static function categorizedTermAhah($start) {
+    foreach (static::searchTerms($start, $start == '*') as $key => $value) {
+      $return["$value (id:$key)"] = $value;
+    }
+    drupal_json_output(!empty($return) ? $return : array());
   }
 
 }

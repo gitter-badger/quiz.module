@@ -8,7 +8,6 @@ class HookMenu {
     $items = array();
 
     $items += $this->getQuizAdminMenuItems();
-    $items += $this->getQuizNodeMenuItems();
     $items += $this->getQuizUserMenuItems();
 
     $items['quiz-result/%quiz_result'] = array(
@@ -91,17 +90,6 @@ class HookMenu {
     );
 
     return $items;
-  }
-
-  private function getQuizNodeMenuItems() {
-    return array(
-        'node/%node/questions/term_ahah' => array(
-            'page callback'    => 'Drupal\quiz\Controller\QuizQuestionManagementController::categorizedTermAhah',
-            'type'             => MENU_CALLBACK,
-            'access callback'  => 'node_access',
-            'access arguments' => array('create', 'quiz'),
-        ),
-    );
   }
 
 }

@@ -100,6 +100,14 @@ class QuizUiController extends EntityDefaultUIController {
         'load arguments'   => array('quiz_entity'),
         'weight'           => 6,
     );
+
+    $items['quiz/%entity_object/questions/term_ahah'] = array(
+        'page callback'    => 'Drupal\quiz\Form\QuizCategorizedForm::categorizedTermAhah',
+        'type'             => MENU_CALLBACK,
+        'access callback'  => 'entity_access',
+        'access arguments' => array('create', 'quiz_entity', 1),
+        'load arguments'   => array('quiz_entity'),
+    );
   }
 
   private function addQuizAddLinks(&$items) {
