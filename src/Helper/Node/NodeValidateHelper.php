@@ -4,29 +4,29 @@ namespace Drupal\quiz\Helper\Node;
 
 class NodeValidateHelper {
 
-  public function execute($node) {
+  public function execute($quiz) {
     // Don't check dates if the quiz is always available.
-    if (!$node->quiz_always) {
-      if (mktime(0, 0, 0, $node->quiz_open['month'], $node->quiz_open['day'], $node->quiz_open['year']) > mktime(0, 0, 0, $node->quiz_close['month'], $node->quiz_close['day'], $node->quiz_close['year'])) {
+    if (!$quiz->quiz_always) {
+      if (mktime(0, 0, 0, $quiz->quiz_open['month'], $quiz->quiz_open['day'], $quiz->quiz_open['year']) > mktime(0, 0, 0, $quiz->quiz_close['month'], $quiz->quiz_close['day'], $quiz->quiz_close['year'])) {
         form_set_error('quiz_close', t('"Close date" must be later than the "open date".'));
       }
     }
 
-    if (!empty($node->pass_rate)) {
-      if (!_quiz_is_int($node->pass_rate, 0, 100)) {
+    if (!empty($quiz->pass_rate)) {
+      if (!_quiz_is_int($quiz->pass_rate, 0, 100)) {
         form_set_error('pass_rate', t('"Passing rate" must be a number between 0 and 100.'));
       }
     }
 
-    if (isset($node->time_limit)) {
-      if (!_quiz_is_int($node->time_limit, 0)) {
+    if (isset($quiz->time_limit)) {
+      if (!_quiz_is_int($quiz->time_limit, 0)) {
         form_set_error('time_limit', t('"Time limit" must be a positive number.'));
       }
     }
 
-    $this->validateResultOptions($node);
+    $this->validateResultOptions($quiz);
 
-    if ($node->allow_jumping && !$node->allow_skipping) {
+    if ($quiz->allow_jumping && !$quiz->allow_skipping) {
       // @todo when we have pages of questions, we have to check that jumping is
       // not enabled, and randomization is not enabled unless there is only 1 page
       form_set_error('allow_skipping', t('If jumping is allowed, skipping must also be allowed.'));

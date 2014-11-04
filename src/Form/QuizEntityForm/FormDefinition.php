@@ -82,7 +82,7 @@ class FormDefinition extends FormHelper {
     $this->defineRevisionOptionsFields($form);
 
     // Attach custom fields by admin
-    if (empty($this->quiz->is_fake)) {
+    if (0 <= $this->quiz->status) {
       field_attach_form('quiz_entity', $this->quiz, $form, $form_state);
     }
 
