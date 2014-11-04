@@ -158,11 +158,11 @@ class QuizEntityTestCase extends QuizTestCase {
     $this->drupalGet('quiz/add');
     $this->drupalPost(NULL, array(
         'title'             => 'Test quiz',
-        'allow_skipping'    => FALSE,
+        'allow_jumping'     => FALSE,
         'remember_settings' => TRUE), t('Save'));
     $this->drupalGet('quiz/add');
     $this->assertNoFieldChecked('edit-allow-resume');
-    $this->assertNoFieldChecked('edit-allow-skipping');
+    $this->assertNoFieldChecked('edit-allow-jumping');
 
     // Ensure it didn't affect another user.
     $this->drupalLogin($this->admin);

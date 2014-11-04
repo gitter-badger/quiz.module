@@ -63,8 +63,8 @@ class QuizEntityForm {
     $quiz->save();
 
     // Use would like remembering settings
-    if (!empty($form_state['values']['remember_settings'])) {
-      $this->remeberSettings();
+    if (!empty($form_state['values']['remember_settings']) || !empty($form_state['values']['remember_global'])) {
+      quiz()->getQuizHelper()->getSettingHelper()->updateUserDefaultSettings($quiz);
     }
 
     if ('admin' === arg(0)) {
@@ -81,10 +81,6 @@ class QuizEntityForm {
     if (!db_query($sql, array(':vid' => $quiz->vid))->fetchField()) {
       $form_state['redirect'] = 'quiz/' . $quiz->qid . '/questions';
     }
-  }
-
-  private function remeberSettings() {
-
   }
 
 }

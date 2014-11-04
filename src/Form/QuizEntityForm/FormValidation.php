@@ -18,7 +18,7 @@ class FormValidation {
   public function __construct($form, &$form_state) {
     $this->form = $form;
     $this->form_state = &$form_state;
-    $this->quiz = $form_state['quiz_entity'];
+    $this->quiz = entity_ui_controller('quiz_entity')->entityFormSubmitBuildEntity($form, $form_state);
   }
 
   public function validate() {
@@ -49,7 +49,11 @@ class FormValidation {
       return form_set_error('option_summary', t('Range has a summary, but no name.'));
     }
 
-    if (empty($option['option_summary'])) {
+    if (empty($option['option_name'])) {
+      return;
+    }
+
+    if (empty($option['option_summary']['value'])) {
       form_set_error('option_summary', t('Range has no summary text.'));
     }
 
@@ -57,7 +61,9 @@ class FormValidation {
       // Check for a number between 0-100.
       foreach (array('option_start' => 'start', 'option_end' => 'end') as $bound => $bound_text) {
         if (!_quiz_is_int($option[$bound], 0, 100)) {
-          form_set_error($bound, t('The range %start value must be a number between 0 and 100.', array('%start' => $bound_text)));
+          form_set_error($bound, t('The range %start value must be a number between 0 and 100.', array(
+              '%start' => $bound_text
+          )));
         }
       }
 

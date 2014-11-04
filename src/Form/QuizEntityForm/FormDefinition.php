@@ -24,6 +24,8 @@ class FormDefinition extends FormHelper {
         }
       }
     }
+
+    $this->quiz->status = 'admin' === arg(0) ? -1 : 1;
   }
 
   /**
@@ -39,7 +41,7 @@ class FormDefinition extends FormHelper {
 
     if (!empty($quiz_type->help)) {
       $form['quiz_help'] = array(
-          '#prefix' => '<div class="quiz-help">!!!',
+          '#prefix' => '<div class="quiz-help">',
           '#markup' => $quiz_type->help,
           '#suffix' => '</div>',
       );
@@ -283,14 +285,14 @@ class FormDefinition extends FormHelper {
     $form['quiz_availability']['quiz_open'] = array(
         '#type'          => 'date',
         '#title'         => t('Open date'),
-        '#default_value' => $this->prepareDate($this->quiz->quiz_open),
+        '#default_value' => isset($this->quiz->quiz_open) ? $this->prepareDate($this->quiz->quiz_open) : NULL,
         '#description'   => t('The date this @quiz will become available.', array('@quiz' => QUIZ_NAME)),
         '#after_build'   => array('_quiz_after_build_fix_year_options'),
     );
     $form['quiz_availability']['quiz_close'] = array(
         '#type'          => 'date',
         '#title'         => t('Close date'),
-        '#default_value' => $this->prepareDate($this->quiz->quiz_close, variable_get('quiz_default_close', 30)),
+        '#default_value' => isset($this->quiz->quiz_close) ? $this->prepareDate($this->quiz->quiz_close, variable_get('quiz_default_close', 30)) : NULL,
         '#description'   => t('The date this @quiz will become unavailable.', array('@quiz' => QUIZ_NAME)),
         '#after_build'   => array('_quiz_after_build_fix_year_options'),
     );
@@ -306,6 +308,7 @@ class FormDefinition extends FormHelper {
         '#attributes'  => array('id' => 'summaryoptions-fieldset'),
         '#group'       => 'vtabs',
     );
+    
     // If pass/fail option is checked, present the form elements.
     if (variable_get('quiz_use_passfail', 1)) {
       $form['summaryoptions']['pass_rate'] = array(
