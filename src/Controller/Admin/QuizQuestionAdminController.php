@@ -15,30 +15,32 @@ class QuizQuestionAdminController {
   public static function staticCallback(QuizEntity $quiz) {
     $obj = new self($quiz);
 
+    module_load_include('pages.inc', 'quiz');
+
     return array(
-      '#type'            => 'vertical_tabs',
-      'question_admin'   => array(
-        '#type'  => 'fieldset',
-        '#title' => t('Manage questions'),
-        '#value' => '',
-        'links'  => array(
-          '#type'        => 'fieldset',
-          '#title'       => t('Create new question'),
-          '#collapsible' => TRUE,
-          '#collapsed'   => TRUE,
-          '#value'       => '',
-          'links'        => array(
-            '#theme' => 'item_list',
-            '#items' => $obj->getQuestionAddingLinks(),
-          ),
+        '#type'            => 'vertical_tabs',
+        'question_admin'   => array(
+            '#type'  => 'fieldset',
+            '#title' => t('Manage questions'),
+            '#value' => '',
+            'links'  => array(
+                '#type'        => 'fieldset',
+                '#title'       => t('Create new question'),
+                '#collapsible' => TRUE,
+                '#collapsed'   => TRUE,
+                '#value'       => '',
+                'links'        => array(
+                    '#theme' => 'item_list',
+                    '#items' => $obj->getQuestionAddingLinks(),
+                ),
+            ),
+            'form'   => drupal_get_form('quiz_questions_form', $quiz),
         ),
-        'form'   => @drupal_get_form('Drupal\quiz\Form\QuizQuestionsForm::staticGet', $quiz),
-      ),
-      'global_questions' => array(
-        '#type'  => 'fieldset',
-        '#title' => t('Question bank'),
-        '#value' => views_get_view('quiz_question_bank')->preview(),
-      ),
+        'global_questions' => array(
+            '#type'  => 'fieldset',
+            '#title' => t('Question bank'),
+            '#value' => views_get_view('quiz_question_bank')->preview(),
+        ),
     );
   }
 

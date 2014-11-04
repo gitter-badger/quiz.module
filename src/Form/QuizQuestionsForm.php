@@ -58,12 +58,10 @@ class QuizQuestionsForm extends BaseForm {
     // Timestamp is needed to avoid multiple users editing the same quiz at the same time.
     $form['timestamp'] = array('#type' => 'hidden', '#default_value' => REQUEST_TIME);
 
+    // Action buttons
     $form['actions']['#type'] = 'actions';
-    $form['actions']['submit'] = array(
-        '#type'   => 'submit',
-        '#value'  => t('Submit'),
-        '#submit' => array(array($this, 'formSubmit')),
-    );
+    $form['actions']['submit'] = array('#type' => 'submit', '#value' => t('Submit'));
+
     return $form;
   }
 
