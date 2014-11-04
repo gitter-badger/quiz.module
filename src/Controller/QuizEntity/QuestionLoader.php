@@ -109,45 +109,11 @@ class QuestionLoader {
    *   Array of question node IDs.
    */
   public function getQuestionList() {
-    $questions = array();
-
     if ($this->quiz->randomization == 3) {
       $questions = $this->buildCategoziedQuestionList();
     }
     else {
-      // Get required questions first.
-      $query = db_query('SELECT n.nid, n.vid, n.type, qnr.qr_id, qnr.qr_pid
-        FROM {quiz_relationship} qnr
-          JOIN {node} n ON qnr.question_nid = n.nid
-          LEFT JOIN {quiz_relationship} qnr2 ON (qnr.qr_pid = qnr2.qr_id OR (qnr.qr_pid IS NULL AND qnr.qr_id = qnr2.qr_id))
-        WHERE qnr.quiz_vid = :quiz_vid
-        AND qnr.question_status = :question_status
-        AND n.status = 1
-        ORDER BY qnr2.weight, qnr.weight', array(
-          ':quiz_vid'        => $this->quiz->vid,
-          ':question_status' => QUESTION_ALWAYS
-      ));
-      $i = 0;
-      while ($question_node = $query->fetchAssoc()) {
-        // Just to make it easier on us, let's use a 1-based index.
-        $i++;
-        $questions[$i] = $question_node;
-      }
-
-      // Get random questions for the remainder.
-      if ($this->quiz->number_of_random_questions > 0) {
-        $random_questions = $this->quiz->getQuestionLoader()->getRandomQuestions();
-        $questions = array_merge($questions, $random_questions);
-        if ($this->quiz->number_of_random_questions > count($random_questions)) {
-          // Unable to find enough requested random questions.
-          return FALSE;
-        }
-      }
-
-      // Shuffle questions if required.
-      if ($this->quiz->randomization > 0) {
-        shuffle($questions);
-      }
+      $questions = $this->getRequiredQuestions();
     }
 
     $count = 0;
@@ -164,6 +130,46 @@ class QuestionLoader {
       $questions_out[$count] = $question;
     }
     return $questions_out;
+  }
+
+  private function getRequiredQuestions() {
+    $questions = array();
+
+    // Get required questions first.
+    $query = db_query('SELECT n.nid, n.vid, n.type, qnr.qr_id, qnr.qr_pid
+        FROM {quiz_relationship} qnr
+          JOIN {node} n ON qnr.question_nid = n.nid
+          LEFT JOIN {quiz_relationship} qnr2 ON (qnr.qr_pid = qnr2.qr_id OR (qnr.qr_pid IS NULL AND qnr.qr_id = qnr2.qr_id))
+        WHERE qnr.quiz_vid = :quiz_vid
+          AND qnr.question_status = :question_status
+          AND n.status = 1
+        ORDER BY qnr2.weight, qnr.weight', array(
+        ':quiz_vid'        => $this->quiz->vid,
+        ':question_status' => QUESTION_ALWAYS
+    ));
+    $i = 0;
+    while ($question_node = $query->fetchAssoc()) {
+      // Just to make it easier on us, let's use a 1-based index.
+      $i++;
+      $questions[$i] = $question_node;
+    }
+
+    // Get random questions for the remainder.
+    if ($this->quiz->number_of_random_questions > 0) {
+      $random_questions = $this->quiz->getQuestionLoader()->getRandomQuestions();
+      $questions = array_merge($questions, $random_questions);
+      if ($this->quiz->number_of_random_questions > count($random_questions)) {
+        // Unable to find enough requested random questions.
+        return FALSE;
+      }
+    }
+
+    // Shuffle questions if required.
+    if ($this->quiz->randomization > 0) {
+      shuffle($questions);
+    }
+
+    return $questions;
   }
 
 }
