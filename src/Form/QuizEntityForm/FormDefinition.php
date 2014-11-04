@@ -13,7 +13,7 @@ class FormDefinition extends FormHelper {
   public function __construct($quiz) {
     $this->quiz = $quiz;
 
-    if (empty($this->quiz->qid)) {
+    if (empty($this->quiz->qid) && 'admin' !== arg(0)) {
       // If this is a new node we apply the user defaults for the quiz settings.
       $msg = t('You are making your first @quiz. On this page you set the attributes, most of which you may tell the system to remember as defaults for the future. On the next screen you can add questions.', array('@quiz' => QUIZ_NAME));
       drupal_set_message($msg);
@@ -82,7 +82,9 @@ class FormDefinition extends FormHelper {
     $this->defineRevisionOptionsFields($form);
 
     // Attach custom fields by admin
-    field_attach_form('quiz_entity', $this->quiz, $form, $form_state);
+    if (empty($this->quiz->is_fake)) {
+      field_attach_form('quiz_entity', $this->quiz, $form, $form_state);
+    }
 
     return $form;
   }

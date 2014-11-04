@@ -2,6 +2,7 @@
 
 use Drupal\quiz\Controller\Admin\QuizAdminSettingsController;
 use Drupal\quiz\Entity\QuizEntity;
+use Drupal\quiz\Form\QuizAdminEntityForm;
 use Drupal\quiz\Form\QuizCategorizedForm;
 use Drupal\quiz\Form\QuizEntityForm;
 use Drupal\quiz\Form\QuizQuestionsForm;
@@ -24,6 +25,21 @@ function quiz_admin_settings_form_validate($form, $form_state) {
 function quiz_admin_settings_form_submit($form, $form_state) {
   $obj = new QuizAdminSettingsController();
   return $obj->submit($form, $form_state);
+}
+
+function quiz_admin_entity_form($form, $form_state) {
+  $obj = new QuizAdminEntityForm();
+  return $obj->getForm($form, $form_state);
+}
+
+function quiz_admin_entity_form_validate($form, $form_state) {
+  $obj = new QuizAdminEntityForm();
+  return $obj->validateForm($form, $form_state);
+}
+
+function quiz_admin_entity_form_submit($form, $form_state) {
+  $obj = new QuizAdminEntityForm();
+  return $obj->submitForm($form, $form_state);
 }
 
 /**

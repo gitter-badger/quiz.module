@@ -11,7 +11,7 @@ class QuizEntityForm {
   /** @var QuizEntity */
   private $quiz;
 
-  public function __construct($quiz) {
+  public function __construct(QuizEntity $quiz) {
     $this->quiz = $quiz;
   }
 
@@ -84,7 +84,7 @@ class QuizEntityForm {
 
     // If the quiz don't have any questions jump to the manage questions tab.
     $sql = 'SELECT 1 FROM {quiz_relationship} WHERE quiz_vid = :vid LIMIT 1';
-    if (!db_query($sql,array(':vid' => $quiz->vid))->fetchField()) {
+    if (!db_query($sql, array(':vid' => $quiz->vid))->fetchField()) {
       $form_state['redirect'] = 'quiz/' . $quiz->qid . '/questions';
     }
   }

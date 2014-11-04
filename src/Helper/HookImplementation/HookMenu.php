@@ -60,6 +60,17 @@ class HookMenu {
         'file'             => 'quiz.pages.inc',
     );
 
+    $items['admin/quiz/settings/quiz-form'] = array(
+        'title'            => '@quiz form configuration',
+        'title arguments'  => array('@quiz' => QUIZ_NAME),
+        'description'      => 'Configure default values for the quiz creation form.',
+        'page callback'    => 'drupal_get_form',
+        'page arguments'   => array('quiz_admin_entity_form'),
+        'access arguments' => array('administer quiz configuration'),
+        'type'             => MENU_NORMAL_ITEM, // optional
+        'file'             => 'quiz.pages.inc',
+    );
+
     $items['admin/quiz/reports'] = array(
         'title'            => 'Quiz reports and scoring',
         'title arguments'  => array('@quiz' => QUIZ_NAME),
