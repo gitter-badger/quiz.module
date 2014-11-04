@@ -17,11 +17,12 @@ class QuizCategorizedForm extends BaseForm {
   public function getForm($form, $form_state, \Drupal\quiz\Entity\QuizEntity $quiz) {
     $form['#tree'] = TRUE;
     $form['#theme'] = 'quiz_categorized_form';
+    $form['#quiz'] = $quiz;
 
     $this->existingTermsForm($form, $form_state, $quiz);
     $this->categorizedNewTermForm($form, $form_state, $quiz);
 
-    $form['nid'] = array('#type' => 'value', '#value' => $quiz->qid);
+    $form['qid'] = array('#type' => 'value', '#value' => $quiz->qid);
     $form['vid'] = array('#type' => 'value', '#value' => $quiz->vid);
     $form['tid'] = array('#type' => 'value', '#value' => NULL);
 
@@ -78,7 +79,7 @@ class QuizCategorizedForm extends BaseForm {
         '#type'              => 'textfield',
         '#title'             => t('Category'),
         '#description'       => t('Type in the name of the term you would like to add questions from.'),
-        '#autocomplete_path' => "node/" . $quiz->qid . "/questions/term_ahah",
+        '#autocomplete_path' => "quiz/" . $quiz->qid . "/questions/term_ahah",
         '#field_suffix'      => '<a id="browse-for-term" href="javascript:void(0)">' . t('browse') . '</a>',
     );
     $form['new']['number'] = array(
@@ -98,14 +99,18 @@ class QuizCategorizedForm extends BaseForm {
    * Validate the categorized form
    */
   function formValidate($form, &$form_state) {
-    if (_quiz_is_int(arg(1))) {
-      if (node_last_changed(arg(1)) > $form_state['values']['timestamp']) {
-        form_set_error('changed', t('This content has been modified by another user, changes cannot be saved.'));
-      }
-    }
-    else {
-      form_set_error('changed', t('A critical error has occured. Please report error code 28 on the quiz project page.'));
+    /* @var $quiz \Drupal\quiz\Entity\QuizEntity */
+    $quiz = $form['#quiz'];
+
+    if (!_quiz_is_int($quiz->qid)) {
+      $msg = t('A critical error has occured. Please report error code 28 on the quiz project page.');
+      form_set_error('changed', $msg);
       return;
+    }
+
+    if ($quiz->changed > $form_state['values']['timestamp']) {
+      $msg = t('This content has been modified by another user, changes cannot be saved.');
+      form_set_error('changed', $msg);
     }
 
     if (!empty($form_state['values']['term'])) {
@@ -164,8 +169,9 @@ class QuizCategorizedForm extends BaseForm {
     kpr($form_state['values']);
     exit;
 
-    $quiz = node_load($form_state['values']['nid'], $form_state['values']['vid']);
+    $quiz = quiz_entity_single_load($form_state['values']['qid'], $form_state['values']['vid']);
     $quiz->number_of_random_questions = 0;
+
     // Update the refresh latest quizzes table so that we know what the users latest quizzes are
     if (variable_get('quiz_auto_revisioning', 1)) {
       $is_new_revision = quiz_has_been_answered($quiz);
@@ -218,7 +224,7 @@ class QuizCategorizedForm extends BaseForm {
       }
       foreach ($ids as $id) {
         if ($existing[$id] != $form[$key][$id]['#default_value'] && !$existing['remove']) {
-          $existing['nid'] = $form_state['values']['nid'];
+          $existing['qid'] = $form_state['values']['qid'];
           $existing['vid'] = $form_state['values']['vid'];
           $existing['tid'] = $key;
           if (empty($existing['weight'])) {
