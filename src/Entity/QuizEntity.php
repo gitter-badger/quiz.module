@@ -2,6 +2,7 @@
 
 namespace Drupal\quiz\Entity;
 
+use Drupal\quiz\Entity\QuizEntity\QuestionLoader;
 use Entity;
 
 class QuizEntity extends Entity {
@@ -38,6 +39,7 @@ class QuizEntity extends Entity {
 
   /** @var string Revision log */
   public $log;
+  private $question_loader;
 
   public function __construct(array $values = array()) {
     parent::__construct($values, 'quiz_entity');
@@ -70,6 +72,21 @@ class QuizEntity extends Entity {
    */
   protected function defaultUri() {
     return array('path' => 'quiz/' . $this->identifier());
+  }
+
+  /**
+   * @return \Drupal\quiz\Entity\QuizEntity\QuestionLoader
+   */
+  public function getQuestionLoader() {
+    if (NULL === $this->question_loader) {
+      $this->question_loader = new QuestionLoader($this);
+    }
+    return $this->question_loader;
+  }
+
+  public function setQuestion_loader($question_loader) {
+    $this->question_loader = $question_loader;
+    return $this;
   }
 
 }
