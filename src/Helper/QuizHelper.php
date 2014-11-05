@@ -6,10 +6,8 @@ use Drupal\quiz\Entity\QuizEntity;
 use Drupal\quiz\Helper\Quiz\AccessHelper;
 use Drupal\quiz\Helper\Quiz\FeedbackHelper;
 use Drupal\quiz\Helper\Quiz\ResultHelper;
-use Drupal\quiz\Helper\Quiz\SettingHelper;
 use Drupal\quiz\Helper\Quiz\TakeJumperHelper;
 use Drupal\quiz\Helper\Quiz\TakingHelper;
-use PDO;
 use stdClass;
 
 class QuizHelper {
@@ -129,41 +127,6 @@ class QuizHelper {
     $question->quiz_vid = $quiz->vid;
     _quiz_question_get_instance($question)->saveRelationships();
     $this->updateMaxScoreProperties(array($quiz->vid));
-  }
-
-  /**
-   * Get all of the question nid/vids by taxonomy term ID.
-   *
-   * @param int $term_id
-   *
-   * @return
-   *   Array of nid/vid combos, like array(array('nid'=>1, 'vid'=>2)).
-   */
-  public function getRandomTaxonomyQuestionIds($term_id, $amount) {
-    if (!$term_id || !$term = taxonomy_term_load($term_id)) {
-      return array();
-    }
-
-    // Flatten the taxonomy tree, and just keep term id's.
-    $term_ids[] = $term->tid;
-    if ($tree = taxonomy_get_tree($term->vid, $term->tid)) {
-      foreach ($tree as $term) {
-        $term_ids[] = $term->tid;
-      }
-    }
-
-    // Get all published questions with one of the allowed term ids.
-    $query = db_select('node', 'n');
-    $query->innerJoin('taxonomy_index', 'tn', 'n.nid = tn.tid');
-    $query->addExpression(1, 'random');
-    return $query
-        ->fields('n', array('nid', 'vid'))
-        ->condition('n.status', 1)
-        ->condition('tn.tid', $term_ids)
-        ->condition('n.type', array_keys(quiz_get_question_types()))
-        ->orderRandom()
-        ->range(0, $amount)
-        ->execute()->fetchAll(PDO::FETCH_ASSOC);
   }
 
   /**

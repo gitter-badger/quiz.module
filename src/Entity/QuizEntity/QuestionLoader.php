@@ -3,6 +3,7 @@
 namespace Drupal\quiz\Entity\QuizEntity;
 
 use Drupal\quiz\Entity\QuizEntity;
+use PDO;
 
 class QuestionLoader {
 
@@ -137,11 +138,11 @@ class QuestionLoader {
    */
   private function getRandomQuestions() {
     $num_random = $this->quiz->number_of_random_questions;
-    $tid = $this->quiz->tid;
+    $term_id = $this->quiz->tid;
     $questions = array();
     if ($num_random > 0) {
-      if ($tid > 0) {
-        $questions = quiz()->getQuizHelper()->getRandomTaxonomyQuestionIds($tid, $num_random);
+      if ($term_id > 0) {
+        $questions = $this->quiz->getQuestionLoader()->getRandomTaxonomyQuestionIds($term_id, $num_random);
       }
       else {
         // Select random question from assigned pool.
@@ -253,6 +254,42 @@ class QuestionLoader {
     $question->qr_pid = $node->qr_pid;
 
     return $question;
+  }
+
+  /**
+   * Get all of the question nid/vids by taxonomy term ID.
+   *
+   * @param int $term_id
+   * @param int $amount
+   *
+   * @return
+   *   Array of nid/vid combos, like array(array('nid'=>1, 'vid'=>2)).
+   */
+  public function getRandomTaxonomyQuestionIds($term_id, $amount) {
+    if (!$term_id || !$term = taxonomy_term_load($term_id)) {
+      return array();
+    }
+
+    // Flatten the taxonomy tree, and just keep term id's.
+    $term_ids[] = $term->tid;
+    if ($tree = taxonomy_get_tree($term->vid, $term->tid)) {
+      foreach ($tree as $term) {
+        $term_ids[] = $term->tid;
+      }
+    }
+
+    // Get all published questions with one of the allowed term ids.
+    $query = db_select('node', 'n');
+    $query->innerJoin('taxonomy_index', 'tn', 'n.nid = tn.tid');
+    $query->addExpression(1, 'random');
+    return $query
+        ->fields('n', array('nid', 'vid'))
+        ->condition('n.status', 1)
+        ->condition('tn.tid', $term_ids)
+        ->condition('n.type', array_keys(quiz_get_question_types()))
+        ->orderRandom()
+        ->range(0, $amount)
+        ->execute()->fetchAll(PDO::FETCH_ASSOC);
   }
 
 }
