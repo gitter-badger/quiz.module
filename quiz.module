@@ -20,7 +20,7 @@ use Drupal\quiz\Quiz;
  *
  * Views support is included in includes/views/quiz.views.inc
  *
- * Function starts with __quiz_ will be removed.
+ * Functions start with __quiz_ will be removed.
  */
 define('QUIZ_VIEWS_DIR', drupal_get_path('module', 'quiz') . '/includes/views');
 
@@ -140,15 +140,13 @@ function quiz_action_options($type = 'all') {
     $options[$action['type']][$aid] = $action['label'];
   }
 
-  if ($type == 'all') {
+  if ('all' === $type) {
     return $options;
   }
-  else {
-    $options[$type][0] = t('Choose an action');
-    // Lets sort it to get the choose an action back first.
-    ksort($options[$type]);
-    return $options[$type];
-  }
+
+  $options[$type][0] = t('Choose an action');
+  ksort($options[$type]); # Sort to get the choose an action back first
+  return $options[$type];
 }
 
 /**
