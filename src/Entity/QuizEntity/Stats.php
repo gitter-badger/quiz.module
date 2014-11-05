@@ -49,4 +49,26 @@ class Stats {
       ))->fetchField();
   }
 
+  /**
+   * Finds out the number of questions for the quiz.
+   *
+   * Good example of usage could be to calculate the % of score.
+   *
+   * @param int $quiz_vid
+   *   Quiz version ID.
+   * @return
+   *   Returns the number of quiz questions.
+   */
+  public function countAllQuestions($quiz_vid) {
+    $counter = (int) db_query(# @TODO use countRandomQuestions() method
+        'SELECT number_of_random_questions'
+        . ' FROM {quiz_entity_revision}'
+        . ' WHERE vid = :vid', array(':vid' => $quiz_vid)
+      )->fetchField();
+
+    $counter += quiz_controller()->getStats()->countAlwaysQuestions($quiz_vid);
+
+    return $counter;
+  }
+
 }
