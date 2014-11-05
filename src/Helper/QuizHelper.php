@@ -2,12 +2,15 @@
 
 namespace Drupal\quiz\Helper;
 
+use Drupal\quiz\Entity\QuizEntity;
 use Drupal\quiz\Helper\Quiz\AccessHelper;
 use Drupal\quiz\Helper\Quiz\FeedbackHelper;
-use Drupal\quiz\Helper\Quiz\TakingHelper;
 use Drupal\quiz\Helper\Quiz\ResultHelper;
 use Drupal\quiz\Helper\Quiz\SettingHelper;
 use Drupal\quiz\Helper\Quiz\TakeJumperHelper;
+use Drupal\quiz\Helper\Quiz\TakingHelper;
+use PDO;
+use stdClass;
 
 class QuizHelper {
 
@@ -108,8 +111,8 @@ class QuizHelper {
   }
 
   /**
-   * @param \Drupal\quiz\Entity\QuizEntity $quiz
-   * @param \stdClass $question
+   * @param QuizEntity $quiz
+   * @param stdClass $question
    */
   public function addQuestion($quiz, $question) {
     $quiz_questions = $quiz->getQuestionLoader()->getQuestions();
@@ -129,48 +132,38 @@ class QuizHelper {
   }
 
   /**
-   * Given a term ID, get all of the question nid/vids that have that ID.
+   * Get all of the question nid/vids by taxonomy term ID.
    *
-   * @param $tid
-   *   Integer term ID.
+   * @param int $term_id
    *
    * @return
    *   Array of nid/vid combos, like array(array('nid'=>1, 'vid'=>2)).
    */
-  public function getRandomTaxonomyQuestionIds($tid, $num_random) {
-    if ($tid == 0) {
+  public function getRandomTaxonomyQuestionIds($term_id, $amount) {
+    if (!$term_id || !$term = taxonomy_term_load($term_id)) {
       return array();
     }
 
-    // Select random questions by taxonomy.
-    $term = taxonomy_term_load($tid);
-    $tree = taxonomy_get_tree($term->vid, $term->tid);
-
     // Flatten the taxonomy tree, and just keep term id's.
     $term_ids[] = $term->tid;
-    if (is_array($tree)) {
+    if ($tree = taxonomy_get_tree($term->vid, $term->tid)) {
       foreach ($tree as $term) {
         $term_ids[] = $term->tid;
       }
     }
-    $term_ids = implode(',', $term_ids);
 
     // Get all published questions with one of the allowed term ids.
-    // TODO Please convert this statement to the D7 database API syntax.
-    $result = db_query_range("SELECT n.nid, n.vid
-    FROM {node} n
-    INNER JOIN {taxonomy_index} tn USING (nid)
-    WHERE n.status = 1 AND tn.tid IN ($term_ids)
-    AND n.type IN ('" . implode("','", array_keys(quiz_get_question_types()))
-      . "') ORDER BY RAND()");
-
-    $questions = array();
-    while ($question_node = db_fetch_array($result)) {
-      $question_node['random'] = TRUE;
-      $questions[] = $question_node;
-    }
-
-    return $questions;
+    $query = db_select('node', 'n');
+    $query->innerJoin('taxonomy_index', 'tn', 'n.nid = tn.tid');
+    $query->addExpression(1, 'random');
+    return $query
+        ->fields('n', array('nid', 'vid'))
+        ->condition('n.status', 1)
+        ->condition('tn.tid', $term_ids)
+        ->condition('n.type', array_keys(quiz_get_question_types()))
+        ->orderRandom()
+        ->range(0, $amount)
+        ->execute()->fetchAll(PDO::FETCH_ASSOC);
   }
 
   /**
@@ -607,12 +600,12 @@ class QuizHelper {
   /**
    * Find out if a quiz is available for taking or not
    *
-   * @param \Drupal\quiz\Entity\QuizEntity $quiz
+   * @param QuizEntity $quiz
    * @return
    *  TRUE if available
    *  Error message(String) if not available
    */
-  public function isAvailable(\Drupal\quiz\Entity\QuizEntity $quiz) {
+  public function isAvailable(QuizEntity $quiz) {
     global $user;
 
     if (!$user->uid && $quiz->takes > 0) {
