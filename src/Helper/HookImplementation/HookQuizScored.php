@@ -25,7 +25,7 @@ class HookQuizScored {
   public function execute() {
     if (variable_get('quiz_email_results', 0) && $this->taker->uid != 0 && $this->score['is_evaluated']) {
       drupal_mail('quiz', 'notice', $this->taker->mail, NULL, array($this->quiz, $this->score, $this->result_id, 'taker'));
-      drupal_set_message(t('The results has been sent to the users e-mail address.'));
+      drupal_set_message(t("The results has been sent to the user's email address."));
     }
     $this->executeUserPoints();
   }
