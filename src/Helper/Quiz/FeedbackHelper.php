@@ -9,12 +9,12 @@ class FeedbackHelper {
    */
   public function getOptions() {
     $feedback_options = array(
-        'attempt'           => "Attempt",
-        'correct'           => "Whether correct",
-        'score'             => "Score",
+        'attempt'           => 'Attempt',
+        'correct'           => 'Whether correct',
+        'score'             => 'Score',
         'answer_feedback'   => 'Answer feedback',
         'question_feedback' => 'Question feedback',
-        'solution'          => "Correct answer",
+        'solution'          => 'Correct answer',
         'quiz_feedback'     => t('@quiz feedback', array('@quiz' => QUIZ_NAME)),
     );
 

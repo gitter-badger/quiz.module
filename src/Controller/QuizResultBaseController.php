@@ -24,15 +24,12 @@ abstract class QuizResultBaseController {
    */
   protected $score;
 
-  public function __construct($quiz, $quiz_revision, $result) {
+  public function __construct(QuizEntity $quiz, QuizEntity $quiz_revision, $result) {
     $this->quiz = $quiz;
     $this->quiz_revision = $quiz_revision;
     $this->result = $result;
     $this->quiz_id = $this->result->quiz_qid;
-    $this->score = quiz()
-      ->getQuizHelper()
-      ->getResultHelper()
-      ->calculateScore($this->quiz_revision, $this->result->result_id);
+    $this->score = quiz_result_controller()->getScoreCalculator()->calculate($this->quiz_revision, $this->result->result_id);
   }
 
   /**

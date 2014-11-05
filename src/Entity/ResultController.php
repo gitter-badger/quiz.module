@@ -7,6 +7,23 @@ use EntityAPIController;
 
 class ResultController extends EntityAPIController {
 
+  private $score_calculator;
+
+  /**
+   * @return \Drupal\quiz\Entity\Result\ScoreCalculator
+   */
+  public function getScoreCalculator() {
+    if (NULL === $this->score_calculator) {
+      $this->score_calculator = new \Drupal\quiz\Entity\Result\ScoreCalculator();
+    }
+    return $this->score_calculator;
+  }
+
+  public function setScoreCalculator($score_calculator) {
+    $this->score_calculator = $score_calculator;
+    return $this;
+  }
+
   public function load($ids = array(), $conditions = array()) {
     $entities = parent::load($ids, $conditions);
 
