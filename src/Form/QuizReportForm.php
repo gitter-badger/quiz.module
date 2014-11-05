@@ -41,18 +41,10 @@ class QuizReportForm {
       $quiz = quiz_entity_single_load(__quiz_get_context_id());
       $quiz_id = $quiz->qid;
       if (empty($_SESSION['quiz'][$quiz_id])) { // Quiz is done.
-        $form['finish'] = array(
-            '#type'   => 'submit',
-            '#submit' => array(array($this, 'formEndSubmit')),
-            '#value'  => t('Finish'),
-        );
+        $form['finish'] = array('#type' => 'submit', '#value' => t('Finish'));
       }
       else {
-        $form['next'] = array(
-            '#type'   => 'submit',
-            '#submit' => array(array($this, 'formSubmitFeedback')),
-            '#value'  => t('Next question'),
-        );
+        $form['next'] = array('#type' => 'submit', '#value' => t('Next question'));
       }
     }
 

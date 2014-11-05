@@ -358,10 +358,30 @@ function theme_quiz_result($variables) {
 
 function quiz_report_form($form, $form_state, $questions) {
   $obj = new QuizReportForm();
-  return $obj->getForm($form, $form_state, $questions);
+  $array = $obj->getForm($form, $form_state, $questions);
+
+  if (isset($array['next'])) {
+    $array['next']['#submit'] = array('quiz_report_form_submit_next');
+  }
+
+  if (isset($array['finish'])) {
+    $array['finish']['#submit'] = array('quiz_report_form_submit_finish');
+  }
+
+  return $array;
 }
 
-function quiz_report_form_submit($form, $form_state) {
+function quiz_report_form_submit_next($form, &$form_state) {
+  $obj = new QuizReportForm();
+  return $obj->formSubmitFeedback($form, $form_state);
+}
+
+function quiz_report_form_submit_finish($form, &$form_state) {
+  $obj = new QuizReportForm();
+  return $obj->formEndSubmit($form, $form_state);
+}
+
+function quiz_report_form_submit($form, &$form_state) {
   $obj = new QuizReportForm();
   return $obj->formSubmit($form, $form_state);
 }
