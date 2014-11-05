@@ -97,7 +97,7 @@ class QuizEntityTestCase extends QuizTestCase {
     $this->drupalPost(NULL, array('title' => 'Test quiz creation'), t('Save'));
     $this->drupalGet("quiz/1");
     $this->assertText('Test quiz creation');
-    $this->assertText('Start quiz');
+    $this->assertText(t('Start !quiz', array('!quiz' => QUIZ_NAME)));
   }
 
   /**
