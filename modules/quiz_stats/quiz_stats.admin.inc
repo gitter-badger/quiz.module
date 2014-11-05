@@ -11,12 +11,13 @@
  *
  * @param int $uid
  *   User id
- * @return
+ * @return string
  *   HTML table
  */
 function quiz_stats_get_basic_stats($uid = 0) {
-  $results = quiz()->getQuizHelper()->getQuizzesByUserId($uid);
-  return empty($results) ? t('No Statistics found.') : theme('quiz_stats_get_basic_stats', array('results' => $results));
+  return theme('quiz_stats_get_basic_stats', array(
+      'results' => quiz_controller()->getStats()->getQuizzesByUserId($uid)
+  ));
 }
 
 /**

@@ -11,6 +11,9 @@ class QuizEntityController extends EntityAPIController {
   /** @var \Drupal\quiz\Entity\QuizEntity\DefaultPropertiesIO */
   private $default_properties_io;
 
+  /** @var \Drupal\quiz\Entity\QuizEntity\Stats */
+  private $stats;
+
   /**
    * @return \Drupal\quiz\Entity\QuizEntity\DefaultPropertiesIO
    */
@@ -19,6 +22,13 @@ class QuizEntityController extends EntityAPIController {
       $this->default_properties_io = new \Drupal\quiz\Entity\QuizEntity\DefaultPropertiesIO();
     }
     return $this->default_properties_io;
+  }
+
+  public function getStats() {
+    if (NULL === $this->stats) {
+      $this->stats = new \Drupal\quiz\Entity\QuizEntity\Stats();
+    }
+    return $this->stats;
   }
 
   /**
