@@ -31,10 +31,10 @@ function quiz_stats_get_basic_stats($uid = 0) {
  *   Integer containing number of times that a quiz has
  *   been attended, can be filtered by uid.
  */
-function _quiz_get_attempt_count($nid, $uid = 0) {
-  $sql = 'SELECT COUNT(result_id) FROM {quiz_results} WHERE nid = :nid';
-  $arg[':nid'] = $nid;
-  if ($uid != 0) {
+function _quiz_get_attempt_count($quiz_id, $uid = 0) {
+  $sql = 'SELECT COUNT(result_id) FROM {quiz_results} WHERE quiz_qid = :qid';
+  $arg = array(':qid' => $quiz_id);
+  if ($uid) {
     $sql .= ' AND uid = :uid';
     $arg[':uid'] = $uid;
   }
