@@ -55,7 +55,6 @@ function _quiz_get_attempt_count($quiz_id, $uid = 0) {
 function theme_quiz_grade_range($variables) {
   $range = $variables['range'];
 
-  $max = max((array) $range);
   $count = array_sum((array) $range);
 
   $chart = array(
@@ -77,13 +76,7 @@ function theme_quiz_grade_range($variables) {
   $chart['xaxis'] = array(
       '#title'  => t('Score'),
       '#type'   => 'chart_xaxis',
-      '#labels' => array(
-          '0-20%',
-          '20-40%',
-          '40-60%',
-          '60-80%',
-          '80-100%',
-      ),
+      '#labels' => array('0-20%', '20-40%', '40-60%', '60-80%', '80-100%'),
   );
   $chart['yaxis'] = array(
       '#title' => t('Grade istribution'),
