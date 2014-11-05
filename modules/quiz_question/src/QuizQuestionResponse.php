@@ -11,7 +11,8 @@ use stdClass;
  */
 abstract class QuizQuestionResponse {
 
-  // Result id
+  /** @var \Drupal\quiz\Entity\Result */
+  protected $result;
   protected $result_id = 0;
   protected $is_correct = FALSE;
   protected $evaluated = TRUE;
@@ -36,6 +37,7 @@ abstract class QuizQuestionResponse {
    */
   public function __construct($result_id, stdClass $question_node, $answer = NULL) {
     $this->result_id = $result_id;
+    $this->result = quiz_result_load($result_id);
     $this->question = $question_node;
     $this->quizQuestion = _quiz_question_get_instance($question_node);
     $this->answer = $answer;
@@ -218,12 +220,12 @@ abstract class QuizQuestionResponse {
         '#value' => $this->result_id,
     );
 
-    if (quiz()->getQuizHelper()->getAccessHelper()->canAccessScore($user) && ($submit = $this->getReportFormSubmit())) {
+    if ($this->result->canAccessOwnScore($user) && ($submit = $this->getReportFormSubmit())) {
       $form['submit'] = array('#type' => 'value', '#value' => $submit);
     }
     $form['question'] = $this->getReportFormQuestion();
 
-    if (quiz()->getQuizHelper()->getAccessHelper()->canAccessScore($user)) {
+    if ($this->result->canAccessOwnScore($user)) {
       $form['answer_feedback'] = $this->getReportFormAnswerFeedback();
     }
 

@@ -51,4 +51,19 @@ class Result extends Entity {
     }
   }
 
+  /**
+   * Checks if the user has access to save score for his quiz.
+   */
+  public function canAccessOwnScore($account) {
+    if (user_access('score any quiz', $account)) {
+      return TRUE;
+    }
+
+    if ($quiz = quiz_entity_single_load(NULL, $this->quiz_vid)) {
+      return user_access('score own quiz', $account) && ($quiz->uid == $account->uid);
+    }
+
+    return FALSE;
+  }
+
 }
