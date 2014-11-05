@@ -633,25 +633,27 @@ class QuizHelper {
    *  TRUE if available
    *  Error message(String) if not available
    */
-  public function isAvailable($quiz) {
+  public function isAvailable(\Drupal\quiz\Entity\QuizEntity $quiz) {
     global $user;
 
-    if ($user->uid == 0 && $quiz->takes > 0) {
-      return t('This @quiz only allows %num_attempts attempts. Anonymous users can only access quizzes that allows an unlimited number of attempts.', array('%num_attempts' => $quiz->takes, '@quiz' => QUIZ_NAME));
+    if (!$user->uid && $quiz->takes > 0) {
+      return t('This @quiz only allows %num_attempts attempts. Anonymous users can only access quizzes that allows an unlimited number of attempts.', array(
+          '%num_attempts' => $quiz->takes,
+          '@quiz'         => QUIZ_NAME
+      ));
     }
 
     $user_is_admin = entity_access('update', 'quiz_entity', $quiz);
-    if ($user_is_admin || $quiz->quiz_always == 1) {
+    if ($user_is_admin || $quiz->quiz_always) {
       return TRUE;
     }
 
     // Compare current GMT time to the open and close dates (which should still be
     // in GMT time).
-    $now = REQUEST_TIME;
-
-    if ($now >= $quiz->quiz_close || $now < $quiz->quiz_open) {
+    if ((REQUEST_TIME >= $quiz->quiz_close) || (REQUEST_TIME < $quiz->quiz_open)) {
       return t('This @quiz is closed.', array('@quiz' => QUIZ_NAME));
     }
+
     return TRUE;
   }
 
@@ -662,14 +664,11 @@ class QuizHelper {
    * FALSE otherwise. Note that a FALSE may simply indicate that the user has not
    * taken the quiz.
    *
-   * @param $uid
-   *   The user ID.
-   * @param $nid
-   *   The node ID.
-   * @param $vid
-   *   The version ID.
+   * @param int $uid
+   * @param int $quiz_qid
+   * @param int $quiz_vid
    */
-  public function isPassed($uid, $nid, $vid) {
+  public function isPassed($uid, $quiz_qid, $quiz_vid) {
     $passed = db_query(
       'SELECT COUNT(result_id) AS passed_count
           FROM {quiz_results} result
@@ -679,8 +678,8 @@ class QuizHelper {
             AND result.quiz_qid = :qid
             AND result.uid = :uid
             AND score >= pass_rate', array(
-        ':vid' => $vid,
-        ':qid' => $nid,
+        ':vid' => $quiz_vid,
+        ':qid' => $quiz_qid,
         ':uid' => $uid
       ))->fetchField();
 
