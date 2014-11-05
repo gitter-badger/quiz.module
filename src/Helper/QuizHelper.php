@@ -641,7 +641,6 @@ class QuizHelper {
     }
 
     $user_is_admin = entity_access('update', 'quiz_entity', $quiz);
-
     if ($user_is_admin || $quiz->quiz_always == 1) {
       return TRUE;
     }

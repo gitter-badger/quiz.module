@@ -12,7 +12,7 @@ class QuizUiController extends EntityDefaultUIController {
 
     $this->addQuizAddLinks($items);
     $this->addQuizCRUDItems($items);
-    $this->addQuizTabsItems($items);
+    $this->addQuizTabItems($items);
     $this->addQuizTakeItems($items);
 
     return $items;
@@ -53,7 +53,7 @@ class QuizUiController extends EntityDefaultUIController {
     );
   }
 
-  private function addQuizTabsItems(&$items) {
+  private function addQuizTabItems(&$items) {
     // Define menu structure for /quiz/%/revisions
     $items['quiz/%entity_object/revisions'] = array(
         'title'            => 'Revisions',
@@ -108,6 +108,19 @@ class QuizUiController extends EntityDefaultUIController {
         'page callback'    => 'Drupal\quiz\Form\QuizCategorizedForm::categorizedTermAhah',
         'load arguments'   => array('quiz_entity'),
     );
+
+    if (module_exists('devel')) {
+      $items['quiz/%entity_object/devel'] = array(
+          'title'            => 'Devel',
+          'load arguments'   => array('quiz_entity'),
+          'access arguments' => array('access devel information'),
+          'page callback'    => 'devel_load_object',
+          'page arguments'   => array('quiz_entity', 1),
+          'type'             => MENU_LOCAL_TASK,
+          'file'             => 'devel.pages.inc',
+          'file path'        => drupal_get_path('module', 'devel')
+      );
+    }
   }
 
   private function addQuizAddLinks(&$items) {
