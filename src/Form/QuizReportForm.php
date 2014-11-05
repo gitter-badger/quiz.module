@@ -36,7 +36,7 @@ class QuizReportForm {
       $form['submit'] = array(
           '#type'   => 'submit',
           '#submit' => array(array($this, 'formSubmit')),
-          '#value'  => t('Save Score'),
+          '#value'  => t('Save score'),
       );
     }
 
