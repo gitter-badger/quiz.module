@@ -313,14 +313,13 @@ abstract class QuizQuestion {
    */
   public static function elementValidate(&$element, &$form_state) {
     $quiz = quiz_entity_single_load(__quiz_get_context_id());
-    $quiz_id = $quiz->qid;
 
     $question_nid = $element['#array_parents'][1];
     $answer = $form_state['values']['question'][$question_nid];
     $current_question = node_load($question_nid);
 
     // There was an answer submitted.
-    $response = _quiz_question_response_get_instance($_SESSION['quiz'][$quiz_id]['result_id'], $current_question, $answer);
+    $response = _quiz_question_response_get_instance($_SESSION['quiz'][$quiz->qid]['result_id'], $current_question, $answer);
     if ($quiz->repeat_until_correct && !$response->isCorrect()) {
       form_set_error('', t('The answer was incorrect. Please try again.'));
 
