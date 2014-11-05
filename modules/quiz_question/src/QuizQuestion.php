@@ -320,11 +320,12 @@ abstract class QuizQuestion {
     $current_question = node_load($question_nid);
 
     // There was an answer submitted.
-    $result = _quiz_question_response_get_instance($_SESSION['quiz'][$quiz_id]['result_id'], $current_question, $answer);
-    if ($quiz->repeat_until_correct && !$result->isCorrect()) {
+    $response = _quiz_question_response_get_instance($_SESSION['quiz'][$quiz_id]['result_id'], $current_question, $answer);
+    if ($quiz->repeat_until_correct && !$response->isCorrect()) {
       form_set_error('', t('The answer was incorrect. Please try again.'));
 
-      $controller = new QuizQuestionFeedbackController($quiz);
+      $result = $form_state['build_info']['args'][3];
+      $controller = new QuizQuestionFeedbackController($quiz, $result);
       $feedback = $controller->buildRenderArray($current_question);
       $element['feedback'] = array(
           '#weight' => 100,
