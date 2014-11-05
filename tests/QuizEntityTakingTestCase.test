@@ -44,7 +44,6 @@ class QuizEntityTakingTestCase extends QuizTestCase {
    * Test the quiz resuming from database.
    */
   public function testQuizResuming() {
-    $this->drupalLogin($this->admin);
     // Resuming is default behavior.
     $quiz = $this->drupalCreateQuiz(array('allow_resume' => 1));
 
@@ -77,44 +76,30 @@ class QuizEntityTakingTestCase extends QuizTestCase {
    * Test the quiz availability tests.
    */
   public function testQuizAvailability() {
+    $this->drupalLogin($this->user);
+
     $future = REQUEST_TIME + 86400;
     $past = REQUEST_TIME - 86400;
 
     // Within range.
-    $quiz = $this->drupalCreateQuiz(array(
-        'quiz_always' => 0,
-        'quiz_open'   => $past,
-        'quiz_close'  => $future,
-    ));
+    $quiz = $this->drupalCreateQuiz(array('quiz_always' => 0, 'quiz_open' => $past, 'quiz_close' => $future));
     $this->drupalGet("quiz/{$quiz->qid}");
-    $this->assertNoText('This @quiz is closed.', array('@quiz' => QUIZ_NAME));
+    $this->assertNoText(t('This @quiz is closed.', array('@quiz' => QUIZ_NAME)));
 
     // Starts in the future.
-    $quiz = $this->drupalCreateQuiz(array(
-        'quiz_always' => 0,
-        'quiz_open'   => $future,
-        'quiz_close'  => $future + 1,
-    ));
+    $quiz = $this->drupalCreateQuiz(array('quiz_always' => 0, 'quiz_open' => $future, 'quiz_close' => $future + 1));
     $this->drupalGet("quiz/{$quiz->qid}");
-    $this->assertText('This @quiz is closed.', array('@quiz' => QUIZ_NAME));
+    $this->assertText(t('This @quiz is closed.', array('@quiz' => QUIZ_NAME)));
 
     // Ends in the past.
-    $quiz = $this->drupalCreateQuiz(array(
-        'quiz_always' => 0,
-        'quiz_open'   => $past,
-        'quiz_close'  => $past + 1,
-    ));
+    $quiz = $this->drupalCreateQuiz(array('quiz_always' => 0, 'quiz_open' => $past, 'quiz_close' => $past + 1));
     $this->drupalGet("quiz/{$quiz->qid}");
-    $this->assertText('This @quiz is closed.', array('@quiz' => QUIZ_NAME));
+    $this->assertText(t('This @quiz is closed.', array('@quiz' => QUIZ_NAME)));
 
     // Always available.
-    $quiz = $this->drupalCreateQuiz(array(
-        'quiz_always' => 1,
-        'quiz_open'   => $future,
-        'quiz_close'  => $past,
-    ));
+    $quiz = $this->drupalCreateQuiz(array('quiz_always' => 1, 'quiz_open' => $future, 'quiz_close' => $past));
     $this->drupalGet("quiz/{$quiz->qid}");
-    $this->assertNoText('This @quiz is closed.', array('@quiz' => QUIZ_NAME));
+    $this->assertNoText(t('This @quiz is closed.', array('@quiz' => QUIZ_NAME)));
   }
 
   /**
@@ -131,12 +116,12 @@ class QuizEntityTakingTestCase extends QuizTestCase {
     node_access_rebuild(FALSE);
 
     $this->drupalLogin($this->user);
-    $this->drupalGet("quiz/{$question_node1->nid}");
+    $this->drupalGet("node/{$question_node1->nid}");
     $this->assertResponse(403);
 
     $user_with_privs = $this->drupalCreateUser(array('view quiz question outside of a quiz', 'access quiz'));
     $this->drupalLogin($user_with_privs);
-    $this->drupalGet("quiz/{$question_node1->nid}");
+    $this->drupalGet("node/{$question_node1->nid}");
     $this->assertResponse(200);
   }
 
@@ -158,16 +143,12 @@ class QuizEntityTakingTestCase extends QuizTestCase {
     $this->drupalLogin($this->user);
     $this->drupalGet("quiz/{$quiz->qid}/take");
     $this->drupalGet("quiz/{$quiz->qid}/take/1");
-    $this->drupalPost(NULL, array(
-        "question[$question_node1->nid]" => 0,
-      ), t('Next'));
+    $this->drupalPost(NULL, array("question[$question_node1->nid]" => 0), t('Next'));
     $this->assertText('Score: 0 of 1');
 
     // Go back and correct the answer.
     $this->drupalGet("quiz/{$quiz->qid}/take/1");
-    $this->drupalPost(NULL, array(
-        "question[$question_node1->nid]" => 1,
-      ), t('Next'));
+    $this->drupalPost(NULL, array("question[$question_node1->nid]" => 1), t('Next'));
     $this->assertText('Score: 1 of 1');
 
     // Restrict change after answer.
@@ -176,7 +157,8 @@ class QuizEntityTakingTestCase extends QuizTestCase {
 
     // Check that the answer cannot be changed.
     $this->drupalGet("quiz/{$quiz->qid}/take/1");
-    $disabled_field = $this->xpath('//input[@id=:id and @disabled="disabled"]', array(':id' => 'edit-question-2-1'));
+    $xpath = '//input[@id=:id and @disabled="disabled"]';
+    $disabled_field = $this->xpath($xpath, array(':id' => 'edit-question-1-1'));
     $this->assertTrue($disabled_field, t('The answer cannot be changed.'));
     $this->drupalPost(NULL, array(), t('Next'));
     $this->assertText('Score: 1 of 1');
