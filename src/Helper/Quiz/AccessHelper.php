@@ -168,7 +168,7 @@ class AccessHelper {
     }
 
     // Enforce normal navigation. Previous answer was submitted
-    if (quiz_result_is_question_answered($result, $question_node_last)) {
+    if (!quiz_result_is_question_answered($result, $question_node_last)) {
       return FALSE;
     }
 
