@@ -332,7 +332,7 @@ class QuizHelper {
       // Save the relationship between the new question and the quiz.
       db_insert('quiz_relationship')
         ->fields(array(
-            'quiz_qid'              => $quiz->nid,
+            'quiz_qid'              => $quiz->qid,
             'quiz_vid'              => $quiz->vid,
             'question_nid'          => $original_question->nid,
             'question_vid'          => $original_question->vid,
