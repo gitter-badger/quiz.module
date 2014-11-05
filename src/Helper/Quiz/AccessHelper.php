@@ -116,11 +116,13 @@ class AccessHelper {
   /**
    * Checks if the user has access to save score for his quiz.
    */
-  public function canAccessScore($quiz, $account) {
+  public function canAccessScore($account) {
     if (user_access('score any quiz', $account)) {
       return true;
     }
-    return user_access('score own quiz', $account) && ($quiz->uid == $account->uid);
+
+    $author_uid = quiz_entity_single_load(__quiz_get_context_id())->uid;
+    return user_access('score own quiz', $account) && ($author_uid == $account->uid);
   }
 
   /**

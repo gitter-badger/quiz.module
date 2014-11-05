@@ -217,12 +217,13 @@ abstract class QuizQuestionResponse {
         '#type'  => 'value',
         '#value' => $this->result_id,
     );
-    if (quiz_access_to_score() && ($submit = $this->getReportFormSubmit())) {
+
+    if (quiz()->getQuizHelper()->getAccessHelper()->canAccessScore($user) && ($submit = $this->getReportFormSubmit())) {
       $form['submit'] = array('#type' => 'value', '#value' => $submit);
     }
     $form['question'] = $this->getReportFormQuestion();
 
-    if (quiz_access_to_score()) {
+    if (quiz()->getQuizHelper()->getAccessHelper()->canAccessScore($user)) {
       $form['answer_feedback'] = $this->getReportFormAnswerFeedback();
     }
 
