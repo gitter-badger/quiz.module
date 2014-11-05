@@ -36,7 +36,7 @@ class QuizQuestionsForm extends BaseForm {
     $this->addFieldsForRandomQuiz($form, $quiz);
 
     // @todo deal with $include_random
-    $questions = quiz()->getQuizHelper()->getQuestions($quiz->qid, $quiz->vid);
+    $questions = $quiz->getQuestionLoader()->getQuestions();
 
     if (empty($questions)) {
       $form['question_list']['no_questions'] = array(

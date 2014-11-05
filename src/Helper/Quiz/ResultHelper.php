@@ -3,7 +3,6 @@
 namespace Drupal\quiz\Helper\Quiz;
 
 use Drupal\quiz\Entity\QuizEntity;
-use stdClass;
 
 class ResultHelper {
 

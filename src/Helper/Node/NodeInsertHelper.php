@@ -14,10 +14,10 @@ class NodeInsertHelper extends NodeHelper {
     }
 
     // Add references to all the questions belonging to the quiz if this is a cloned quiz (node_clone compatibility)
-    if ($quiz->is_new && isset($quiz->clone_from_original_nid)) {
-      $old_quiz = node_load($quiz->clone_from_original_nid, NULL, TRUE);
+    if ($quiz->is_new && isset($quiz->clone_from_original_qid)) {
+      $old_quiz = quiz_entity_single_load($quiz->clone_from_original_qid, NULL, TRUE);
       $max_score = $old_quiz->max_score;
-      $questions = quiz()->getQuizHelper()->getQuestions($old_quiz->qid, $old_quiz->vid);
+      $questions = $old_quiz->getQuestionLoader()->getQuestions();
 
       // Format the current questions for referencing
       foreach ($questions as $question) {

@@ -128,9 +128,12 @@ class QuizHelper {
     return $to_return;
   }
 
+  /**
+   * @param \Drupal\quiz\Entity\QuizEntity $quiz
+   * @param \stdClass $question
+   */
   public function addQuestion($quiz, $question) {
-    $quiz_id = $quiz->qid;
-    $quiz_questions = $this->getQuestions($quiz_id, $quiz->vid);
+    $quiz_questions = $quiz->getQuestionLoader()->getQuestions();
 
     // Do not add a question if it's already been added (selected in an earlier checkbox)
     foreach ($quiz_questions as $q) {
@@ -140,84 +143,10 @@ class QuizHelper {
     }
 
     // Otherwise let's add a relationship!
-    $question->quiz_qid = $quiz_id;
+    $question->quiz_qid = $quiz->qid;
     $question->quiz_vid = $quiz->vid;
     _quiz_question_get_instance($question)->saveRelationships();
     $this->updateMaxScoreProperties(array($quiz->vid));
-  }
-
-  /**
-   * Retrieve list of published questions assigned to quiz.
-   *
-   * This function should be used for question browsers and similiar... It should not be used to decide what questions
-   * a user should answer when taking a quiz. quiz_build_question_list is written for that purpose.
-   *
-   * @param $quiz_qid
-   *   Quiz entity id.
-   * @param $quiz_vid
-   *   Quiz entity version id.
-   *
-   * @return
-   *   An array of questions.
-   */
-  public function getQuestions($quiz_qid, $quiz_vid = NULL) {
-    $questions = array();
-    $query = db_select('node', 'n');
-    $query->fields('n', array('nid', 'type'));
-    $query->fields('nr', array('vid', 'title'));
-    $query->fields('qnr', array('question_status', 'weight', 'max_score', 'auto_update_max_score', 'qr_id', 'qr_pid'));
-    $query->addField('n', 'vid', 'latest_vid');
-    $query->join('node_revision', 'nr', 'n.nid = nr.nid');
-    $query->leftJoin('quiz_relationship', 'qnr', 'nr.vid = qnr.question_vid');
-    $query->condition('n.status', 1);
-    $query->condition('qnr.quiz_qid', $quiz_qid);
-    if ($quiz_vid) {
-      $query->condition('qnr.quiz_vid', $quiz_vid);
-    }
-    $query->condition('qr_pid', NULL, 'IS');
-    $query->orderBy('qnr.weight');
-
-    $result = $query->execute();
-    foreach ($result as $question) {
-      $questions[] = $question;
-      $this->getSubQuestions($question->qr_id, $questions);
-    }
-
-    foreach ($questions as &$node) {
-      $node = $this->reloadQuestion($node);
-    }
-
-    return $questions;
-  }
-
-  /**
-   * Map node properties to a question object.
-   *
-   *  This was 'quiz_node_map($node)' before.
-   *
-   * @param $node
-   *  The question node.
-   *
-   * @return
-   *  Question object.
-   */
-  public function reloadQuestion($node) {
-    $question = node_load($node->nid, $node->vid);
-
-    // Append extra fields.
-    $question->latest_vid = $node->latest_vid;
-    $question->question_status = isset($node->question_status) ? $node->question_status : QUESTION_NEVER;
-    if (isset($node->max_score)) {
-      $question->max_score = $node->max_score;
-    }
-    if (isset($node->auto_update_max_score)) {
-      $question->auto_update_max_score = $node->auto_update_max_score;
-    }
-    $question->weight = $node->weight;
-    $question->qr_id = $node->qr_id;
-    $question->qr_pid = $node->qr_pid;
-
-    return $question;
   }
 
   /**
@@ -340,22 +269,6 @@ class QuizHelper {
 
     $this->updateMaxScoreProperties(array($quiz->vid));
     return TRUE;
-  }
-
-  public function getSubQuestions($qr_pid, &$questions) {
-    $query = db_select('node', 'n');
-    $query->fields('n', array('nid', 'type'));
-    $query->fields('nr', array('vid', 'title'));
-    $query->fields('qnr', array('question_status', 'weight', 'max_score', 'auto_update_max_score', 'qr_id', 'qr_pid'));
-    $query->addField('n', 'vid', 'latest_vid');
-    $query->innerJoin('node_revision', 'nr', 'n.nid = nr.nid');
-    $query->innerJoin('quiz_relationship', 'qnr', 'nr.vid = qnr.question_vid');
-    $query->condition('qr_pid', $qr_pid);
-    $query->orderBy('weight');
-    $result = $query->execute();
-    foreach ($result as $question) {
-      $questions[] = $question;
-    }
   }
 
   /**
