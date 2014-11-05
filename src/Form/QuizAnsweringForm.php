@@ -184,6 +184,13 @@ class QuizAnsweringForm {
    * Validation callback for quiz question submit.
    */
   public function formValidate(&$form, &$form_state) {
+    $time_reached = $this->quiz->time_limit && (REQUEST_TIME > ($this->result->time_start + $this->quiz->time_limit));
+
+    // Let's not validate anything, because the input won't get saved in submit either.
+    if ($time_reached) {
+      return;
+    }
+
     foreach (array_keys($form_state['values']['question']) as $question_id) {
       if ($current_question = node_load($question_id)) {
         // There was an answer submitted.
