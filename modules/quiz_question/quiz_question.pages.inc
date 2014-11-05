@@ -183,7 +183,8 @@ function quiz_question_revision_actions_submit($form, &$form_state) {
     if (isset($quiz)) {
       $quiz->auto_created = TRUE;
       $quiz->status = $publish;
-      node_save($quiz);
+      entity_save('quiz_entity', $quiz);
+
       $quiz_qid = $quiz->qid;
       $quiz_vid = $quiz->vid;
     }

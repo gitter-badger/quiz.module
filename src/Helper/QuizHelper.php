@@ -117,8 +117,8 @@ class QuizHelper {
   /**
    * Sets the questions that are assigned to a quiz.
    *
-   * @param $quiz
-   *   The quiz(node) to modify.
+   * @param \Drupal\quiz\Entity\QuizEntity $quiz
+   *   The quiz entity to modify.
    * @param $questions
    *   An array of questions.
    * @param $set_new_revision
@@ -135,10 +135,8 @@ class QuizHelper {
    */
   public function setQuestions(&$quiz, $questions, $set_new_revision = FALSE) {
     if ($set_new_revision) {
-      // Create a new Quiz VID, even if nothing changed.
-      $quiz->revision = 1;
-
-      node_save($quiz);
+      $quiz->is_new_revision = 1; # Create a new Quiz VID, even if nothing changed.
+      entity_save('quiz_entity', $quiz);
     }
 
     // When node_save() calls all of the node API hooks, old quiz info is
