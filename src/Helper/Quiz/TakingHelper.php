@@ -4,7 +4,7 @@ namespace Drupal\quiz\Helper\Quiz;
 
 use Drupal\quiz\Entity\QuizEntity;
 
-class QuestionHelper {
+class TakingHelper {
 
   /**
    * Update the session for this quiz to the active question.
