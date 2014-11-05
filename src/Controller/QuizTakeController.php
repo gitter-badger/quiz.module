@@ -33,7 +33,9 @@ class QuizTakeController extends QuizTakeLegacyController {
     }
     catch (RuntimeException $e) {
       throw $e;
-      return array('body' => ['#markup' => $e->getMessage()]);
+      return array(
+          'body' => array('#markup' => $e->getMessage())
+      );
     }
   }
 

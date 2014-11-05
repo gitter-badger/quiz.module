@@ -17,7 +17,6 @@ class QuizReportForm {
   public function getForm($form, $form_state, $questions) {
     $form['#theme'] = 'quiz_report_form'; # @TODO: Remove me
     $form['#tree'] = TRUE;
-    $form['#submit'][] = array($this, 'formSubmit');
 
     foreach ($questions as $question) {
       if (!$module = quiz_question_module_for_type($question->type)) {
@@ -28,7 +27,7 @@ class QuizReportForm {
       if (isset($form_to_add['submit'])) {
         $show_submit = TRUE;
       }
-      $form_to_add['#element_validate'][] = array($this, 'validateElement');
+      $form_to_add['#element_validate'][] = 'quiz_report_form_element_validate';
       $form[] = $form_to_add;
     }
 
@@ -75,7 +74,7 @@ class QuizReportForm {
   /**
    * Validate a single question sub-form.
    */
-  function validateElement(&$element, &$form_state) {
+  public static function validateElement(&$element, &$form_state) {
     $question = node_load($element['nid']['#value'], $element['vid']['#value']);
     if ($quizQuestionResponse = _quiz_question_response_get_instance($element['result_id']['#value'], $question)) {
       $quizQuestionResponse->getReportFormValidate($element, $form_state);

@@ -301,15 +301,17 @@ abstract class QuizQuestion {
    *  Must return a FAPI array.
    */
   public function getAnsweringForm(array $form_state = NULL, $result_id) {
-    $form = array();
-    $form['#element_validate'] = array(array($this, 'elementValidate'));
-    return $form;
+    return array(
+        '#element_validate' => array(
+            'quiz_question_element_validate'
+        )
+    );
   }
 
   /**
    * Element validator (for repeat until correct).
    */
-  public function elementValidate(&$element, &$form_state) {
+  public static function elementValidate(&$element, &$form_state) {
     $quiz = quiz_entity_single_load(__quiz_get_context_id());
     $quiz_id = $quiz->qid;
 
