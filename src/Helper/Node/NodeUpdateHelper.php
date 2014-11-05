@@ -14,7 +14,8 @@ class NodeUpdateHelper extends NodeHelper {
     }
 
     $this->presaveActions($quiz);
-    quiz()->getQuizHelper()->getSettingHelper()->updateUserDefaultSettings($quiz);
+    entity_get_controller('quiz_entity')->getSettingIO()->updateUserDefaultSettings($quiz);
+
     $this->checkNumRandom($quiz);
     $this->checkNumAlways($quiz);
     quiz_update_max_score_properties(array($quiz->vid));

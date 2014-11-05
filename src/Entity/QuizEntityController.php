@@ -11,6 +11,9 @@ class QuizEntityController extends EntityAPIController {
   /** @var \Drupal\quiz\Entity\QuizEntity\DefaultPropertiesIO */
   private $default_properties_io;
 
+  /**
+   * @return \Drupal\quiz\Entity\QuizEntity\DefaultPropertiesIO
+   */
   public function getSettingIO() {
     if (NULL === $this->default_properties_io) {
       $this->default_properties_io = new \Drupal\quiz\Entity\QuizEntity\DefaultPropertiesIO();

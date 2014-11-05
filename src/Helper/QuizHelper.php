@@ -11,27 +11,11 @@ use Drupal\quiz\Helper\Quiz\TakeJumperHelper;
 
 class QuizHelper {
 
-  private $settingHelper;
   private $resultHelper;
   private $accessHelper;
   private $feedbackHelper;
   private $takeJumperHelper;
   private $questionHelper;
-
-  /**
-   * @return SettingHelper
-   */
-  public function getSettingHelper() {
-    if (null === $this->settingHelper) {
-      $this->settingHelper = new SettingHelper();
-    }
-    return $this->settingHelper;
-  }
-
-  public function setSettingHelper($settingHelper) {
-    $this->settingHelper = $settingHelper;
-    return $this;
-  }
 
   /**
    * @return ResultHelper

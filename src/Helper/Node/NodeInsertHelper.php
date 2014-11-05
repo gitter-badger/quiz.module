@@ -35,7 +35,7 @@ class NodeInsertHelper extends NodeHelper {
     $this->checkNumRandom($quiz);
     $this->checkNumAlways($quiz);
 
-    quiz()->getQuizHelper()->getSettingHelper()->updateUserDefaultSettings($quiz);
+    entity_get_controller('quiz_entity')->getSettingIO()->updateUserDefaultSettings($quiz);
   }
 
 }

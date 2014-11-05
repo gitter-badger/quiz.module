@@ -59,7 +59,7 @@ class QuizAdminEntityForm {
         'remember_global'   => 1,
       ) + $form_state['values']);
 
-    quiz()->getQuizHelper()->getSettingHelper()->updateUserDefaultSettings($quiz);
+    entity_get_controller('quiz_entity')->getSettingIO()->updateUserDefaultSettings($quiz);
     $form_state['quiz'] = $quiz;
   }
 
