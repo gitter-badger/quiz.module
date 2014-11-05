@@ -42,7 +42,8 @@ class QuizEntityController extends EntityAPIController {
     // Render Stats
     if ($extra_fields['stats']['visible']) {
       // Number of questions is needed on the statistics page.
-      $quiz->number_of_questions = $quiz->number_of_random_questions + quiz()->getQuizHelper()->countAlwaysQuestions($quiz->vid);
+      $quiz->number_of_questions = $quiz->number_of_random_questions;
+      $quiz->number_of_questions += $this->getStats()->countAlwaysQuestions($quiz->vid);
 
       $content['quiz_entity'][$quiz->qid]['stats'] = array(
           '#markup' => theme('quiz_view_stats', array('quiz' => $quiz)),

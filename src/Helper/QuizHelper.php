@@ -251,30 +251,15 @@ class QuizHelper {
    *   Returns the number of quiz questions.
    */
   public function countQuestion($quiz_vid) {
-    return $this->countAlwaysQuestions($quiz_vid) + (int) db_query(
+    $counter = (int) db_query(# @TODO use countRandomQuestions() method
         'SELECT number_of_random_questions'
         . ' FROM {quiz_entity_revision}'
         . ' WHERE vid = :vid', array(':vid' => $quiz_vid)
       )->fetchField();
-  }
 
-  /**
-   * Get the number of compulsory questions for a quiz.
-   *
-   * @param int $quiz_vid
-   * @return int
-   *   Number of compulsory questions.
-   */
-  public function countAlwaysQuestions($quiz_vid) {
-    return db_query('SELECT COUNT(*)
-      FROM {quiz_relationship} qnr
-        JOIN {node} n ON n.nid = qnr.question_nid
-      WHERE n.status=1
-        AND qnr.quiz_vid = :quiz_vid
-        AND qnr.question_status = :question_status', array(
-          ':quiz_vid'        => $quiz_vid,
-          ':question_status' => QUESTION_ALWAYS
-      ))->fetchField();
+    $counter += quiz_controller()->getStats()->countAlwaysQuestions($quiz_vid);
+
+    return $counter;
   }
 
   /**

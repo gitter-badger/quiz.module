@@ -30,4 +30,23 @@ class Stats {
         ->fetchAllAssoc('qid');
   }
 
+  /**
+   * Get the number of compulsory questions for a quiz.
+   *
+   * @param int $quiz_vid
+   * @return int
+   *   Number of compulsory questions.
+   */
+  public function countAlwaysQuestions($quiz_vid) {
+    return db_query('SELECT COUNT(*)
+      FROM {quiz_relationship} qnr
+        JOIN {node} n ON n.nid = qnr.question_nid
+      WHERE n.status = 1
+        AND qnr.quiz_vid = :quiz_vid
+        AND qnr.question_status = :question_status', array(
+          ':quiz_vid'        => $quiz_vid,
+          ':question_status' => QUESTION_ALWAYS
+      ))->fetchField();
+  }
+
 }
