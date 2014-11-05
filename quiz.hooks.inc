@@ -514,6 +514,12 @@ function quiz_type_access($op, $type = NULL, $account = NULL) {
  * @param stdClass $account
  */
 function quiz_entity_access_callback($op, $type = NULL, $account = NULL) {
+  switch ($op) {
+    case 'update':
+      return user_access('edit any quiz content', $account);
+    case 'view':
+      return user_access('access quiz', $account);
+  }
   return TRUE;
 }
 
