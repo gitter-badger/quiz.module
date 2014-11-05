@@ -224,8 +224,7 @@ function _quiz_is_int($value, $min = 1, $max = NULL) {
  *   Quiz name variable.
  */
 function _quiz_get_quiz_name() {
-  // @todo: remove all the quiz_name stuff? Isn't there better ways to do this?
-  return variable_get('quiz_name', 'Quiz');
+  return t(variable_get('quiz_name', 'Quiz'));
 }
 
 function __quiz_get_context_id() {

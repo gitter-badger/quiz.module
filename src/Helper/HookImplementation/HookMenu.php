@@ -72,7 +72,7 @@ class HookMenu {
     );
 
     $items['admin/quiz/reports'] = array(
-        'title'            => 'Quiz reports and scoring',
+        'title'            => '@quiz reports and scoring',
         'title arguments'  => array('@quiz' => QUIZ_NAME),
         'description'      => 'View reports and score answers.',
         'page callback'    => 'system_admin_menu_block_page',

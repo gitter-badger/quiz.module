@@ -7,26 +7,22 @@
 function quiz_quiztake_page_manager_tasks() {
 
   return array(
-    // This is a 'page' task and will fall under the page admin UI
-    'task type' => 'page',
-
-    'title' => t('Take quiz'),
-    'admin title' => t('The take page for quiz.'),
-    'admin description' => t('When enabled, this overrides the default view at node/%node/take'),
-    'admin path' => 'node/%node/take',
-
-    // Menu hooks so that we can alter the node/%node menu entry to point to us.
-    'hook menu alter' => 'quiz_quiztake_menu_alter',
-
-    // This is task uses 'context' handlers and must implement these to give the
-    // handler data it needs.
-    'handler type' => 'context',
-    'get arguments' => 'quiz_quiztake_get_arguments',
-    'get context placeholders' => 'quiz_quiztake_get_contexts',
-
-    // Allow this to be enabled or disabled:
-    'disabled' => variable_get('quiz_quiztake_disabled', TRUE),
-    'enable callback' => 'quiz_quiztake_enable',
+      // This is a 'page' task and will fall under the page admin UI
+      'task type'                => 'page',
+      'title'                    => t('Take @quiz', array('@quiz' => QUIZ_NAME)),
+      'admin title'              => t('The take page for @quiz.', array('@quiz' => QUIZ_NAME)),
+      'admin description'        => t('When enabled, this overrides the default view at quiz/%quiz_entity_single/take'),
+      'admin path'               => 'node/%node/take',
+      // Menu hooks so that we can alter the node/%node menu entry to point to us.
+      'hook menu alter'          => 'quiz_quiztake_menu_alter',
+      // This is task uses 'context' handlers and must implement these to give the
+      // handler data it needs.
+      'handler type'             => 'context',
+      'get arguments'            => 'quiz_quiztake_get_arguments',
+      'get context placeholders' => 'quiz_quiztake_get_contexts',
+      // Allow this to be enabled or disabled:
+      'disabled'                 => variable_get('quiz_quiztake_disabled', TRUE),
+      'enable callback'          => 'quiz_quiztake_enable',
   );
 }
 
@@ -111,13 +107,13 @@ function quiz_quiztake_enable($cache, $status) {
  */
 function quiz_quiztake_get_arguments($task, $subtask_id) {
   return array(
-    array(
-      'keyword' => 'node',
-      'identifier' => t('Node being taken'),
-      'id' => 1,
-      'name' => 'entity_id:node',
-      'settings' => array(),
-    ),
+      array(
+          'keyword'    => 'node',
+          'identifier' => t('Node being taken'),
+          'id'         => 1,
+          'name'       => 'entity_id:node',
+          'settings'   => array(),
+      ),
   );
 }
 

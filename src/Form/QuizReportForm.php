@@ -134,7 +134,7 @@ class QuizReportForm {
     }
 
     // Notify the user if results got deleted as a result of him scoring an answer.
-    $add = $quiz->keep_results == QUIZ_KEEP_BEST && $results_got_deleted ? ' ' . t('Note that this quiz is set to only keep each users best answer.') : '';
+    $add = $quiz->keep_results == QUIZ_KEEP_BEST && $results_got_deleted ? ' ' . t('Note that this @quiz is set to only keep each users best answer.', array('@quiz' => QUIZ_NAME)) : '';
 
     $score_data = $this->getScoreArray($result_id, $quiz->vid, TRUE);
 
@@ -163,7 +163,7 @@ class QuizReportForm {
     if (!empty($_SESSION['messages']['warning'])) {
       // Search for the message, and remove it if we find it.
       foreach ($_SESSION['messages']['warning'] as $key => $val) {
-        if ($val == t('This quiz has not been scored yet.')) {
+        if ($val == t('This @quiz has not been scored yet.', array('@quiz' => QUIZ_NAME))) {
           unset($_SESSION['messages']['warning'][$key]);
         }
       }

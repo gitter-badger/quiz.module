@@ -47,15 +47,15 @@ class HookQuizScored {
       WHERE ti.nid = :nid", array(':nid' => $this->quiz->qid, ':vid' => userpoints_get_vid()))->fetchField();
 
     $variables = array(
-      '@title' => $this->quiz->title,
-      '@quiz'  => variable_get('quiz_name', QUIZ_NAME),
-      '@time'  => date('l jS \of F Y h:i:s A'),
+        '@title' => $this->quiz->title,
+        '@quiz'  => QUIZ_NAME,
+        '@time'  => date('l jS \of F Y h:i:s A'),
     );
 
     $params = array(
-      'points'      => $this->score['numeric_score'],
-      'description' => t('Attended @title @quiz on @time', $variables),
-      'tid'         => $selected_tid,
+        'points'      => $this->score['numeric_score'],
+        'description' => t('Attended @title @quiz on @time', $variables),
+        'tid'         => $selected_tid,
     );
 
     if ($this->quiz->userpoints_tid != 0) {

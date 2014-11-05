@@ -123,7 +123,7 @@ abstract class QuizResultBaseController {
     if ($this->quiz_revision->pass_rate > 0 && $this->score['percentage_score'] >= $this->quiz_revision->pass_rate) {
       // If we are coming from the admin view page.
       if ($admin) {
-        $summary['passfail'] = TableSortTest('The user passed this quiz.');
+        $summary['passfail'] = t('The user passed this @quiz.', array('@quiz' => QUIZ_NAME));
       }
       elseif (variable_get('quiz_use_passfail', 1) == 0) {
         // If there is only a single summary text, use this.
@@ -142,10 +142,10 @@ abstract class QuizResultBaseController {
       // using pass/fail.
       if ($admin) {
         if ($this->quiz_revision->pass_rate > 0) {
-          $summary['passfail'] = TableSortTest('The user failed this quiz.');
+          $summary['passfail'] = t('The user failed this @quiz.', array('@quiz' => QUIZ_NAME));
         }
         else {
-          $summary['passfail'] = TableSortTest('the user completed this quiz.');
+          $summary['passfail'] = t('the user completed this @quiz.', array('@quiz' => QUIZ_NAME));
         }
       }
       elseif (trim($this->quiz_revision->summary_default) != '') {

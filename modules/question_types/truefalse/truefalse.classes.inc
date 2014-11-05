@@ -298,7 +298,7 @@ class TrueFalseResponse extends QuizQuestionResponse {
             'score'           => intval($correct_answer == 1 && $answer == 1),
             'answer_feedback' => '',
             'solution'        => $correct_answer == 1 ? quiz_icon('should') : '',
-            'quiz_feedback'   => "Quiz feedback",
+            'quiz_feedback'   => t('@quiz feedback', array('@quiz' => QUIZ_NAME)),
         ),
         array(
             'choice'          => 'False',

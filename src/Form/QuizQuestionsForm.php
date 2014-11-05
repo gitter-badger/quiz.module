@@ -25,7 +25,7 @@ class QuizQuestionsForm extends BaseForm {
     // Display questions in this quiz.
     $form['question_list'] = array(
         '#type'           => 'fieldset',
-        '#title'          => t('Questions in this quiz'),
+        '#title'          => t('Questions in this @quiz', array('@quiz' => QUIZ_NAME)),
         '#theme'          => 'question_selection_table',
         '#collapsible'    => TRUE,
         '#attributes'     => array('id' => 'mq-fieldset'),
@@ -40,7 +40,7 @@ class QuizQuestionsForm extends BaseForm {
 
     if (empty($questions)) {
       $form['question_list']['no_questions'] = array(
-          '#markup' => '<div id = "no-questions">' . t('There are currently no questions in this quiz. Assign existing questions by using the question browser below. You can also use the links above to create new questions.') . '</div>',
+          '#markup' => '<div id = "no-questions">' . t('There are currently no questions in this @quiz. Assign existing questions by using the question browser below. You can also use the links above to create new questions.', array('@quiz' => QUIZ_NAME)) . '</div>',
       );
     }
 

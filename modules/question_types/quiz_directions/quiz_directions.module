@@ -21,13 +21,13 @@ function quiz_directions_help($path, $args) {
  */
 function quiz_directions_quiz_question_info() {
   return array(
-    'quiz_directions' => array(
-      'name' => t('Quiz directions'),
-      'description' => t('Quiz directions allow you to drop in directions anywhere in a quiz. You can also use them to insert a confirmation step at the end of the quiz.'),
-      'question provider' => 'QuizDirectionsQuestion',
-      'response provider' => 'QuizDirectionsResponse',
-      'module' => 'quiz_question', // All wrapper functions are in that module.
-    ),
+      'quiz_directions' => array(
+          'name'              => t('@quiz directions', array('@quiz' => QUIZ_NAME)),
+          'description'       => t('@quiz directions allow you to drop in directions anywhere in a quiz. You can also use them to insert a confirmation step at the end of the quiz.', array('@quiz' => QUIZ_NAME)),
+          'question provider' => 'QuizDirectionsQuestion',
+          'response provider' => 'QuizDirectionsResponse',
+          'module'            => 'quiz_question', // All wrapper functions are in that module.
+      ),
   );
 }
 
@@ -43,10 +43,10 @@ function quiz_directions_quiz_question_config() {
  */
 function quiz_directions_theme() {
   return array(
-    'quiz_directions_answering_form' => array(
-      'render element' => 'form',
-      'path' => drupal_get_path('module', 'quiz_directions') . '/theme',
-      'template' => 'quiz-directions-answering-form',
-    ),
+      'quiz_directions_answering_form' => array(
+          'render element' => 'form',
+          'path'           => drupal_get_path('module', 'quiz_directions') . '/theme',
+          'template'       => 'quiz-directions-answering-form',
+      ),
   );
 }

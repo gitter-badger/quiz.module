@@ -179,7 +179,7 @@ class QuizAdminSettingsController {
     $form['quiz_email_settings']['taker']['quiz_email_results_body_taker'] = array(
         '#type'          => 'textarea',
         '#title'         => t('Configure E-mail Format'),
-        '#description'   => t('This format will be used when sending quiz results at the end of a quiz. !title(quiz title), !sitename, !taker(quiz takers username), !date(time when quiz was finished), !minutes(How many minutes the quiz taker spent taking the quiz), !desc(description of the quiz), !correct(points attained), !total(max score for the quiz), !percentage(percentage score), !url(url to the result page) and !author are placeholders.'),
+        '#description'   => t('This format will be used when sending @quiz results at the end of a quiz. !title(quiz title), !sitename, !taker(quiz takers username), !date(time when quiz was finished), !minutes(How many minutes the quiz taker spent taking the quiz), !desc(description of the quiz), !correct(points attained), !total(max score for the quiz), !percentage(percentage score), !url(url to the result page) and !author are placeholders.'),
         '#default_value' => variable_get('quiz_email_results_body_taker', $this->formatEmailResults('body', 'taker')),
     );
 
@@ -211,7 +211,7 @@ class QuizAdminSettingsController {
     );
 
     $form['def_settings_link'] = array(
-        '#markup' => '<p>' . t('Default values for the quiz creation form can be edited <a href="!url">here</a>', array('!url' => url('admin/quiz/settings/quiz_form'))) . '</p>',
+        '#markup' => '<p>' . t('Default values for the @quiz creation form can be edited <a href="!url">here</a>', array('@quiz' => QUIZ_NAME, '!url' => url('admin/quiz/settings/quiz_form'))) . '</p>',
     );
 
     return system_settings_form($form);

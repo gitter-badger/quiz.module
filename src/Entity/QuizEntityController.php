@@ -34,7 +34,7 @@ class QuizEntityController extends EntityAPIController {
           '#suffix' => '</div>',
           '#access' => quiz()->getQuizHelper()->isAvailable($quiz),
           '#weight' => $extra_fields['take']['weight'],
-          '#markup' => l(t('Start quiz'), 'quiz/' . $quiz->qid . '/take'),
+          '#markup' => l(t('Start @quiz', array('@quiz' => QUIZ_NAME)), 'quiz/' . $quiz->qid . '/take'),
       );
     }
 

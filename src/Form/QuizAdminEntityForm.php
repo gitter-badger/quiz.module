@@ -13,7 +13,7 @@ class QuizAdminEntityForm {
     $form = $entity_form->get($form, $form_state, 'add');
 
     $form['direction'] = array(
-        '#markup' => t('Here you can change the default quiz settings for new users.'),
+        '#markup' => t('Here you can change the default @quiz settings for new users.', array('@quiz' => QUIZ_NAME)),
         '#weight' => -10,
     );
 

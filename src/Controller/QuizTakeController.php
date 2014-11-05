@@ -64,7 +64,7 @@ class QuizTakeController extends QuizTakeLegacyController {
     // Start new quiz progress
     if (!$this->result) {
       if (!$this->checkAvailability()) {
-        throw new RuntimeException(t('This quiz is closed.'));
+        throw new RuntimeException(t('This @quiz is closed.', array('@quiz' => QUIZ_NAME)));
       }
 
       $this->result = $this->createQuizResultObject();
@@ -77,7 +77,7 @@ class QuizTakeController extends QuizTakeLegacyController {
     }
 
     if (!quiz()->getQuizHelper()->isAvailable($this->quiz)) {
-      throw new RuntimeException(t('This quiz is not available.'));
+      throw new RuntimeException(t('This @quiz is not available.', array('@quiz' => QUIZ_NAME)));
     }
   }
 
@@ -96,7 +96,7 @@ class QuizTakeController extends QuizTakeLegacyController {
     $this->result_id = $result_id;
 
     // Resume a quiz from the database.
-    drupal_set_message(t('Resuming a previous quiz in-progress.'), 'status');
+    drupal_set_message(t('Resuming a previous @quiz in-progress.', array('@quiz' => QUIZ_NAME)), 'status');
   }
 
   /**
@@ -119,7 +119,7 @@ class QuizTakeController extends QuizTakeLegacyController {
 
       if ($now >= $this->quiz->quiz_close || $now < $this->quiz->quiz_open) {
         if ($user_is_admin) {
-          $msg = t('You are marked as an administrator or owner for this quiz. While you can take this quiz, the open/close times prohibit other users from taking this quiz.');
+          $msg = t('You are marked as an administrator or owner for this @quiz. While you can take this @quiz, the open/close times prohibit other users from taking this @quiz.', array('@quiz' => QUIZ_NAME));
           drupal_set_message($msg, 'status');
         }
         else {
@@ -142,19 +142,19 @@ class QuizTakeController extends QuizTakeLegacyController {
       // The user has already taken this quiz.
       if ($taken) {
         if ($user_is_admin) {
-          $msg = t('You have taken this quiz already. You are marked as an owner or administrator for this quiz, so you can take this quiz as many times as you would like.');
+          $msg = t('You have taken this @quiz already. You are marked as an owner or administrator for this quiz, so you can take this quiz as many times as you would like.', array('@quiz' => QUIZ_NAME));
           drupal_set_message($msg, 'status');
         }
         // If the user has already taken this quiz too many times, stop the user.
         elseif ($taken >= $this->quiz->takes) {
-          $msg = t('You have already taken this quiz @really. You may not take it again.', array('@really' => $taken_times));
+          $msg = t('You have already taken this @quiz @really. You may not take it again.', array('@quiz', QUIZ_NAME, '@really' => $taken_times));
           drupal_set_message($msg, 'error');
           return FALSE;
         }
         // If the user has taken the quiz more than once, see if we should report
         // this.
         elseif ($this->quiz->show_attempt_stats) {
-          $msg = t("You can only take this quiz @allowed. You have taken it @really.", array('@allowed' => $allowed_times, '@really' => $taken_times));
+          $msg = t("You can only take this @quiz @allowed. You have taken it @really.", array('@quiz' => QUIZ_NAME, '@allowed' => $allowed_times, '@really' => $taken_times));
           drupal_set_message($msg, 'status');
         }
       }

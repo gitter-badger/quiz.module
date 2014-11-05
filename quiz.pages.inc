@@ -249,7 +249,7 @@ function theme_quiz_progress($variables) {
  * @ingroup themeable
  */
 function theme_quiz_no_feedback() {
-  return t('Thanks for taking the quiz!');
+  return t('Thanks for taking the @quiz!', array('@quiz' => QUIZ_NAME));
 }
 
 /**

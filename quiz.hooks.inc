@@ -168,7 +168,7 @@ function quiz_action_info() {
 
   $actions['quiz_add_question_to_quiz'] = array(
       'type'             => 'node',
-      'label'            => t('Add questions to quiz'),
+      'label'            => t('Add questions to @quiz', array('@quiz' => QUIZ_NAME)),
       'configurable'     => FALSE,
       'vbo_configurable' => FALSE,
   );

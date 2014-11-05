@@ -15,7 +15,7 @@ class FeedbackHelper {
         'answer_feedback'   => 'Answer feedback',
         'question_feedback' => 'Question feedback',
         'solution'          => "Correct answer",
-        'quiz_feedback'     => "Quiz feedback",
+        'quiz_feedback'     => t('@quiz feedback', array('@quiz' => QUIZ_NAME)),
     );
 
     drupal_alter('quiz_feedback_options', $feedback_options);

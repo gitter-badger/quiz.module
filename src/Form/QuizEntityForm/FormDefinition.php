@@ -161,7 +161,7 @@ class FormDefinition extends FormHelper {
             t('Categorized random questions'),
         ),
         '#description'   => t('<strong>Random order</strong> - all questions display in random order')
-        . '<br/>' . t("<strong>Random questions</strong> - specific number of questions are drawn randomly from this Quiz's pool of questions")
+        . '<br/>' . t("<strong>Random questions</strong> - specific number of questions are drawn randomly from this @quiz's pool of questions", array('@quiz' => QUIZ_NAME))
         . '<br/>' . t('<strong>Categorized random questions</strong> - specific number of questions are drawn from each specified taxonomy term'),
         '#default_value' => $this->quiz->randomization,
     );
@@ -174,7 +174,8 @@ class FormDefinition extends FormHelper {
     );
 
     $review_options = quiz()->getQuizHelper()->getFeedbackHelper()->getOptions();
-    foreach (array('question' => 'After the question', 'end' => 'After the quiz') as $key => $when) {
+
+    foreach (array('question' => 'After the question', 'end' => t('After the @quiz', array('@quiz' => QUIZ_NAME))) as $key => $when) {
       $form['taking']['review_options'][$key] = array(
           '#title'         => $when,
           '#type'          => 'checkboxes',
@@ -196,13 +197,13 @@ class FormDefinition extends FormHelper {
         '#title'         => t('Allowed number of attempts'),
         '#default_value' => $this->quiz->takes,
         '#options'       => array(t('Unlimited')) + range(0, 10),
-        '#description'   => t('The number of times a user is allowed to take this @quiz. <strong>Anonymous users are only allowed to take quizzes that allow an unlimited number of attempts.</strong>', array('@quiz' => QUIZ_NAME)),
+        '#description'   => t('The number of times a user is allowed to take this @quiz. <strong>Anonymous users are only allowed to take @quiz that allow an unlimited number of attempts.</strong>', array('@quiz' => QUIZ_NAME)),
     );
     $form['taking']['multiple_takes']['show_attempt_stats'] = array(
         '#type'          => 'checkbox',
         '#title'         => t('Display allowed number of attempts'),
         '#default_value' => $this->quiz->show_attempt_stats,
-        '#description'   => t('Display the allowed number of attempts on the starting page for this quiz.'),
+        '#description'   => t('Display the allowed number of attempts on the starting page for this @quiz.', array('@quiz' => QUIZ_NAME)),
     );
 
     if (user_access('delete any quiz results') || user_access('delete results for own quiz')) {
@@ -308,7 +309,7 @@ class FormDefinition extends FormHelper {
         '#attributes'  => array('id' => 'summaryoptions-fieldset'),
         '#group'       => 'vtabs',
     );
-    
+
     // If pass/fail option is checked, present the form elements.
     if (variable_get('quiz_use_passfail', 1)) {
       $form['summaryoptions']['pass_rate'] = array(
@@ -392,14 +393,14 @@ class FormDefinition extends FormHelper {
         $form['resultoptions'][$i]['option_start'] = array(
             '#type'          => 'textfield',
             '#title'         => t('Percentage low'),
-            '#description'   => t('Show this result for scored quizzes in this range (0-100).'),
+            '#description'   => t('Show this result for scored @quiz in this range (0-100).', array('@quiz' => QUIZ_NAME)),
             '#default_value' => isset($option['option_start']) ? $option['option_start'] : '',
             '#size'          => 5,
         );
         $form['resultoptions'][$i]['option_end'] = array(
             '#type'          => 'textfield',
             '#title'         => t('Percentage high'),
-            '#description'   => t('Show this result for scored quizzes in this range (0-100).'),
+            '#description'   => t('Show this result for scored @quiz in this range (0-100).', array('@quiz' => QUIZ_NAME)),
             '#default_value' => isset($option['option_end']) ? $option['option_end'] : '',
             '#size'          => 5,
         );
@@ -425,14 +426,14 @@ class FormDefinition extends FormHelper {
     $form['remember_settings'] = array(
         '#type'        => 'checkbox',
         '#title'       => t('Remember my settings'),
-        '#description' => t('If this box is checked most of the quiz specific settings you have made will be remembered and will be everyone\'s default settings next time they create a quiz.'),
+        '#description' => t('If this box is checked most of the @quiz specific settings you have made will be remembered and will be your default settings next time you create a @quiz.', array('@quiz' => QUIZ_NAME)),
         '#weight'      => -15,
     );
 
     $form['remember_global'] = array(
         '#type'        => 'checkbox',
         '#title'       => t('Remember as global'),
-        '#description' => t('If this box is checked most of the quiz specific settings you have made will be remembered and will be everyone\'s default settings next time you create a quiz.'),
+        '#description' => t('If this box is checked most of the @quiz specific settings you have made will be remembered and will be everyone\'s default settings next time they create a @quiz.', array('@quiz' => QUIZ_NAME)),
         '#weight'      => -15,
         '#access'      => user_access('administer quiz configuration'),
     );

@@ -273,7 +273,7 @@ class FormSubmission extends QuestionHelper {
         ':vid' => userpoints_get_vid()))->fetchField();
     $variables = array(
         '@title' => $this->quiz->title,
-        '@quiz'  => variable_get('quiz_name', QUIZ_NAME),
+        '@quiz'  => QUIZ_NAME,
         '@time'  => date('l jS \of F Y h:i:s A'),
     );
     $params = array(

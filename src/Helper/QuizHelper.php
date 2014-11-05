@@ -740,7 +740,7 @@ class QuizHelper {
     global $user;
 
     if ($user->uid == 0 && $quiz->takes > 0) {
-      return t('This quiz only allows %num_attempts attempts. Anonymous users can only access quizzes that allows an unlimited number of attempts.', array('%num_attempts' => $quiz->takes));
+      return t('This @quiz only allows %num_attempts attempts. Anonymous users can only access quizzes that allows an unlimited number of attempts.', array('%num_attempts' => $quiz->takes, '@quiz' => QUIZ_NAME));
     }
 
     $user_is_admin = user_access('edit any quiz content') || (user_access('edit own quiz content') && $quiz->uid == $user->uid);
@@ -753,7 +753,7 @@ class QuizHelper {
     $now = REQUEST_TIME;
 
     if ($now >= $quiz->quiz_close || $now < $quiz->quiz_open) {
-      return t('This quiz is closed.');
+      return t('This @quiz is closed.', array('@quiz' => QUIZ_NAME));
     }
     return TRUE;
   }
