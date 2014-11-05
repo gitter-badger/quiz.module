@@ -171,12 +171,12 @@ function quiz_question_revision_actions_submit($form, &$form_state) {
     //
     // If we are to revise the quiz we need to do that first...
     if ($revise == '1') {
-      $quiz = quiz_entity_single_load((int) $qid, (int) $vid);
+      $quiz = quiz_load((int) $qid, (int) $vid);
       $quiz->is_new_revision = 1;
     }
 
     if (!isset($quiz) && $publish != $published) {
-      $quiz = quiz_entity_single_load((int) $qid, (int) $vid);
+      $quiz = quiz_load((int) $qid, (int) $vid);
     }
 
     // If the quiz entity is to be revised and/or (un)published we save it now

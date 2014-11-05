@@ -19,7 +19,7 @@ class QuizUiController extends EntityDefaultUIController {
   }
 
   private function addQuizCRUDItems(&$items) {
-    $items['quiz/%quiz_entity_single'] = array(
+    $items['quiz/%quiz'] = array(
         'title callback'   => 'entity_class_label',
         'title arguments'  => array(1),
         'access callback'  => 'quiz_entity_access_callback',
@@ -28,7 +28,7 @@ class QuizUiController extends EntityDefaultUIController {
         'page arguments'   => array(1),
     );
 
-    $items['quiz/%quiz_entity_single/view'] = array(
+    $items['quiz/%quiz/view'] = array(
         'title'  => 'View',
         'type'   => MENU_DEFAULT_LOCAL_TASK,
         'weight' => -10,

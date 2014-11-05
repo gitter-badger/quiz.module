@@ -123,7 +123,7 @@ function quiz_jumper_form($form, $form_state, $questions, $current) {
 }
 
 function quiz_jumper_form_submit($form, &$form_state) {
-  $quiz = quiz_entity_single_load(__quiz_get_context_id());
+  $quiz = quiz_load(__quiz_get_context_id());
   quiz()
     ->getQuizHelper()
     ->getQuestionHelper()

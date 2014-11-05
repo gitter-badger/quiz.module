@@ -103,7 +103,7 @@ function quiz_type_load($name) {
  *
  * @return \Drupal\quiz\Entity\QuizEntity
  */
-function quiz_entity_single_load($id = NULL, $vid = NULL, $reset = FALSE) {
+function quiz_load($id = NULL, $vid = NULL, $reset = FALSE) {
   if (NULL === $vid) {
     return entity_load_single('quiz_entity', $id);
   }
@@ -170,7 +170,7 @@ function quiz_result_answer_load($result_id, $question_nid, $question_vid) {
  * Action to add questions to the current quiz.
  */
 function quiz_add_question_to_quiz($question) {
-  $quiz = quiz_entity_single_load(__quiz_get_context_id());
+  $quiz = quiz_load(__quiz_get_context_id());
   return quiz()->getQuizHelper()->addQuestion($quiz, $question);
 }
 

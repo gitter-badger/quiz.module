@@ -551,7 +551,7 @@ function quiz_update_7511() {
 function _quiz_update_7511($row) {
   // find quiz revision
   if ($quiz_id = db_query('SELECT qid FROM {quiz_entity} WHERE node_nid = :nid', array(':nid' => $row->nid))) {
-    $quiz = quiz_entity_single_load($quiz_id);
+    $quiz = quiz_load($quiz_id);
   }
   else {
     $quiz = entity_create('quiz_entity', array(
@@ -609,7 +609,7 @@ function quiz_update_7512() {
 function _quiz_update_7512($quiz_node, $field_names) {
   $sql = 'SELECT vid FROM {quiz_entity_revision} WHERE node_vid = :vid';
   if ($quiz_vid = db_query($sql, array(':vid' => $quiz_node->vid))->fetchColumn()) {
-    $quiz = quiz_entity_single_load(NULL, $quiz_vid);
+    $quiz = quiz_load(NULL, $quiz_vid);
     foreach ($field_names as $field_name) {
       if (empty($quiz_node->{$field_name})) {
         continue;

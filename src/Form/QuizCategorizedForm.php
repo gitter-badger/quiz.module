@@ -166,7 +166,7 @@ class QuizCategorizedForm extends BaseForm {
    * Submit the categorized form
    */
   public function formSubmit($form, $form_state) {
-    $quiz = quiz_entity_single_load($form_state['values']['qid'], $form_state['values']['vid']);
+    $quiz = quiz_load($form_state['values']['qid'], $form_state['values']['vid']);
     $quiz->number_of_random_questions = 0;
 
     // Update the refresh latest quizzes table so that we know what the users latest quizzes are

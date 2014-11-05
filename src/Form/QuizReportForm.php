@@ -38,7 +38,7 @@ class QuizReportForm {
 
     if (arg(4) === 'feedback') {
       // @todo figure something better than args.
-      $quiz = quiz_entity_single_load(__quiz_get_context_id());
+      $quiz = quiz_load(__quiz_get_context_id());
       $quiz_id = $quiz->qid;
       if (empty($_SESSION['quiz'][$quiz_id])) { // Quiz is done.
         $form['finish'] = array('#type' => 'submit', '#value' => t('Finish'));
@@ -98,7 +98,7 @@ class QuizReportForm {
           'SELECT quiz_qid, quiz_vid, uid FROM {quiz_results} WHERE result_id = :result_id', array(
             ':result_id' => $q_values['result_id']
           ))->fetchObject();
-        $quiz = quiz_entity_single_load($result->quiz_qid, $result->quiz_vid);
+        $quiz = quiz_load($result->quiz_qid, $result->quiz_vid);
         $result_id = $q_values['result_id'];
       }
 
@@ -206,7 +206,7 @@ class QuizReportForm {
       ->addExpression('SUM(a.points_awarded)');
 
     $score = $subq1->execute()->fetchField();
-    $max_score = quiz_entity_single_load(NULL, $quiz_vid)->max_score;
+    $max_score = quiz_load(NULL, $quiz_vid)->max_score;
     $final_score = round(100 * ($score / $max_score));
 
     db_update('quiz_results')

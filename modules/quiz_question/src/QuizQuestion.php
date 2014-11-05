@@ -312,7 +312,7 @@ abstract class QuizQuestion {
    * Element validator (for repeat until correct).
    */
   public static function elementValidate(&$element, &$form_state) {
-    $quiz = quiz_entity_single_load(__quiz_get_context_id());
+    $quiz = quiz_load(__quiz_get_context_id());
 
     $question_nid = $element['#array_parents'][1];
     $answer = $form_state['values']['question'][$question_nid];
@@ -359,7 +359,7 @@ abstract class QuizQuestion {
   function saveRelationships() {
     if (!empty($this->node->quiz_qid) && !empty($this->node->quiz_vid)) {
       /* @var $quiz QuizEntity */
-      $quiz = quiz_entity_single_load($this->node->quiz_qid, $this->node->quiz_vid);
+      $quiz = quiz_load($this->node->quiz_qid, $this->node->quiz_vid);
       $quiz_id = $quiz->qid;
       $ids[0] = $quiz_id;
       $ids[1] = $quiz->vid;

@@ -59,7 +59,7 @@ class Result extends Entity {
       return TRUE;
     }
 
-    if ($quiz = quiz_entity_single_load(NULL, $this->quiz_vid)) {
+    if ($quiz = quiz_load(NULL, $this->quiz_vid)) {
       return user_access('score own quiz', $account) && ($quiz->uid == $account->uid);
     }
 

@@ -11,7 +11,7 @@ function quiz_quiztake_page_manager_tasks() {
       'task type'                => 'page',
       'title'                    => t('Take @quiz', array('@quiz' => QUIZ_NAME)),
       'admin title'              => t('The take page for @quiz.', array('@quiz' => QUIZ_NAME)),
-      'admin description'        => t('When enabled, this overrides the default view at quiz/%quiz_entity_single/take'),
+      'admin description'        => t('When enabled, this overrides the default view at quiz/%quiz/take'),
       'admin path'               => 'node/%node/take',
       // Menu hooks so that we can alter the node/%node menu entry to point to us.
       'hook menu alter'          => 'quiz_quiztake_menu_alter',

@@ -17,7 +17,7 @@ class QuizResultController extends QuizResultBaseController {
    */
   public static function staticCallback($quiz, $result_id) {
     $result = quiz_result_load($result_id);
-    $quiz_revision = quiz_entity_single_load($quiz->qid, $result->vid);
+    $quiz_revision = quiz_load($quiz->qid, $result->vid);
     $obj = new static($quiz, $quiz_revision, $result);
     return $obj->render();
   }
