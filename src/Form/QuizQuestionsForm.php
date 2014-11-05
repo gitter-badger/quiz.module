@@ -389,7 +389,7 @@ class QuizQuestionsForm extends BaseForm {
    */
   public function formSubmit($form, &$form_state) {
     /* @var $quiz QuizEntity */
-    $quiz = 'node' === arg(0) ? node_load(arg(1)) : quiz_load(arg(1));
+    $quiz = quiz_load(__quiz_get_context_id());
 
     // Update the refresh latest quizzes table so that we know what the users latest quizzes are
     if (variable_get('quiz_auto_revisioning', 1)) {
