@@ -109,7 +109,7 @@ class QuizTakeController extends QuizTakeLegacyController {
    *   Return quiz_results result_id, or FALSE if there is an error.
    */
   private function checkAvailability() {
-    $user_is_admin = user_access('edit any quiz content') || (user_access('edit own quiz content') && $this->quiz->uid == $this->account->uid);
+    $user_is_admin = entity_access('update', 'quiz_entity', $this->quiz);
 
     // Make sure this is available.
     if ($this->quiz->quiz_always != 1) {

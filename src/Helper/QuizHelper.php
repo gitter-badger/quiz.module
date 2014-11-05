@@ -743,7 +743,8 @@ class QuizHelper {
       return t('This @quiz only allows %num_attempts attempts. Anonymous users can only access quizzes that allows an unlimited number of attempts.', array('%num_attempts' => $quiz->takes, '@quiz' => QUIZ_NAME));
     }
 
-    $user_is_admin = user_access('edit any quiz content') || (user_access('edit own quiz content') && $quiz->uid == $user->uid);
+    $user_is_admin = entity_access('update', 'quiz_entity', $quiz);
+
     if ($user_is_admin || $quiz->quiz_always == 1) {
       return TRUE;
     }
