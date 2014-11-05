@@ -94,21 +94,6 @@ class QuizHelper {
   }
 
   /**
-   * Returns the titles for all quizzes the user has access to.
-   *
-   * @return quizzes
-   *   Array with nids as keys and titles as values.
-   */
-  public function getAllTitles() {
-    return db_select('node', 'n')
-        ->fields('n', array('nid', 'title'))
-        ->condition('n.type', 'quiz')
-        ->addTag('node_access')
-        ->execute()
-        ->fetchAllKeyed();
-  }
-
-  /**
    * @param QuizEntity $quiz
    * @param stdClass $question
    */
