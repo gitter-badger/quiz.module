@@ -1,4 +1,4 @@
-Quiz.module [![Build Status](https://travis-ci.org/v3kwip/quiz.svg?branch=dev-master)](https://travis-ci.org/v3kwip/quiz)
+Quiz.module [![Build Status](https://travis-ci.org/andytruong/quiz.svg?branch=quiz-entity)](https://travis-ci.org/andytruong/quiz)
 ====
 
 Overview
