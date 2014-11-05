@@ -64,7 +64,7 @@ class QuizEntityForm {
 
     // Use would like remembering settings
     if (!empty($form_state['values']['remember_settings']) || !empty($form_state['values']['remember_global'])) {
-      entity_get_controller('quiz_entity')->getSettingIO()->updateUserDefaultSettings($quiz);
+      quiz_controller()->getSettingIO()->updateUserDefaultSettings($quiz);
     }
 
     if ('admin' === arg(0)) {

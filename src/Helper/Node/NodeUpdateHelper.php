@@ -14,7 +14,7 @@ class NodeUpdateHelper extends NodeHelper {
     }
 
     $this->presaveActions($quiz);
-    entity_get_controller('quiz_entity')->getSettingIO()->updateUserDefaultSettings($quiz);
+    quiz_controller()->getSettingIO()->updateUserDefaultSettings($quiz);
 
     $this->checkNumRandom($quiz);
     $this->checkNumAlways($quiz);

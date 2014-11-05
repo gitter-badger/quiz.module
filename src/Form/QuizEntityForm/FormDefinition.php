@@ -18,7 +18,7 @@ class FormDefinition extends FormHelper {
       $msg = t('You are making your first @quiz. On this page you set the attributes, most of which you may tell the system to remember as defaults for the future. On the next screen you can add questions.', array('@quiz' => QUIZ_NAME));
       drupal_set_message($msg);
 
-      foreach (entity_get_controller('quiz_entity')->getSettingIO()->getUserDefaultSettings() as $k => $v) {
+      foreach (quiz_controller()->getSettingIO()->getUserDefaultSettings() as $k => $v) {
         if (!isset($this->quiz->{$k}) || is_null($this->quiz->{$k})) {
           $this->quiz->{$k} = $v;
         }

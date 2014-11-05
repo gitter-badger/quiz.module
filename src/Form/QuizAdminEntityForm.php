@@ -8,7 +8,7 @@ class QuizAdminEntityForm {
 
   public function getForm($form, $form_state) {
     // basic form
-    $dummy_quiz = entity_get_controller('quiz_entity')->getSettingIO()->getSystemDefaultSettings(FALSE);
+    $dummy_quiz = quiz_controller()->getSettingIO()->getSystemDefaultSettings(FALSE);
     $entity_form = new QuizEntityForm($dummy_quiz);
     $form = $entity_form->get($form, $form_state, 'add');
 
@@ -59,7 +59,7 @@ class QuizAdminEntityForm {
         'remember_global'   => 1,
       ) + $form_state['values']);
 
-    entity_get_controller('quiz_entity')->getSettingIO()->updateUserDefaultSettings($quiz);
+    quiz_controller()->getSettingIO()->updateUserDefaultSettings($quiz);
     $form_state['quiz'] = $quiz;
   }
 

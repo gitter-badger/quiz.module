@@ -61,6 +61,15 @@ function quiz($className = 'Drupal\quiz\Quiz') {
 }
 
 /**
+ * Get controller for quiz entity.
+ *
+ * @return \Drupal\quiz\Entity\QuizEntityController
+ */
+function quiz_controller() {
+  return entity_get_controller('quiz_entity');
+}
+
+/**
  * Gets an array of all quiz types, keyed by the type name.
  *
  * @return \Drupal\quiz\Entity\QuizEntityType[]

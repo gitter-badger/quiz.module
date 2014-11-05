@@ -63,7 +63,7 @@ class QuizEntity extends Entity {
     }
 
     // Default properties
-    foreach (entity_get_controller('quiz_entity')->getSettingIO()->getQuizDefaultSettings() as $k => $v) {
+    foreach (quiz_controller()->getSettingIO()->getQuizDefaultSettings() as $k => $v) {
       if (!isset($this->{$k})) {
         $this->{$k} = $v;
       }
