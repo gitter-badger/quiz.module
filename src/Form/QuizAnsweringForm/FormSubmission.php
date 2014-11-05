@@ -288,4 +288,9 @@ class FormSubmission extends QuestionHelper {
     userpoints_userpointsapi($params);
   }
 
+  private function getCurrentPageNumber(QuizEntity $quiz) {
+    $id = $quiz->qid;
+    return isset($_SESSION['quiz'][$id]['current']) ? $_SESSION['quiz'][$id]['current'] : 1;
+  }
+
 }
