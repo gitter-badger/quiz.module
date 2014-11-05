@@ -154,24 +154,31 @@ class QuizHelper {
     }
 
     foreach ($questions as $question) {
-      if ($question->state != QUESTION_NEVER) {
-        $question_inserts[$question->qr_id] = array(
-            'quiz_qid'              => $quiz->qid,
-            'quiz_vid'              => $quiz->vid,
-            'question_nid'          => $question->nid,
-            // Update to latest OR use the version given.
-            'question_vid'          => $question->refresh ? db_query('SELECT vid FROM {node} WHERE nid = :nid', array(
-                  ':nid' => $question->nid))->fetchField() : $question->vid,
-            'question_status'       => $question->state,
-            'weight'                => $question->weight,
-            'max_score'             => (int) $question->max_score,
-            'auto_update_max_score' => (int) $question->auto_update_max_score,
-            'qr_pid'                => $question->qr_pid,
-            'qr_id'                 => !$set_new_revision ? $question->qr_id : NULL,
-            'old_qr_id'             => $question->qr_id,
-        );
-        drupal_write_record('quiz_relationship', $question_inserts[$question->qr_id]);
+      if ($question->state == QUESTION_NEVER) {
+        continue;
       }
+
+      // Update to latest OR use the version given.
+      $question_vid = $question->vid;
+      if ($question->refresh) {
+        $question_vid = db_query('SELECT vid FROM {node} WHERE nid = :nid', array(
+            ':nid' => $question->nid))->fetchField();
+      }
+
+      $question_inserts[$question->qr_id] = array(
+          'quiz_qid'              => $quiz->qid,
+          'quiz_vid'              => $quiz->vid,
+          'question_nid'          => $question->nid,
+          'question_vid'          => $question_vid,
+          'question_status'       => $question->state,
+          'weight'                => $question->weight,
+          'max_score'             => (int) $question->max_score,
+          'auto_update_max_score' => (int) $question->auto_update_max_score,
+          'qr_pid'                => $question->qr_pid,
+          'qr_id'                 => !$set_new_revision ? $question->qr_id : NULL,
+          'old_qr_id'             => $question->qr_id,
+      );
+      drupal_write_record('quiz_relationship', $question_inserts[$question->qr_id]);
     }
 
     // Update the parentage when a new revision is created.
