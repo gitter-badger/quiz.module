@@ -314,15 +314,6 @@ function quiz_quiz_scored($quiz, $score, $result_id) {
 // ---------------------
 
 /**
- * Shortcut to entity_load_single().
- *
- * @return \Drupal\quiz\Entity\Result
- */
-function quiz_result_load($result_id) {
-  return entity_load_single('quiz_result', $result_id);
-}
-
-/**
  * Workaround for menu_translate bug.
  */
 function question_number_to_arg() {
