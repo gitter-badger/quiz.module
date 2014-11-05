@@ -8,6 +8,16 @@ use stdClass;
 
 class QuizEntityController extends EntityAPIController {
 
+  /** @var \Drupal\quiz\Entity\QuizEntity\DefaultPropertiesIO */
+  private $default_properties_io;
+
+  public function getSettingIO() {
+    if (NULL === $this->default_properties_io) {
+      $this->default_properties_io = new \Drupal\quiz\Entity\QuizEntity\DefaultPropertiesIO();
+    }
+    return $this->default_properties_io;
+  }
+
   /**
    * @param QuizEntity $quiz
    */

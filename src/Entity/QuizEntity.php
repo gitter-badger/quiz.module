@@ -42,6 +42,8 @@ class QuizEntity extends Entity {
 
   /** @var string Revision log */
   public $log;
+
+  /** @var \Drupal\quiz\Entity\QuizEntity\QuestionLoader */
   private $question_loader;
 
   public function __construct(array $values = array()) {
@@ -61,7 +63,7 @@ class QuizEntity extends Entity {
     }
 
     // Default properties
-    foreach (quiz()->getQuizHelper()->getSettingHelper()->getQuizDefaultSettings() as $k => $v) {
+    foreach (entity_get_controller('quiz_entity')->getSettingIO()->getQuizDefaultSettings() as $k => $v) {
       if (!isset($this->{$k})) {
         $this->{$k} = $v;
       }

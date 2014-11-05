@@ -8,7 +8,7 @@ class QuizAdminEntityForm {
 
   public function getForm($form, $form_state) {
     // basic form
-    $dummy_quiz = quiz()->getQuizHelper()->getSettingHelper()->getSystemDefaultSettings(FALSE);
+    $dummy_quiz = entity_get_controller('quiz_entity')->getSettingIO()->getSystemDefaultSettings(FALSE);
     $entity_form = new QuizEntityForm($dummy_quiz);
     $form = $entity_form->get($form, $form_state, 'add');
 
