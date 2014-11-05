@@ -3,6 +3,7 @@
 use Drupal\quiz\Controller\Admin\QuizAdminSettingsController;
 use Drupal\quiz\Entity\QuizEntity;
 use Drupal\quiz\Form\QuizAdminEntityForm;
+use Drupal\quiz\Form\QuizAnsweringForm;
 use Drupal\quiz\Form\QuizCategorizedForm;
 use Drupal\quiz\Form\QuizEntityForm;
 use Drupal\quiz\Form\QuizQuestionsForm;
@@ -128,6 +129,13 @@ function quiz_jumper_form_submit($form, &$form_state) {
               ->redirect($quiz, $form_state['values']['question_number'] - 1);
             $form_state['redirect'] = "quiz/" . $quiz->qid . "/take/" . $form_state['values']['question_number'];
 }
+
+function quiz_answer_form($form, $form_state, $quiz, $question, $page_number, $result) {
+  $controller = new QuizAnsweringForm($quiz, $question, $page_number, $result);
+  if (is_array($question) || ($question->type !== 'quiz_page')) {
+    return $controller->getForm($form, $form_state, is_array($question) ? $question : array($question));
+  }
+  return $controller->getForm($form, $form_state, QuizAnsweringForm::findPageQuestions($result, $question));
 }
 
 /**
