@@ -111,10 +111,10 @@ class FormSubmission extends TakingHelper {
         $qi_instance = _quiz_question_response_get_instance($this->result->result_id, $_question, $_answer);
         $qi_instance->delete();
         $qi_instance->saveResult();
-        $result = $qi_instance->toBareObject();
+        $response = $qi_instance->toBareObject();
         quiz()
           ->getQuizHelper()
-          ->saveQuestionResult($this->quiz, $result, array('set_msg' => TRUE, 'question_data' => $question_array));
+          ->saveQuestionResult($this->quiz, $response, array('set_msg' => TRUE, 'question_data' => $question_array));
 
         // Increment the counter.
         $this->redirect($this->quiz, $this->result->getNextPageNumber($this->page_number));
@@ -185,10 +185,10 @@ class FormSubmission extends TakingHelper {
       if (!$answer = quiz_result_answer_load($this->result->result_id, $qinfo['nid'], $qinfo['vid'])) {
         $qi_instance = _quiz_question_response_get_instance($this->result->result_id, $current_question, NULL);
         $qi_instance->delete();
-        $bare_object = $qi_instance->toBareObject();
+        $response = $qi_instance->toBareObject();
         quiz()
           ->getQuizHelper()
-          ->saveQuestionResult($this->quiz, $bare_object, array('set_msg' => TRUE, 'question_data' => $question_array));
+          ->saveQuestionResult($this->quiz, $response, array('set_msg' => TRUE, 'question_data' => $question_array));
       }
     }
 

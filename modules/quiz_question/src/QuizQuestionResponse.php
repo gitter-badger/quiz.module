@@ -144,8 +144,8 @@ abstract class QuizQuestionResponse {
   function toBareObject() {
     $result = new stdClass();
     $result->score = $this->getScore(); // This can be 0 for unscored.
-    $result->quiz_qid = $this->question->nid;
-    $result->quiz_vid = $this->question->vid;
+    $result->question_nid = $this->question->nid;
+    $result->question_vid = $this->question->vid;
     $result->result_id = $this->result_id;
     $result->is_correct = (int) $this->isCorrect();
     $result->is_evaluated = $this->isEvaluated();

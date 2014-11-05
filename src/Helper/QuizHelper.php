@@ -245,104 +245,96 @@ class QuizHelper {
    *
    * @param $quiz
    *  The quiz entity
-   * @param $result
+   * @param $response
    *  Object with data about the result for a question.
    * @param $options
    *  Array with options that affect the behavior of this function.
    *  ['set_msg'] - Sets a message if the last question was skipped.
    */
-  public function saveQuestionResult($quiz, $result, $options) {
-    if (isset($result->is_skipped) && $result->is_skipped == TRUE) {
+  public function saveQuestionResult(\Drupal\quiz\Entity\QuizEntity $quiz, $response, $options) {
+    if (isset($response->is_skipped) && $response->is_skipped == TRUE) {
       if ($options['set_msg']) {
         drupal_set_message(t('Last question skipped.'), 'status');
       }
-      $result->is_correct = FALSE;
-      $result->score = 0;
+      $response->is_correct = FALSE;
+      $response->score = 0;
     }
     else {
       // Make sure this is set.
-      $result->is_skipped = FALSE;
+      $response->is_skipped = FALSE;
     }
-    if (!isset($result->score)) {
-      $result->score = $result->is_correct ? 1 : 0;
+    if (!isset($response->score)) {
+      $response->score = $response->is_correct ? 1 : 0;
     }
 
     // Points are stored pre-scaled in the quiz_results_answers table. We get the scale.
+    $ssql = '(SELECT max_score FROM {quiz_question_properties} WHERE nid = :question_nid AND vid = :question_vid)';
     if ($quiz->randomization < 2) {
       $scale = db_query("
-        SELECT (max_score / (
-              SELECT max_score FROM {quiz_question_properties} WHERE nid = :nid AND vid = :vid
-            )) as scale
-            FROM {quiz_relationship}
-            WHERE quiz_qid = :quiz_qid
+          SELECT (max_score/{$ssql}) as scale
+          FROM {quiz_relationship}
+          WHERE quiz_qid = :quiz_qid
             AND quiz_vid = :quiz_vid
             AND question_nid = :question_nid
             AND question_vid = :question_vid", array(
-          ':nid'          => $result->quiz_qid,
-          ':vid'          => $result->quiz_vid,
           ':quiz_qid'     => $quiz->qid,
           ':quiz_vid'     => $quiz->vid,
-          ':question_nid' => $result->quiz_qid,
-          ':question_vid' => $result->quiz_vid
+          ':question_nid' => $response->question_nid,
+          ':question_vid' => $response->question_vid
         ))->fetchField();
     }
     elseif ($quiz->randomization == 2) {
       $scale = db_query("
-          SELECT
-            (max_score_for_random /
-              (SELECT max_score FROM {quiz_question_properties} WHERE nid = :question_nid AND vid = :question_vid)
-            ) as scale
+          SELECT (max_score_for_random/{$ssql}) as scale
           FROM {quiz_entity_revision}
           WHERE vid = :quiz_vid", array(
-          ':question_nid' => $result->quiz_qid,
-          ':question_vid' => $result->quiz_vid,
+          ':question_nid' => $response->question_nid,
+          ':question_vid' => $response->question_vid,
           ':quiz_vid'     => $quiz->vid
         ))->fetchField();
     }
     elseif ($quiz->randomization == 3) {
       if (isset($options['question_data']['tid'])) {
-        $result->tid = $options['question_data']['tid'];
+        $response->tid = $options['question_data']['tid'];
       }
       $scale = db_query("
-          SELECT
-            (max_score /
-              (SELECT max_score FROM {quiz_question_properties} WHERE nid = :nid AND vid = :vid)
-            ) as scale
+          SELECT (max_score/{$ssql}) as scale
           FROM {quiz_terms} WHERE vid = :vid AND tid = :tid", array(
-          ':nid' => $result->quiz_qid,
-          ':vid' => $result->quiz_vid,
-          ':vid' => $quiz->vid,
-          ':tid' => $result->tid
+          ':question_nid' => $response->question_nid,
+          ':question_vid' => $response->question_vid,
+          ':vid'          => $quiz->vid,
+          ':tid'          => $response->tid
         ))->fetchField();
     }
-    $points = round($result->score * $scale);
 
     // Insert result data, or update existing data.
-    $result_answer_id = db_query("SELECT result_answer_id
+    $answer = (object) array(
+          'result_answer_id' => $this->findAnswerId($response),
+          'question_nid'     => $response->question_nid,
+          'question_vid'     => $response->question_vid,
+          'result_id'        => $response->result_id,
+          'is_correct'       => (int) $response->is_correct,
+          'points_awarded'   => round($response->score * $scale),
+          'answer_timestamp' => REQUEST_TIME,
+          'is_skipped'       => (int) $response->is_skipped,
+          'is_doubtful'      => (int) $response->is_doubtful,
+          'number'           => $options['question_data']['number'],
+          'tid'              => ($quiz->randomization == 3 && $response->tid) ? $response->tid : 0,
+    );
+
+    entity_save('quiz_result_answer', $answer);
+  }
+
+  private function findAnswerId($response) {
+    return db_query("SELECT result_answer_id
         FROM {quiz_results_answers}
         WHERE question_nid = :question_nid
           AND question_vid = :question_vid
           AND result_id = :result_id", array(
-        ':question_nid' => $result->quiz_qid,
-        ':question_vid' => $result->quiz_vid,
-        ':result_id'    => $result->result_id
+          ':question_nid' => $response->question_nid,
+          ':question_vid' => $response->question_vid,
+          ':result_id'    => $response->result_id
       ))->fetchField();
-
-    $answer = (object) array(
-          'result_answer_id' => $result_answer_id,
-          'question_nid'     => $result->quiz_qid,
-          'question_vid'     => $result->quiz_vid,
-          'result_id'        => $result->result_id,
-          'is_correct'       => (int) $result->is_correct,
-          'points_awarded'   => $points,
-          'answer_timestamp' => REQUEST_TIME,
-          'is_skipped'       => (int) $result->is_skipped,
-          'is_doubtful'      => (int) $result->is_doubtful,
-          'number'           => $options['question_data']['number'],
-          'tid'              => ($quiz->randomization == 3 && $result->tid) ? $result->tid : 0,
-    );
-
-    entity_save('quiz_result_answer', $answer);
   }
 
   /**
