@@ -316,14 +316,15 @@ class QuizQuestionsForm extends BaseForm {
    * Validate that the supplied questions are real.
    */
   public function formValidate($form, $form_state) {
-    if (_quiz_is_int(arg(1))) {
-      if (node_last_changed(intval(arg(1))) > $form_state['values']['timestamp']) {
-        form_set_error('changed', t('This content has been modified by another user, changes cannot be saved.'));
-      }
-    }
-    else {
-      form_set_error('changed', t('A critical error has occured. Please report error code 28 on the quiz project page.'));
+    if (!$quiz = quiz_entity_single_load(__quiz_get_context_id())) {
+      $msg = t('A critical error has occured. Please report error code 28 on the quiz project page.');
+      form_set_error('changed', $msg);
       return;
+    }
+
+    if ($quiz->changed > $form_state['values']['timestamp']) {
+      $msg = t('This content has been modified by another user, changes cannot be saved.');
+      form_set_error('changed', $msg);
     }
 
     $already_checked = array();
