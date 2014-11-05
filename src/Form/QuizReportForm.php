@@ -33,11 +33,7 @@ class QuizReportForm {
 
     // The submit button is only shown if one or more of the questions has input elements
     if (!empty($show_submit)) {
-      $form['submit'] = array(
-          '#type'   => 'submit',
-          '#submit' => array(array($this, 'formSubmit')),
-          '#value'  => t('Save score'),
-      );
+      $form['submit'] = array('#type' => 'submit', '#value' => t('Save score'));
     }
 
     if (arg(4) === 'feedback') {
