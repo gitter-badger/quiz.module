@@ -38,7 +38,7 @@ class Stats {
    *   Number of compulsory questions.
    */
   public function countAlwaysQuestions($quiz_vid) {
-    return db_query('SELECT COUNT(*)
+    return (int) db_query('SELECT COUNT(*)
       FROM {quiz_relationship} qnr
         JOIN {node} n ON n.nid = qnr.question_nid
       WHERE n.status = 1
@@ -50,25 +50,33 @@ class Stats {
   }
 
   /**
+   * Get the number of random questions for a quiz.
+   *
+   * @param int $quiz_vid
+   * @return int
+   */
+  public function countRandomQuestions($quiz_vid) {
+    return (int) db_query(
+        'SELECT number_of_random_questions'
+        . ' FROM {quiz_entity_revision}'
+        . ' WHERE vid = :vid', array(':vid' => $quiz_vid)
+      )->fetchField();
+  }
+
+  /**
    * Finds out the number of questions for the quiz.
    *
    * Good example of usage could be to calculate the % of score.
    *
    * @param int $quiz_vid
    *   Quiz version ID.
-   * @return
+   * @return int
    *   Returns the number of quiz questions.
    */
   public function countAllQuestions($quiz_vid) {
-    $counter = (int) db_query(# @TODO use countRandomQuestions() method
-        'SELECT number_of_random_questions'
-        . ' FROM {quiz_entity_revision}'
-        . ' WHERE vid = :vid', array(':vid' => $quiz_vid)
-      )->fetchField();
-
-    $counter += quiz_controller()->getStats()->countAlwaysQuestions($quiz_vid);
-
-    return $counter;
+    $count_random = $this->countRandomQuestions($quiz_vid);
+    $count_always += $this->countAlwaysQuestions($quiz_vid);
+    return $count_random + $count_always;
   }
 
 }
