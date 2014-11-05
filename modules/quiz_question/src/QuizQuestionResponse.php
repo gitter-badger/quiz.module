@@ -142,17 +142,17 @@ abstract class QuizQuestionResponse {
    * - $is_correct
    */
   function toBareObject() {
-    $result = new stdClass();
-    $result->score = $this->getScore(); // This can be 0 for unscored.
-    $result->question_nid = $this->question->nid;
-    $result->question_vid = $this->question->vid;
-    $result->result_id = $this->result_id;
-    $result->is_correct = (int) $this->isCorrect();
-    $result->is_evaluated = $this->isEvaluated();
-    $result->is_skipped = 0;
-    $result->is_doubtful = isset($_POST['is_doubtful']) ? (int) ($_POST['is_doubtful']) : 0;
-    $result->is_valid = $this->isValid();
-    return $result;
+    $response = new stdClass();
+    $response->score = $this->getScore(); // This can be 0 for unscored.
+    $response->question_nid = $this->question->nid;
+    $response->question_vid = $this->question->vid;
+    $response->result_id = $this->result_id;
+    $response->is_correct = (int) $this->isCorrect();
+    $response->is_evaluated = $this->isEvaluated();
+    $response->is_skipped = 0;
+    $response->is_doubtful = isset($_POST['is_doubtful']) ? (int) ($_POST['is_doubtful']) : 0;
+    $response->is_valid = $this->isValid();
+    return $response;
   }
 
   /**

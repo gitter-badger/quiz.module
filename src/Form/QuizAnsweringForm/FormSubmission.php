@@ -112,8 +112,8 @@ class FormSubmission extends TakingHelper {
         $qi_instance->delete();
         $qi_instance->saveResult();
         $response = $qi_instance->toBareObject();
-        quiz()
-          ->getQuizHelper()
+        quiz_result_controller()
+          ->getWriter()
           ->saveQuestionResult($this->quiz, $response, array('set_msg' => TRUE, 'question_data' => $question_array));
 
         // Increment the counter.
@@ -186,8 +186,8 @@ class FormSubmission extends TakingHelper {
         $qi_instance = _quiz_question_response_get_instance($this->result->result_id, $current_question, NULL);
         $qi_instance->delete();
         $response = $qi_instance->toBareObject();
-        quiz()
-          ->getQuizHelper()
+        quiz_result_controller()
+          ->getWriter()
           ->saveQuestionResult($this->quiz, $response, array('set_msg' => TRUE, 'question_data' => $question_array));
       }
     }

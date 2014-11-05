@@ -9,6 +9,16 @@ class ResultController extends EntityAPIController {
 
   private $score_calculator;
 
+  /** @var \Drupal\quiz\Entity\Result\Writer */
+  private $writer;
+
+  public function getWriter() {
+    if (NULL === $this->writer) {
+      $this->writer = new \Drupal\quiz\Entity\Result\Writer();
+    }
+    return $this->writer;
+  }
+
   /**
    * @return \Drupal\quiz\Entity\Result\ScoreCalculator
    */
