@@ -85,4 +85,27 @@ class QuizResultTestCase extends QuizTestCase {
     $this->assertText('This is the default summary text');
   }
 
+  /**
+   * Test access to results.
+   */
+  function testQuizResultAccess() {
+    $this->drupalLogin($this->admin);
+
+    $question_node = $this->drupalCreateNode(array('type' => 'truefalse', 'correct_answer' => 1));
+    $quiz = $this->linkQuestionToQuiz($question_node);
+
+    // Submit an answer.
+    $this->drupalLogin($this->user);
+    $this->drupalGet("quiz/$quiz->qid/take");
+    $this->drupalPost(NULL, array("question[$question_node->nid]" => 1), t('Finish'));
+
+    $resultsUrl = $this->getUrl();
+
+    $this->drupalGet($resultsUrl);
+    $this->assertResponse(200, t('User can view own result'));
+    $this->drupalLogout();
+    $this->drupalGet($resultsUrl);
+    $this->assertNoResponse(200, t('Anonymous user cannot view result'));
+  }
+
 }

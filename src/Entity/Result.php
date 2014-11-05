@@ -66,4 +66,22 @@ class Result extends Entity {
     return FALSE;
   }
 
+  /**
+   * Dtermine if a user has access to view a specific quiz result.
+   *
+   * @param \Drupal\quiz\Entity\Result|int $result
+   * @return boolean
+   *  True if access, false otherwise
+   */
+  public function canAccessOwnResult($account) {
+    // Check if the quiz taking has been completed.
+    if ($this->time_end > 0 && $this->uid == $account->uid) {
+      return TRUE;
+    }
+
+    if ($this->canAccessOwnScore($account)) {
+      return TRUE;
+    }
+  }
+
 }
