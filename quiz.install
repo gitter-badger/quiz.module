@@ -556,6 +556,7 @@ function _quiz_update_7511($row) {
   else {
     $quiz = entity_create('quiz_entity', array(
         'type'     => 'quiz',
+        'status'   => $row->status,
         'uid'      => $row->uid,
         'title'    => $row->title,
         'created'  => $row->created,
