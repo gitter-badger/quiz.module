@@ -162,9 +162,17 @@ class AccessHelper {
       return FALSE;
     }
 
-    // Enforce normal navigation.
-    // Previous answer was submitted or this is the first question.
-    return ($page_number == 1) || quiz_result_is_question_answered($result, $question_node_last);
+    // this is the first question.
+    if (1 == $page_number) {
+      return TRUE;
+    }
+
+    // Enforce normal navigation. Previous answer was submitted
+    if (quiz_result_is_question_answered($result, $question_node_last)) {
+      return FALSE;
+    }
+
+    return TRUE;
   }
 
   public function canTakeQuiz($quiz, $account) {
