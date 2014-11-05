@@ -118,10 +118,9 @@ class QuizHelper {
    * Sets the questions that are assigned to a quiz.
    *
    * @param \Drupal\quiz\Entity\QuizEntity $quiz
-   *   The quiz entity to modify.
-   * @param $questions
+   * @param \stdClass[] $questions
    *   An array of questions.
-   * @param $set_new_revision
+   * @param bool $set_new_revision
    *   If TRUE, a new revision will be generated. Note that saving
    *   quiz questions unmodified will still generate a new revision of the quiz if
    *   this is set to TRUE. Why? For a few reasons:
@@ -199,30 +198,27 @@ class QuizHelper {
   /**
    * Get a list of all available quizzes.
    *
-   * @param $uid
+   * @param int $uid
    *   An optional user ID. If supplied, only quizzes created by that user will be
    *   returned.
    *
    * @return
    *   A list of quizzes.
    */
-  public function getQuizzesByUserId($uid) {
-    $results = array();
-    $args = array();
-    $query = db_select('node', 'n')
-      ->fields('n', array('nid', 'vid', 'title', 'uid', 'created'))
-      ->fields('u', array('name'));
-    $query->leftJoin('users', 'u', 'u.uid = n.uid');
-    $query->condition('n.type', 'quiz');
-    if ($uid != 0) {
-      $query->condition('n.uid', $uid);
+  public function getQuizzesByUserId($uid = 0) {
+    $select = db_select('quiz_entity', 'quiz');
+    $select->leftJoin('users', 'u', 'u.uid = quiz.uid');
+
+    if ($uid) {
+      $select->condition('quiz.uid', $uid);
     }
-    $query->orderBy('n.nid');
-    $quizzes = $query->execute();
-    foreach ($quizzes as $quiz) {
-      $results[$quiz->qid] = (array) $quiz;
-    }
-    return $results;
+
+    return $select
+        ->fields('quiz', array('nid', 'vid', 'title', 'uid', 'created'))
+        ->fields('u', array('name'))
+        ->orderBy('quiz.qid')
+        ->execute()
+        ->fetchAllAssoc('qid');
   }
 
   /**
