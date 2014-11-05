@@ -150,10 +150,12 @@ class QuizUiController extends EntityDefaultUIController {
     // Define menu item structure for /quiz/%/take/%
     $items['quiz/%entity_object/take/%question_number'] = array(
         'load arguments'   => array('quiz_entity'),
-        'page callback'    => 'Drupal\quiz\Controller\QuizTakeQuestionController::staticCallback',
-        'page arguments'   => array(1, 3),
         'access callback'  => 'quiz_access_question',
         'access arguments' => array(1, 3),
+        'page callback'    => 'Drupal\quiz\Controller\QuizTakeQuestionController::staticCallback',
+        'page arguments'   => array(1, 3),
+        'file path'        => drupal_get_path('module', 'quiz'),
+        'file'             => 'quiz.pages.inc',
     );
 
     $items['quiz/%entity_object/take/%question_number/feedback'] = array(

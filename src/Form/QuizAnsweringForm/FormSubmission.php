@@ -90,7 +90,7 @@ class FormSubmission extends QuestionHelper {
    * There is no validation code here, but there may be feedback code for
    * correct feedback.
    */
-  public function formSubmit(&$form, &$form_state) {
+  public function formSubmit($form, &$form_state) {
     if ($time_reached = $this->quiz->time_limit && (REQUEST_TIME > ($this->result->time_start + $this->quiz->time_limit))) {
       // Too late.
       // @todo move to quiz_question_answering_form_validate(), and then put all

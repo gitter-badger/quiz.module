@@ -122,20 +122,59 @@ function quiz_jumper_form($form, $form_state, $questions, $current) {
 }
 
 function quiz_jumper_form_submit($form, &$form_state) {
-            $quiz = quiz_entity_single_load(__quiz_get_context_id());
-            quiz()
-              ->getQuizHelper()
-              ->getQuestionHelper()
-              ->redirect($quiz, $form_state['values']['question_number'] - 1);
-            $form_state['redirect'] = "quiz/" . $quiz->qid . "/take/" . $form_state['values']['question_number'];
+  $quiz = quiz_entity_single_load(__quiz_get_context_id());
+  quiz()
+    ->getQuizHelper()
+    ->getQuestionHelper()
+    ->redirect($quiz, $form_state['values']['question_number'] - 1);
+  $form_state['redirect'] = "quiz/" . $quiz->qid . "/take/" . $form_state['values']['question_number'];
 }
 
 function quiz_answer_form($form, $form_state, $quiz, $question, $page_number, $result) {
-  $controller = new QuizAnsweringForm($quiz, $question, $page_number, $result);
+  $obj = new QuizAnsweringForm($quiz, $question, $page_number, $result);
   if (is_array($question) || ($question->type !== 'quiz_page')) {
-    return $controller->getForm($form, $form_state, is_array($question) ? $question : array($question));
+    $f_array = $obj->getForm($form, $form_state, is_array($question) ? $question : array($question));
   }
-  return $controller->getForm($form, $form_state, QuizAnsweringForm::findPageQuestions($result, $question));
+  else {
+    $f_array = $obj->getForm($form, $form_state, QuizAnsweringForm::findPageQuestions($result, $question));
+  }
+  return $f_array;
+}
+
+function quiz_answer_form_validate($form, &$form_state) {
+  $quiz = $form['#quiz'];
+  $question = $form['#question'];
+  $page_number = $form['#page_number'];
+  $result = $form['#result'];
+  $obj = new QuizAnsweringForm($quiz, $question, $page_number, $result);
+  return $obj->formValidate($form, $form_state);
+}
+
+function quiz_answer_form_submit_back($form, &$form_state) {
+  $quiz = $form['#quiz'];
+  $question = $form['#question'];
+  $page_number = $form['#page_number'];
+  $result = $form['#result'];
+  $obj = new QuizAnsweringForm($quiz, $question, $page_number, $result);
+  return $obj->getSubmit()->formBackSubmit($form, $form_state);
+}
+
+function quiz_answer_form_submit_blank($form, &$form_state) {
+  $quiz = $form['#quiz'];
+  $question = $form['#question'];
+  $page_number = $form['#page_number'];
+  $result = $form['#result'];
+  $obj = new QuizAnsweringForm($quiz, $question, $page_number, $result);
+  return $obj->getSubmit()->formBlankSubmit($form, $form_state);
+}
+
+function quiz_answer_form_submit($form, &$form_state) {
+  $quiz = $form['#quiz'];
+  $question = $form['#question'];
+  $page_number = $form['#page_number'];
+  $result = $form['#result'];
+  $obj = new QuizAnsweringForm($quiz, $question, $page_number, $result);
+  return $obj->getSubmit()->formSubmit($form, $form_state);
 }
 
 /**

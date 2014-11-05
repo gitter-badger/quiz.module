@@ -4,7 +4,6 @@ namespace Drupal\quiz\Controller;
 
 use Drupal\quiz\Entity\QuizEntity;
 use Drupal\quiz\Helper\Quiz\QuestionHelper;
-use RuntimeException;
 
 class QuizTakeQuestionController extends QuestionHelper {
 
@@ -91,15 +90,13 @@ class QuizTakeQuestionController extends QuestionHelper {
       $this->attachJs($this->result->time_start + $this->quiz->time_limit - REQUEST_TIME);
     }
 
-    $form_id = 'Drupal\quiz\Form\QuizAnsweringForm::staticCallback';
-    $question_form = @drupal_get_form($form_id, $this->quiz, $this->question, $this->page_number, $this->result);
+    $question_form = drupal_get_form('quiz_answer_form', $this->quiz, $this->question, $this->page_number, $this->result);
     $content['body']['question']['#markup'] = drupal_render($question_form);
 
     return $content;
   }
 
   /**
-   * @todo Get rid of inline Javascript.
    * @param int $time
    */
   private function attachJs($time) {

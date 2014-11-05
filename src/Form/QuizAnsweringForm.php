@@ -31,32 +31,12 @@ class QuizAnsweringForm {
     $this->quiz_id = $quiz->qid;
   }
 
-  public function getSubmit() {
-    if (null === $this->submit) {
-      $this->submit = new FormSubmission($this->quiz, $this->result, $this->page_number);
-    }
-    return $this->submit;
-  }
-
-  public function setSubmit($submit) {
-    $this->submit = $submit;
-    return $this;
-  }
-
-  public static function staticCallback($form, &$form_state, $quiz, $question, $page_number, $result) {
-    $controller = new static($quiz, $question, $page_number, $result);
-    if (is_array($question) || ($question->type !== 'quiz_page')) {
-      return $controller->getForm($form, $form_state, is_array($question) ? $question : array($question));
-    }
-    return $controller->getForm($form, $form_state, static::findPageQuestions($result, $question));
-  }
-
   /**
    * Build question list in page.
    * @param stdClass $result
    * @param stdClass $page
    */
-  private static function findPageQuestions($result, $page) {
+  public static function findPageQuestions($result, $page) {
     $page_id = NULL;
     $questions = array(node_load($page->nid));
 
@@ -85,16 +65,22 @@ class QuizAnsweringForm {
    *   The result ID for this attempt.
    */
   public function getForm($form, &$form_state, $questions) {
-    // set validate callback
-    $form['#validate'][] = array($this, 'formValidate');
     $form['#attributes']['class'] = array('answering-form');
+
+    $form['#quiz'] = $this->quiz;
+    $form['#question'] = $this->question;
+    $form['#page_number'] = $this->page_number;
+    $form['#result'] = $this->result;
 
     foreach ($questions as $question) {
       $question = _quiz_question_get_instance($question);
       $this->buildQuestionItem($question, $form, $form_state);
     }
 
-    $this->buildSubmitButtons($form, $question->type !== 'quiz_directions');
+    // Build buttons
+    $allow_skipping = isset($question->type) ? $question->type !== 'quiz_directions' : $question->node->type;
+    $this->buildSubmitButtons($form, $allow_skipping);
+
     return $form;
   }
 
@@ -154,7 +140,7 @@ class QuizAnsweringForm {
           '#weight'                  => 10,
           '#type'                    => 'submit',
           '#value'                   => t('Back'),
-          '#submit'                  => array(array($this->getSubmit(), 'formBackSubmit')),
+          '#submit'                  => array('quiz_answer_form_submit_back'),
           '#limit_validation_errors' => array(),
       );
 
@@ -171,7 +157,7 @@ class QuizAnsweringForm {
         '#weight' => 30,
         '#type'   => 'submit',
         '#value'  => $is_last ? t('Finish') : t('Next'),
-        '#submit' => array(array($this->getSubmit(), 'formSubmit')),
+        '#submit' => array('quiz_answer_form_submit'),
     );
 
     // @TODO: Check this
@@ -180,7 +166,7 @@ class QuizAnsweringForm {
         '#type'                    => 'submit',
         '#value'                   => $is_last ? t('Leave blank and finish') : t('Leave blank'),
         '#access'                  => $allow_skipping,
-        '#submit'                  => array(array($this->getSubmit(), 'formBlankSubmit')),
+        '#submit'                  => array('quiz_answer_form_submit_blank'),
         '#limit_validation_errors' => array(),
         '#access'                  => $this->quiz->allow_skipping,
     );
@@ -197,13 +183,20 @@ class QuizAnsweringForm {
   /**
    * Validation callback for quiz question submit.
    */
-  function formValidate(&$form, &$form_state) {
+  public function formValidate(&$form, &$form_state) {
     foreach (array_keys($form_state['values']['question']) as $question_id) {
       if ($current_question = node_load($question_id)) {
         // There was an answer submitted.
         _quiz_question_get_instance($current_question)->getAnsweringFormValidate($form, $form_state);
       }
     }
+  }
+
+  public function getSubmit() {
+    if (null === $this->submit) {
+      $this->submit = new FormSubmission($this->quiz, $this->result, $this->page_number);
+    }
+    return $this->submit;
   }
 
 }
