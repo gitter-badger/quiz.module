@@ -185,20 +185,15 @@ function theme_date_vs_takeup_count($variables) {
   );
 
   $chart['line_data']['#data'] = array();
+
   $labels = array();
   foreach ($variables['takeup'] as $point) {
     $chart['line_data']['#data'][] = (int) $point->count;
     $labels[] = $point->date;
   }
 
-  $chart['xaxis'] = array(
-      '#type'   => 'chart_xaxis',
-      '#labels' => $labels,
-  );
-  $chart['yaxis'] = array(
-      '#title' => 'Participants',
-      '#type'  => 'chart_yaxis',
-  );
+  $chart['xaxis'] = array('#type' => 'chart_xaxis', '#labels' => $labels);
+  $chart['yaxis'] = array('#title' => 'Participants', '#type' => 'chart_yaxis');
   return drupal_render($chart);
 }
 
@@ -216,11 +211,7 @@ function theme_quiz_stats_get_basic_stats($variables) {
     return '<p>' . t('No questions were found.') . '</p>';
   }
   $rows = array();
-  $header = array(
-      'title'   => t('Quiz'),
-      'creator' => t('Author'),
-      'created' => t('Created'),
-  );
+  $header = array('title' => t('Quiz'), 'creator' => t('Author'), 'created' => t('Created'));
   if (user_access('access author stats')) {
     $header['questions_count'] = t('Questions');
     $header['attempt_count'] = t('Attempts');
@@ -228,7 +219,7 @@ function theme_quiz_stats_get_basic_stats($variables) {
   $p = drupal_get_path('module', 'quiz_stats');
   $chart_icon = theme('image', array('path' => "$p/chart.png", 'width' => t('Charts'), 'height' => t('See charts')));
   foreach ($results as $result) {
-    $title_link = user_access('access author stats') ? 'node/' . $result['nid'] . '/quiz/statistics' : 'user/' . arg(1) . '/stats/';
+    $title_link = user_access('access author stats') ? 'quiz/' . $result['quiz_qid'] . '/statistics' : 'user/' . arg(1) . '/stats/';
     $row = array(
         'title'   => l($chart_icon . ' ' . $result['title'], $title_link, array('html' => TRUE)),
         'creator' => l($result['name'], 'user/' . $result['uid']),
