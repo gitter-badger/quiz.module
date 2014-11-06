@@ -84,15 +84,13 @@ function quiz_views_data_alter(&$data) {
 
   $data['quiz_results']['table']['join'] = array(
       // This is vid because vid is always more specific.
-      'node'                 => array('left_field' => 'vid', 'field' => 'vid'),
-      'node_revisions'       => array('left_field' => 'vid', 'field' => 'vid'),
-      'quiz_entity_revision' => array('left_field' => 'vid', 'field' => 'vid'),
+      'quiz_entity'          => array('left_field' => 'vid', 'field' => 'quiz_vid'),
+      'quiz_entity_revision' => array('left_field' => 'vid', 'field' => 'quiz_vid'),
   );
 
   $data['quiz_relationship']['table']['join'] = array(
       // This is vid because vid is always more specific.
-      'node'                 => array('left_field' => 'vid', 'field' => 'quiz_vid'),
-      'node_revisions'       => array('left_field' => 'vid', 'field' => 'quiz_vid'),
+      'quiz_entity'          => array('left_field' => 'vid', 'field' => 'quiz_vid', 'type' => 'INNER'),
       'quiz_entity_revision' => array('left_field' => 'vid', 'field' => 'quiz_vid', 'type' => 'INNER'),
   );
 
