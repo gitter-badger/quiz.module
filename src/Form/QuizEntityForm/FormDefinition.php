@@ -282,21 +282,27 @@ class FormDefinition extends FormHelper {
         '#title'         => t('Always available'),
         '#default_value' => $this->quiz->quiz_always,
         '#description'   => t('Ignore the open and close dates.'),
+        '#disabled'      => !module_exists('date_popup'),
     );
-    $form['quiz_availability']['quiz_open'] = array(
-        '#type'          => 'date',
-        '#title'         => t('Open date'),
-        '#default_value' => isset($this->quiz->quiz_open) ? $this->prepareDate($this->quiz->quiz_open) : NULL,
-        '#description'   => t('The date this @quiz will become available.', array('@quiz' => QUIZ_NAME)),
-        '#after_build'   => array('_quiz_after_build_fix_year_options'),
-    );
-    $form['quiz_availability']['quiz_close'] = array(
-        '#type'          => 'date',
-        '#title'         => t('Close date'),
-        '#default_value' => isset($this->quiz->quiz_close) ? $this->prepareDate($this->quiz->quiz_close, variable_get('quiz_default_close', 30)) : NULL,
-        '#description'   => t('The date this @quiz will become unavailable.', array('@quiz' => QUIZ_NAME)),
-        '#after_build'   => array('_quiz_after_build_fix_year_options'),
-    );
+
+    if (module_exists('date_popup')) {
+      $format = 'Y-m-d H:i';
+      $form['quiz_availability']['quiz_open'] = array(
+          '#type'          => 'date_popup',
+          '#title'         => t('Open date'),
+          '#default_value' => date($format, isset($this->quiz->quiz_open) ? $this->quiz->quiz_open : REQUEST_TIME),
+          '#description'   => t('The date this @quiz will become available.', array('@quiz' => QUIZ_NAME)),
+      );
+      $form['quiz_availability']['quiz_close'] = array(
+          '#type'          => 'date_popup',
+          '#title'         => t('Close date'),
+          '#default_value' => date($format, isset($this->quiz->quiz_close) ? $this->quiz->quiz_close : REQUEST_TIME + variable_get('quiz_default_close', 30) * 86400),
+          '#description'   => t('The date this @quiz will become unavailable.', array('@quiz' => QUIZ_NAME)),
+      );
+    }
+    else {
+      $form['quiz_availability']['help']['#markup'] = t('Enable the Date Popup (date_popup) module from the !date project to enable support for open and close dates.', array('!date' => l('Date', 'http://drupal.org/project/date')));
+    }
   }
 
   private function definePassFailOptionsFields(&$form) {
