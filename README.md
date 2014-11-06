@@ -10,9 +10,6 @@ to collect those questions into quizzes.
 
 Requirements
 ------------
-Drupal 6.x
-PHP 5.1 (for OOP code introduced in Quiz 3.0)
-MySQL 5
 
 The module consists of two types of modules: the Quiz module itself 
 (quiz.module), and various question types (example: multichoice.module). The 
@@ -22,7 +19,7 @@ are required to be both installed and enabled for this module to function proper
 
 Features
 --------
-This list isn't complete(not even close)
+This list isn't complete (not even close)
 
  - Administrative features:
     o Assign feedback to responses to help point out places for further study
@@ -42,11 +39,9 @@ Installation
 ------------
 Please refer to the INSTALL file for installation directions.
 
-
 Support
 -------
 - Visit the Quiz group at http://groups.drupal.org/quiz
-
 
 Credits
 -------
@@ -54,7 +49,6 @@ Credits
 - Original author:    Károly Négyesi
 - Update to Drupal 5: Wim Mostrey and riverfr0zen
 - Maintainers: Angela Byron, westwesterson, mbutcher, sivaji, turadg, falcon
-
 
 Acknowledgements
 ----------------
