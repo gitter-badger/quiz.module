@@ -177,11 +177,11 @@ function quiz_add_question_to_quiz($question) {
 /**
  * Updates the max_score property on the specified quizzes
  *
- * @param $vids
+ * @param $quiz_vids
  *  Array with the vid's of the quizzes to update
  */
-function quiz_update_max_score_properties($vids) {
-  return quiz()->getQuizHelper()->updateMaxScoreProperties($vids);
+function quiz_update_max_score_properties($quiz_vids) {
+  return quiz()->getQuizHelper()->updateMaxScoreProperties($quiz_vids);
 }
 
 /**
