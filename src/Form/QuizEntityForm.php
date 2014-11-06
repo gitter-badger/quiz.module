@@ -41,9 +41,12 @@ class QuizEntityForm {
     $quiz->summary_pass_format = $quiz->summary_pass['format'];
     $quiz->summary_pass = $quiz->summary_pass['value'];
 
-    // convert value from date widget to timestamp
-    $quiz->quiz_open = mktime(0, 0, 0, $quiz->quiz_open['month'], $quiz->quiz_open['day'], $quiz->quiz_open['year']);
-    $quiz->quiz_close = mktime(0, 0, 0, $quiz->quiz_close['month'], $quiz->quiz_close['day'], $quiz->quiz_close['year']);
+    // convert value from date (popup) widgets to timestamp
+    foreach (array('quiz_open', 'quiz_close') as $k) {
+      if (($human = $quiz->$k) && (FALSE !== strtotime($human))) {
+        $quiz->$k = strtotime($human);
+      }
+    }
 
     // Enable revision flag.
     if (!empty($form_state['values']['revision'])) {

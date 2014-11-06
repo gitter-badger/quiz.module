@@ -46,40 +46,6 @@ class FormHelper {
     return $result;
   }
 
-  /**
-   * Takes a time element and prepares to send it to form_date().
-   *
-   * @param $time
-   *   The time to be turned into an array. This can be:
-   *   - A timestamp when from the database.
-   *   - An array (day, month, year) when previewing.
-   *   - NULL for new nodes.
-   *
-   * @return
-   *   An array for form_date (day, month, year).
-   */
-  protected function prepareDate($time = '', $offset = 0) {
-    if (!$time) { // If this is empty, get the current time.
-      $time = REQUEST_TIME + $offset * 86400;
-    }
-
-    // If we are previewing, $time will be an array so just pass it through.
-    $time_array = array();
-    if (is_array($time)) {
-      $time_array = $time;
-    }
-    // Otherwise build the array from the timestamp.
-    elseif (is_numeric($time)) {
-      $time_array = array(
-        'day'   => $this->date('j', $time),
-        'month' => $this->date('n', $time),
-        'year'  => $this->date('Y', $time),
-      );
-    }
-
-    return $time_array;
-  }
-
   protected function getUserpointsType() {
     $userpoints_terms = taxonomy_get_tree(userpoints_get_vid());
     $userpoints_tids = array(0 => t('Select'));
