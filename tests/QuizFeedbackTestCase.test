@@ -5,7 +5,7 @@ use Drupal\quiz\Entity\QuizEntity;
 /**
  * Base test class for Quiz questions.
  */
-class QuizEntityFeedbackTestCase extends QuizTestCase {
+class QuizFeedbackTestCase extends QuizTestCase {
 
   protected $extraModules = array('truefalse');
   protected $extraUserPermissions = array('view any quiz question correct response');
