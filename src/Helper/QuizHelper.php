@@ -196,51 +196,6 @@ class QuizHelper {
   }
 
   /**
-   * Copies questions when a quiz is translated.
-   *
-   * @param $quiz
-   *   The new translated quiz entity.
-   */
-  public function copyQuestions($quiz) {
-    // Find original questions.
-    $query = db_query('SELECT question_nid, question_vid, question_status, weight, max_score, auto_update_max_score
-        FROM {quiz_relationship}
-        WHERE quiz_vid = :quiz_vid', array(':quiz_vid' => $quiz->translation_source->vid));
-    foreach ($query as $res_o) {
-      $original_question = node_load($res_o->question_nid);
-
-      // Set variables we can't or won't carry with us to the translated node to
-      // NULL.
-      $original_question->nid = $original_question->vid = $original_question->created = $original_question->changed = NULL;
-      $original_question->revision_timestamp = $original_question->menu = $original_question->path = NULL;
-      $original_question->files = array();
-      if (isset($original_question->book['mlid'])) {
-        $original_question->book['mlid'] = NULL;
-      }
-
-      // Set the correct language.
-      $original_question->language = $quiz->language;
-
-      // Save the node.
-      node_save($original_question);
-
-      // Save the relationship between the new question and the quiz.
-      db_insert('quiz_relationship')
-        ->fields(array(
-            'quiz_qid'              => $quiz->qid,
-            'quiz_vid'              => $quiz->vid,
-            'question_nid'          => $original_question->nid,
-            'question_vid'          => $original_question->vid,
-            'question_status'       => $res_o->question_status,
-            'weight'                => $res_o->weight,
-            'max_score'             => $res_o->max_score,
-            'auto_update_max_score' => $res_o->auto_update_max_score,
-        ))
-        ->execute();
-    }
-  }
-
-  /**
    * Updates the max_score property on the specified quizzes
    *
    * @param $quiz_vids
