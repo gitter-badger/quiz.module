@@ -157,7 +157,7 @@ function _quiz_question_get_instance(&$node, $use_cached = FALSE) {
   if (is_object($node)) {
     // If $node don't have a type it is a dummy node
     if (!isset($node->type)) {
-      // To substanitally improve performance(especially on the result page) we avoid node_load()...
+      // To substanitally improve performance(especially on the result page) we avoid node_load()…
       // @todo why is this? consider getting rid of this as nodes are better
       // cached/retrieved in d7. adding the UID here to get rid of a notice.
       $sql = 'SELECT n.type, r.nid, r.vid, r.title, p.max_score, n.uid
@@ -308,7 +308,7 @@ function quiz_question_refresh_latest_quizzes($qid) {
     ->fields(array('uid' => $user->uid, 'quiz_nid' => $qid))
     ->execute();
 
-  // If we have to many entries for current user, delete the oldest entries...
+  // If we have to many entries for current user, delete the oldest entries…
   $min_id = db_select('quiz_question_latest_quizzes', 'lq')
     ->fields('lq', array('id'))
     ->condition('uid', $user->uid)

@@ -20,7 +20,7 @@
  *  FAPI form array
  */
 function quiz_question_revision_actions($form, $form_state, $nid, $vid) {
-  // If no questions were kept we shouldn't get here...
+  // If no questions were kept we shouldn't get here…
   if (!isset($_SESSION['quiz_question_kept'])) {
     drupal_goto('node/' . $nid);
   }
@@ -166,10 +166,10 @@ function quiz_question_revision_actions_submit($form, &$form_state) {
     if (!preg_match('/^[0-9]+-[0-9]+-[0,1]-[0,1]$/', $key)) {
       continue;
     }
-    list($update, $revise, $publish) = str_split($value); //FORMAT: Update[0,1], revise[0,1] and publish[0,1]
+    list($update, $revise, $publish) = str_split($value); // FORMAT: Update[0,1], revise[0,1] and publish[0,1]
     list($qid, $vid, $published, $answered) = explode('-', $key); //FORMAT: nid(int), vid(int), published[0,1] and answered[0,1]
     //
-    // If we are to revise the quiz we need to do that first...
+    // If we are to revise the quiz we need to do that first…
     if ($revise == '1') {
       $quiz = quiz_load((int) $qid, (int) $vid);
       $quiz->is_new_revision = 1;

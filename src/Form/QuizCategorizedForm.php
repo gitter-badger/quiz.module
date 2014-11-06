@@ -260,7 +260,7 @@ class QuizCategorizedForm extends BaseForm {
   }
 
   /**
-   * Helper function for finding terms...
+   * Helper function for finding terms…
    *
    * @param string $start
    *  The start of the string we are looking for

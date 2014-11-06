@@ -8,7 +8,7 @@
   function quizUpdateTitle() {
     var body = $("#edit-body textarea:eq(1)").val();
     if (quizStripTags(body).length > maxLength) {
-      $("#edit-title").val(quizStripTags(body).substring(0, maxLength - 3) + "...");
+      $("#edit-title").val(quizStripTags(body).substring(0, maxLength - 3) + "…");
     }
     else {
       $("#edit-title").val(quizStripTags(body).substring(0, maxLength));

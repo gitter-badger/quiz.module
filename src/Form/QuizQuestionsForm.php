@@ -231,7 +231,7 @@ class QuizQuestionsForm extends BaseForm {
           '#default_value' => $question->qr_id,
       );
 
-      // Quiz directions don't have scoring...
+      // Quiz directions don't have scoring…
       $form[$fieldset]['max_scores'][$id] = array(
           '#type'          => $instance->isGraded() ? 'textfield' : 'hidden',
           '#size'          => 2,
@@ -248,7 +248,7 @@ class QuizQuestionsForm extends BaseForm {
           '#default_value' => isset($question->auto_update_max_score) ? $question->auto_update_max_score : 0,
       );
 
-      // Add checkboxes to remove questions in js disabled browsers...
+      // Add checkboxes to remove questions in js disabled browsers…
       $form[$fieldset]['stayers'][$id] = array(
           '#type'          => 'checkbox',
           '#default_value' => 0,

@@ -113,7 +113,7 @@ class MultichoiceQuestion extends QuizQuestion {
    *
    * Stores the question in the database.
    *
-   * @param is_new if - if the node is a new node...
+   * @param is_new if - if the node is a new node…
    * (non-PHPdoc)
    * @see sites/all/modules/quiz-HEAD/question_types/quiz_question/QuizQuestion#save()
    */
@@ -835,15 +835,14 @@ class MultichoiceResponse extends QuizQuestionResponse {
       if (isset($values['user_answer']) && is_array($values['user_answer'])) {
         foreach ($values['user_answer'] as $answer_id) {
           $this->user_answer_ids[] = $answer_id;
-          $this->answer = $this->user_answer_ids; //@todo: Stop using user_answer_ids and only use answer instead...
+          $this->answer = $this->user_answer_ids; //@todo: Stop using user_answer_ids and only use answer instead…
         }
       }
       elseif (isset($values['user_answer'])) {
         $this->user_answer_ids[] = $values['user_answer'];
       }
     }
-    // We load the answer from the database
-    else {
+    else { // We load the answer from the database
       $res = db_query('SELECT answer_id FROM {quiz_multichoice_user_answers} ua
               LEFT OUTER JOIN {quiz_multichoice_user_answer_multi} uam ON(uam.user_answer_id = ua.id)
               WHERE ua.result_id = :result_id AND ua.question_nid = :question_nid AND ua.question_vid = :question_vid', array(':result_id' => $result_id, ':question_nid' => $this->question->nid, ':question_vid' => $this->question->vid));

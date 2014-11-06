@@ -53,9 +53,7 @@ class DefaultPropertiesIO extends FormHelper {
   /**
    * Returns default values for all quiz settings.
    *
-   * @todo also store this in the quiz_node_properties table
-   *
-   * @return
+   * @return mixed[]
    *   Array of default values.
    */
   public function getQuizDefaultSettings() {

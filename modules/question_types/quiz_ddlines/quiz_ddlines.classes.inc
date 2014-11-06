@@ -318,7 +318,7 @@ class DDLinesResponse extends QuizQuestionResponse {
     // Is answers set in form?
     if (isset($tries)) {
       // Tries contains the answer decoded as JSON:
-      // {"label_id":x,"hotspot_id":y},{...}
+      // {"label_id":x,"hotspot_id":y},{…}
       $decoded = json_decode($tries);
       if(is_array($decoded)) {
         foreach ($decoded as $answer) {
@@ -407,7 +407,7 @@ class DDLinesResponse extends QuizQuestionResponse {
   }
 
   public function getReportFormResponse() {
-    // Have to do node_load, since quiz does not do this. Need the field_image...
+    // Have to do node_load, since quiz does not do this. Need the field_image…
     $img_field = field_get_items('node', node_load($this->question->nid), 'field_image');
     $img_rendered = theme('image', array('path' => image_style_url('large',$img_field[0]['uri'])));
 

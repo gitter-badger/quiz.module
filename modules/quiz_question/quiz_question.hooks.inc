@@ -90,7 +90,7 @@ function quiz_question_node_presave($node) {
         $body = field_get_items('node', $node, 'body');
         $markup = strip_tags(check_markup($body[0]['value'], $body[0]['format']));
         if (drupal_strlen($markup) > variable_get('quiz_autotitle_length', 50)) {
-          $node->title = drupal_substr($markup, 0, variable_get('quiz_autotitle_length', 50) - 3) . '...';
+          $node->title = drupal_substr($markup, 0, variable_get('quiz_autotitle_length', 50) - 3) . '…';
         }
         else {
           $node->title = $markup;
@@ -293,7 +293,7 @@ function quiz_question_quiz_question_score($quiz, $question_nid, $question_vid =
     return quiz_question_get_max_score($question_nid, $question_vid);
   }
 
-  // We avoid using node_load to increase performance...
+  // We avoid using node_load to increase performance…
   $dummy_node = new stdClass();
   $dummy_node->nid = $question_nid;
   $dummy_node->vid = $question_vid;

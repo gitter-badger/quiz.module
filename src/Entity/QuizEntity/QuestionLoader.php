@@ -173,7 +173,7 @@ class QuestionLoader {
   /**
    * Retrieve list of published questions assigned to quiz.
    *
-   * This function should be used for question browsers and similiar... It should
+   * This function should be used for question browsers and similiar… It should
    * not be used to decide what questions a user should answer when taking a
    * quiz. quiz_build_question_list is written for that purpose.
    *

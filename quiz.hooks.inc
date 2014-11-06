@@ -107,11 +107,9 @@ function quiz_action_info() {
 /**
  * Implementation of hook_cron().
  *
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Remove old quiz results that haven't been finished.
  */
 function quiz_cron() {
-  // Remove old quiz results that haven't been finished.
   if ($rm_time = variable_get('quiz_remove_partial_quiz_record', '0')) { // $time = 0 for never.
     db_delete('quiz_results')
       ->condition('time_end', 0)

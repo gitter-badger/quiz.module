@@ -335,7 +335,7 @@ function _multichoice_check_answers(&$to_return, &$sandbox) {
     // Update all the formats
     $sql = 'UPDATE {quiz_multichoice_answers}
             SET answer_format = %d, feedback_if_chosen_format = %d, feedback_if_not_chosen_format = %d
-            WHERE question_vid = %d'; // This table haven't been indexed yet, making this query very slow... :/
+            WHERE question_vid = %d'; // This table haven't been indexed yet, making this query very slow… :/
     $lf = $sandbox['last_format'];
     // TODO Please review the conversion of this statement to the D7 database API syntax.
     /* db_query($sql, $lf, $lf, $lf, $res_o->question_vid) */

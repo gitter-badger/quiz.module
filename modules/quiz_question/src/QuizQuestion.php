@@ -421,10 +421,10 @@ abstract class QuizQuestion {
    *
    * This function also returns TRUE if a quiz that this question belongs to have been answered.
    * Even if the question itself haven't been answered. This is because the question might have
-   * been rendered and a user is about to answer it...
+   * been rendered and a user is about to answer it…
    *
    * @return
-   *   true if question has been answered or is about to be answered...
+   *   true if question has been answered or is about to be answered…
    */
   public function hasBeenAnswered() {
     if (!isset($this->node->vid)) {
@@ -445,7 +445,7 @@ abstract class QuizQuestion {
    * @todo grabbing the node context here probably isn't a great idea
    *
    * @return boolean
-   *   true iff the view may include the correct answers to the question
+   *   true if the view may include the correct answers to the question
    */
   public function viewCanRevealCorrect() {
     global $user;

@@ -27,7 +27,7 @@ class ScoreCalculator {
       WHERE result_id = :rid', array(':vid' => $quiz->vid, ':rid' => $result_id));
 
     // 2. Callback into the modules and let them do the scoring. @todo after 4.0: Why isn't the scores already saved? They should be
-    // Fetched from the db, not calculated....
+    // Fetched from the db, not calculated…
     $scores = array();
     $count = 0;
     foreach ($questions as $question) {

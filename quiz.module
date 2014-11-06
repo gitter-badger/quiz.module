@@ -30,7 +30,7 @@ define('QUIZ_VIEWS_DIR', drupal_get_path('module', 'quiz') . '/includes/views');
 require_once dirname(__FILE__) . '/quiz.hooks.inc';
 
 /*
- * Define question statuses...
+ * Define question statuses…
  */
 define('QUESTION_RANDOM', 0);
 define('QUESTION_ALWAYS', 1);

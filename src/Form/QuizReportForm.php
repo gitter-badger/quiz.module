@@ -5,7 +5,7 @@ namespace Drupal\quiz\Form;
 class QuizReportForm {
 
   /**
-   * Form for showing feedback, and for editing the feedback if necessary...
+   * Form for showing feedback, and for editing the feedback if necessary…
    *
    * @param $form_state
    *   FAPI form state(array)
@@ -116,7 +116,7 @@ class QuizReportForm {
       ->execute();
     $results_got_deleted = quiz()->getQuizHelper()->getResultHelper()->maintainResult($user, $quiz, $result_id);
 
-    // A message saying the quiz is unscored has already been set. We unset it here...
+    // A message saying the quiz is unscored has already been set. We unset it here…
     if ($changed > 0) {
       $this->removeUnscoredMessage();
     }

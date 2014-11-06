@@ -56,16 +56,16 @@ class ScaleQuestion extends QuizQuestion {
     if ($is_new_node) {
       $id = db_insert('quiz_scale_node_properties')
         ->fields(array(
-          'nid' => $this->node->nid,
-          'vid' => $this->node->vid,
-          'answer_collection_id' => $answer_collection_id,
+            'nid'                  => $this->node->nid,
+            'vid'                  => $this->node->vid,
+            'answer_collection_id' => $answer_collection_id,
         ))
         ->execute();
     }
     else {
       db_update('quiz_scale_node_properties')
         ->fields(array(
-          'answer_collection_id' => $answer_collection_id,
+            'answer_collection_id' => $answer_collection_id,
         ))
         ->condition('nid', $this->node->nid)
         ->condition('vid', $this->node->vid)
@@ -81,12 +81,12 @@ class ScaleQuestion extends QuizQuestion {
   private function setPreset($col_id) {
     db_merge('quiz_scale_user')
       ->key(array(
-        'uid' => $GLOBALS['user']->uid,
-        'answer_collection_id' => $col_id
+          'uid'                  => $GLOBALS['user']->uid,
+          'answer_collection_id' => $col_id
       ))
       ->fields(array(
-        'uid' => $GLOBALS['user']->uid,
-        'answer_collection_id' => $col_id
+          'uid'                  => $GLOBALS['user']->uid,
+          'answer_collection_id' => $col_id
       ))
       ->execute();
   }
@@ -142,8 +142,8 @@ class ScaleQuestion extends QuizQuestion {
     if ($preset == 1) {
       $id = db_insert('quiz_scale_user')
         ->fields(array(
-          'uid' => $user->uid,
-          'answer_collection_id' => $answer_collection_id,
+            'uid'                  => $user->uid,
+            'answer_collection_id' => $answer_collection_id,
         ))
         ->execute();
     }
@@ -165,8 +165,8 @@ class ScaleQuestion extends QuizQuestion {
   private function saveAlternative($alternative, $answer_collection_id) {
     $id = db_insert('quiz_scale_answer')
       ->fields(array(
-        'answer_collection_id' => $answer_collection_id,
-        'answer' => $alternative,
+          'answer_collection_id' => $answer_collection_id,
+          'answer'               => $alternative,
       ))
       ->execute();
   }
@@ -340,8 +340,8 @@ class ScaleQuestion extends QuizQuestion {
       }
     }
     $content['answer'] = array(
-      '#markup' => theme('scale_answer_node_view', array('alternatives' => $alternatives)),
-      '#weight' => 2,
+        '#markup' => theme('scale_answer_node_view', array('alternatives' => $alternatives)),
+        '#weight' => 2,
     );
     return $content;
   }
@@ -362,9 +362,9 @@ class ScaleQuestion extends QuizQuestion {
     }
 
     $form = array(
-      '#type' => 'radios',
-      '#title' => t('Choose one'),
-      '#options' => $options,
+        '#type'    => 'radios',
+        '#title'   => t('Choose one'),
+        '#options' => $options,
     );
     if (isset($result_id)) {
       $response = new ScaleResponse($result_id, $this->node);
@@ -400,46 +400,46 @@ class ScaleQuestion extends QuizQuestion {
     $jsArray = $this->makeJSArray($collections);
 
     $form['answer'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Answer'),
-      '#description' => t('Provide alternatives for the user to answer.'),
-      '#collapsible' => TRUE,
-      '#collapsed' => FALSE,
-      '#weight' => -4,
+        '#type'        => 'fieldset',
+        '#title'       => t('Answer'),
+        '#description' => t('Provide alternatives for the user to answer.'),
+        '#collapsible' => TRUE,
+        '#collapsed'   => FALSE,
+        '#weight'      => -4,
     );
     $form['answer']['#theme'][] = 'scale_creation_form';
     $form['answer']['presets'] = array(
-      '#type' => 'select',
-      '#title' => t('Presets'),
-      '#options' => $options,
-      '#default_value' => 'd',
-      '#description' => t('Select a set of alternatives'),
-      '#attributes' => array('onchange' => 'refreshAlternatives(this)'),
+        '#type'          => 'select',
+        '#title'         => t('Presets'),
+        '#options'       => $options,
+        '#default_value' => 'd',
+        '#description'   => t('Select a set of alternatives'),
+        '#attributes'    => array('onchange' => 'refreshAlternatives(this)'),
     );
     $max_num_alts = variable_get('scale_max_num_of_alts', 10);
     // TODO: use drupal_add_js($path, 'settings');
     $form['jsArray'] = array('#markup' => "<script type='text/javascript'>$jsArray var scale_max_num_of_alts = $max_num_alts;</script>");
     $form['answer']['alternatives'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Alternatives'),
-      '#collapsible' => TRUE,
-      '#collapsed' => TRUE,
+        '#type'        => 'fieldset',
+        '#title'       => t('Alternatives'),
+        '#collapsible' => TRUE,
+        '#collapsed'   => TRUE,
     );
     for ($i = 0; $i < $max_num_alts; $i++) {
       $form['answer']['alternatives']["alternative$i"] = array(
-        '#type' => 'textfield',
-        '#title' => t('Alternative !i', array('!i' => ($i + 1))),
-        '#size' => 60,
-        '#maxlength' => 256,
-        '#default_value' => isset($this->node->{$i}->answer) ? $this->node->{$i}->answer : '',
-        '#required' => $i < 2,
+          '#type'          => 'textfield',
+          '#title'         => t('Alternative !i', array('!i' => ($i + 1))),
+          '#size'          => 60,
+          '#maxlength'     => 256,
+          '#default_value' => isset($this->node->{$i}->answer) ? $this->node->{$i}->answer : '',
+          '#required'      => $i < 2,
       );
     }
     $form['answer']['alternatives']['save'] = array(// @todo: Rename save to save_as_preset or something
-      '#type' => 'checkbox',
-      '#title' => t('Save as a new preset'),
-      '#description' => t('Current alternatives will be saved as a new preset'),
-      '#default_value' => FALSE,
+        '#type'          => 'checkbox',
+        '#title'         => t('Save as a new preset'),
+        '#description'   => t('Current alternatives will be saved as a new preset'),
+        '#default_value' => FALSE,
     );
     $form['answer']['manage'] = array('#markup' => l(t('Manage presets'), 'scale/collection/manage'));
     return $form;
@@ -477,7 +477,7 @@ class ScaleQuestion extends QuizQuestion {
       if (!($res_o = $res->fetch()) || ($res_o->answer_collection_id != $col_id)) {
         /*
          * We have gone through all elements for one answer collection,
-         * and needs to store the answer collection name and id in the options array...
+         * and needs to store the answer collection name and id in the options array…
          */
         if (isset($col_id)) {
           $num_scale_elements = count($collections[$col_id]->alternatives);
@@ -505,7 +505,7 @@ class ScaleQuestion extends QuizQuestion {
    * Makes options array for form elements.
    *
    * @param $collections
-   *  collections array, from getPresetCollections() for instance...
+   *  collections array, from getPresetCollections() for instance…
    * @return
    *  #options array.
    */
@@ -521,7 +521,7 @@ class ScaleQuestion extends QuizQuestion {
    * Makes a javascript constructing an answer collection array.
    *
    * @param $collections
-   *  collections array, from getPresetCollections() for instance...
+   *  collections array, from getPresetCollections() for instance…
    * @return
    *  javascript(string)
    */
@@ -585,10 +585,10 @@ class ScaleResponse extends QuizQuestionResponse {
   public function save() {
     $id = db_insert('quiz_scale_user_answers')
       ->fields(array(
-        'answer_id' => $this->answer_id,
-        'result_id' => $this->result_id,
-        'question_vid' => $this->question->vid,
-        'question_nid' => $this->question->nid,
+          'answer_id'    => $this->answer_id,
+          'result_id'    => $this->result_id,
+          'question_vid' => $this->question->vid,
+          'question_nid' => $this->question->nid,
       ))
       ->execute();
   }
@@ -630,7 +630,7 @@ class ScaleResponse extends QuizQuestionResponse {
   public function getReportFormResponse() {
     $data = array();
     $data[] = array(
-      'choice' => $this->answer,
+        'choice' => $this->answer,
     );
     return $data;
   }
