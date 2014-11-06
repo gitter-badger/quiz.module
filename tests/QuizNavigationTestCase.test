@@ -3,15 +3,15 @@
 /**
  * Base test class for Quiz questions.
  */
-class QuizEntityNavigationTestCase extends QuizTestCase {
+class QuizNavigationTestCase extends QuizTestCase {
 
   protected $extraModules = array('truefalse');
 
   public static function getInfo() {
     return array(
-      'name'        => t('Quiz navigation'),
-      'description' => t('Unit test for Quiz navigation.'),
-      'group'       => t('Quiz'),
+        'name'        => t('Quiz navigation'),
+        'description' => t('Unit test for Quiz navigation.'),
+        'group'       => t('Quiz'),
     );
   }
 
@@ -139,9 +139,9 @@ class QuizEntityNavigationTestCase extends QuizTestCase {
   function testQuestionNavigationBackwards() {
     $this->drupalLogin($this->admin);
     $quiz = $this->drupalCreateQuiz(array(
-      'backwards_navigation' => 0,
-      'allow_skipping'       => 0,
-      'allow_jumping'        => 0,
+        'backwards_navigation' => 0,
+        'allow_skipping'       => 0,
+        'allow_jumping'        => 0,
     ));
 
     // 3 questions.
