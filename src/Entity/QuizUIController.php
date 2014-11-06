@@ -129,11 +129,12 @@ class QuizUiController extends EntityDefaultUIController {
     // Menu items for /quiz/add/*
     if (($types = quiz_get_types()) && (1 < count($types))) {
       $items['quiz/add'] = array(
-          'title'           => 'Add ' . QUIZ_NAME,
-          'access callback' => 'quiz_can_create_quiz_entity',
-          'file path'       => drupal_get_path('module', 'quiz'),
-          'file'            => 'quiz.pages.inc',
-          'page callback'   => 'quiz_entity_adding_landing_page',
+          'title'            => 'Add ' . QUIZ_NAME,
+          'access callback'  => 'entity_access',
+          'access arguments' => array('create', 'quiz_entity'),
+          'file path'        => drupal_get_path('module', 'quiz'),
+          'file'             => 'quiz.pages.inc',
+          'page callback'    => 'quiz_entity_adding_landing_page',
       );
 
       foreach (array_keys($types) as $name) {
