@@ -268,7 +268,7 @@ function quiz_question_form(&$node, &$form_state) {
 // QUIZ HOOK IMPLEMENTATIONS
 
 /**
- * Implementation of hook_get_report().
+ * Implements hook_get_report().
  *
  * @return
  *  Node containing all of the items from the question plus the user's answer.

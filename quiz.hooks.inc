@@ -105,7 +105,7 @@ function quiz_action_info() {
 }
 
 /**
- * Implementation of hook_cron().
+ * Implements hook_cron().
  *
  * Remove old quiz results that haven't been finished.
  */
@@ -251,7 +251,7 @@ function quiz_update($node) {
 }
 
 /**
- * Implementation of hook_node_presave().
+ * Implements hook_node_presave().
  */
 function quiz_node_presave($node) {
   // Convert the action id to the actual id from the MD5 hash.
@@ -267,7 +267,7 @@ function quiz_node_presave($node) {
 }
 
 /**
- * Implementation of hook_node_prepare().
+ * Implements hook_node_prepare().
  */
 function quiz_node_prepare($node) {
   if (isset($node->is_quiz_question) && variable_get('quiz_auto_revisioning', 1)) {
