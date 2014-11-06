@@ -12,42 +12,6 @@ class QuizQuestionAdminController {
     $this->quiz = $quiz;
   }
 
-  public static function staticCallback(QuizEntity $quiz) {
-    $obj = new self($quiz);
-
-    module_load_include('pages.inc', 'quiz');
-
-    if ($quiz->randomization >= 3) {
-      return drupal_get_form('quiz_categorized_form', $quiz);
-    }
-
-    return array(
-        '#type'            => 'vertical_tabs',
-        'question_admin'   => array(
-            '#type'  => 'fieldset',
-            '#title' => t('Manage questions'),
-            '#value' => '',
-            'links'  => array(
-                '#type'        => 'fieldset',
-                '#title'       => t('Create new question'),
-                '#collapsible' => TRUE,
-                '#collapsed'   => TRUE,
-                '#value'       => '',
-                'links'        => array(
-                    '#theme' => 'item_list',
-                    '#items' => $obj->getQuestionAddingLinks(),
-                ),
-            ),
-            'form'   => drupal_get_form('quiz_questions_form', $quiz),
-        ),
-        'global_questions' => array(
-            '#type'  => 'fieldset',
-            '#title' => t('Question bank'),
-            '#value' => views_get_view('quiz_question_bank')->preview(),
-        ),
-    );
-  }
-
   public function getQuestionAddingLinks() {
     $items = array();
 

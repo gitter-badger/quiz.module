@@ -16,18 +16,6 @@ class QuizQuestionFeedbackController {
   /** @var Result */
   private $result;
 
-  /**
-   * Callback for quiz/%/take/%question_number/feedback. Show feedback for a
-   * question response.
-   */
-  public static function staticCallback($quiz, $page_number) {
-    $quiz_id = $quiz->qid;
-    $result_id = empty($_SESSION['quiz'][$quiz_id]['result_id']) ? $_SESSION['quiz']['temp']['result_id'] : $_SESSION['quiz'][$quiz_id]['result_id'];
-    $result = quiz_result_load($result_id);
-    $controller = new static($quiz, $result);
-    return $controller->render($page_number);
-  }
-
   public function __construct(QuizEntity $quiz, Result $result) {
     $this->quiz = $quiz;
     $this->quiz_id = $this->quiz->qid;

@@ -1,7 +1,21 @@
 <?php
 
+/**
+ * @file
+ * quiz.pages.inc
+ *
+ * This file contains function callbacks for forms and pages. Long or complex
+ * functions are moved to classes.
+ */
 use Drupal\quiz\Controller\Admin\QuizAdminSettingsController;
+use Drupal\quiz\Controller\Admin\QuizQuestionAdminController;
+use Drupal\quiz\Controller\Admin\QuizRevisionsAdminController;
+use Drupal\quiz\Controller\QuizQuestionFeedbackController;
+use Drupal\quiz\Controller\QuizTakeController;
+use Drupal\quiz\Controller\QuizTakeQuestionController;
+use Drupal\quiz\Controller\QuizUserResultController;
 use Drupal\quiz\Entity\QuizEntity;
+use Drupal\quiz\Entity\Result;
 use Drupal\quiz\Form\QuizAdminEntityForm;
 use Drupal\quiz\Form\QuizAnsweringForm;
 use Drupal\quiz\Form\QuizCategorizedForm;
@@ -52,6 +66,37 @@ function quiz_type_form($form, &$form_state, $quiz_type, $op = 'edit') {
   return $obj->get($form, $form_state, $quiz_type, $op);
 }
 
+function quiz_type_form_submit_delete($form, &$form_state) {
+  $form_state['redirect'] = 'admin/structure/quiz/manage/' . $form_state['quiz_type']->type . '/delete';
+}
+
+function quiz_type_form_submit($form, &$form_state) {
+  $obj = new QuizTypeForm();
+  return $obj->submit($form, $form_state);
+}
+
+/**
+ * @TODO Only list quiz type if user has permission to create it.
+ * @return string
+ */
+function quiz_entity_adding_landing_page() {
+  return theme_render_template(drupal_get_path('module', 'quiz') . '/theme/quiz-adding-landing.tpl.php', array(
+      'quiz_types' => quiz_get_types()
+  ));
+}
+
+/**
+ * Callback for /quiz/add/%quiz_type
+ */
+function quiz_entity_adding_page($op, $quiz_type) {
+  $quiz = NULL;
+  if ($op === 'add') {
+    $values['type'] = $quiz_type;
+    $quiz = entity_create('quiz_entity', $values);
+  }
+  return entity_ui_get_form('quiz_entity', $quiz, $op);
+}
+
 /**
  * Define quiz-entity editing form.
  */
@@ -70,6 +115,40 @@ function quiz_entity_form_submit($form, &$form_state) {
   $quiz = $form_state['quiz_entity'];
   $obj = new QuizEntityForm($quiz);
   return $obj->submit($form, $form_state);
+}
+
+function quiz_question_admin_page(QuizEntity $quiz) {
+  $obj = new QuizQuestionAdminController($quiz);
+
+  if ($quiz->randomization >= 3) {
+    return drupal_get_form('quiz_categorized_form', $quiz);
+  }
+
+  return array(
+      '#type'            => 'vertical_tabs',
+      'question_admin'   => array(
+          '#type'  => 'fieldset',
+          '#title' => t('Manage questions'),
+          '#value' => '',
+          'links'  => array(
+              '#type'        => 'fieldset',
+              '#title'       => t('Create new question'),
+              '#collapsible' => TRUE,
+              '#collapsed'   => TRUE,
+              '#value'       => '',
+              'links'        => array(
+                  '#theme' => 'item_list',
+                  '#items' => $obj->getQuestionAddingLinks(),
+              ),
+          ),
+          'form'   => drupal_get_form('quiz_questions_form', $quiz),
+      ),
+      'global_questions' => array(
+          '#type'  => 'fieldset',
+          '#title' => t('Question bank'),
+          '#value' => views_get_view('quiz_question_bank')->preview(),
+      ),
+  );
 }
 
 function quiz_questions_form($form, $form_state, $quiz) {
@@ -102,6 +181,57 @@ function quiz_categorized_form_validate($form, &$form_state) {
 function quiz_categorized_form_submit($form, &$form_state) {
   $obj = new QuizCategorizedForm();
   return $obj->formSubmit($form, $form_state);
+}
+
+/**
+ * Callback for quiz/%quiz
+ */
+function quiz_page(QuizEntity $quiz, $view_mode = 'default', $langcode = NULL) {
+  return entity_view('quiz_entity', array($quiz), $view_mode, $langcode);
+}
+
+/**
+ * Callback for /quiz/%quiz/revisions.
+ *
+ * @param QuizEntity $quiz
+ */
+function quiz_revisions_page(QuizEntity $quiz) {
+  $obj = new QuizRevisionsAdminController();
+  return $obj->render($quiz);
+}
+
+/**
+ * Callback for quiz/%/take
+ */
+function quiz_take_page(QuizEntity $quiz) {
+  global $user;
+  $obj = new QuizTakeController($quiz, $user);
+  $obj->render();
+}
+
+/**
+ * Callback for quiz/%/take/%. Take a quiz questions.
+ *
+ * @param QuizEntity $quiz A quiz entity
+ * @param int $page_number
+ *   A question number, starting at 1. Pages do not have question numbers. Quiz
+ *   directions are considered part of the numbering.
+ */
+function quiz_question_take_page(QuizEntity $quiz, $page_number) {
+  $result = $layout_item = NULL;
+  $quiz_id = $quiz->qid;
+
+  if (isset($_SESSION['quiz'][$quiz_id]['result_id'])) {
+    $result = quiz_result_load($_SESSION['quiz'][$quiz_id]['result_id']);
+  }
+
+  // Load the page that the requested question belongs to.
+  if ($result && ($_layout_item = $result->getPageItem($page_number))) {
+    $layout_item = node_load($_layout_item['nid']);
+  }
+
+  $controller = new QuizTakeQuestionController($quiz, $result, $page_number, $layout_item);
+  return $controller->render();
 }
 
 /**
@@ -184,6 +314,26 @@ function quiz_question_element_validate(&$element, &$form_state) {
 
 function quiz_report_form_element_validate(&$element, &$form_state) {
   return QuizReportForm::validateElement($element, $form_state);
+}
+
+/**
+ * Callback for quiz/%/take/%question_number/feedback. Show feedback for a
+ * question response.
+ */
+function quiz_question_feedback_page(QuizEntity $quiz, $page_number) {
+  $result_id = empty($_SESSION['quiz'][$quiz->qid]['result_id']) ? $_SESSION['quiz']['temp']['result_id'] : $_SESSION['quiz'][$quiz->qid]['result_id'];
+  $result = quiz_result_load($result_id);
+  $controller = new QuizQuestionFeedbackController($quiz, $result);
+  return $controller->render($page_number);
+}
+
+function quiz_results_page(QuizEntity $quiz) {
+  return views_embed_view('quiz_results', 'page', $quiz->qid);
+}
+
+function quiz_results_user_page(QuizEntity $quiz) {
+  global $user;
+  return views_embed_view('quiz_user_results', 'page', $quiz->qid, $user->uid);
 }
 
 /**
@@ -293,6 +443,18 @@ function theme_quiz_view_stats($variables) {
       . '</tr>';
   }
   return '<table id="quiz-view-table">' . $table . '</table>';
+}
+
+/**
+ * Callback for /quiz-result/%quiz_result.
+ *
+ * @param Result $result
+ */
+function quiz_result_page(Result $result) {
+  $quiz = quiz_load($result->quiz_qid);
+  $quiz_revision = quiz_load($result->quiz_qid, $result->quiz_vid);
+  $obj = new QuizUserResultController($quiz, $quiz_revision, $result);
+  return $obj->render();
 }
 
 /**

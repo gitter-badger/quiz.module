@@ -1,10 +1,30 @@
 <?php
 
+use Drupal\quiz\Entity\QuizEntity;
+use Drupal\quiz_stats\Controller\RevisionListingController;
+use Drupal\quiz_stats\Controller\RevisionStatsController;
+
 /**
  * @file
  * Administration file for Quiz stats Module
- *
  */
+
+/**
+ * Page for selecting between several quiz revisions
+ *
+ * Callback for /quiz/%quiz/statistics
+ *
+ * @return string
+ */
+function quiz_stats_page(QuizEntity $quiz) {
+  $obj = new RevisionListingController($quiz);
+  return $obj->render();
+}
+
+function quiz_stats_revision_page($quiz_vid, $uid = 0) {
+  $obj = new RevisionStatsController($quiz_vid, $uid);
+  return $obj->render($quiz_vid, $uid);
+}
 
 /**
  * Returns statistics for all available quizzes

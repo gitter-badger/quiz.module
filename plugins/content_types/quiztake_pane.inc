@@ -42,7 +42,8 @@ function quiz_take_pane_content_type_render($subtype, $conf, $panel_args, $conte
     $block->content = $quiz->rendered_content;
   }
   else {
-    $block->content = QuizTakeController::staticCallback($quiz);
+    module_load_include('pages.inc', 'quiz');
+    $block->content = quiz_take_page($quiz);
   }
   return $block;
 }

@@ -11,39 +11,36 @@ class QuizTypeForm {
     }
 
     $form['label'] = array(
-      '#type'          => 'textfield',
-      '#title'         => t('Label'),
-      '#default_value' => $quiz_type->label,
-      '#description'   => t('The human-readable name of this !quiz type.', array('!quiz' => QUIZ_NAME)),
-      '#required'      => TRUE,
-      '#size'          => 30,
+        '#type'          => 'textfield',
+        '#title'         => t('Label'),
+        '#default_value' => $quiz_type->label,
+        '#description'   => t('The human-readable name of this !quiz type.', array('!quiz' => QUIZ_NAME)),
+        '#required'      => TRUE,
+        '#size'          => 30,
     );
 
     $form['description'] = array(
-      '#type'          => 'textarea',
-      '#title'         => t('Description'),
-      '#description'   => t('Describe this !quiz type. The text will be displayed on the Add new !quiz page.', array('!quiz' => QUIZ_NAME)),
-      '#default_value' => $quiz_type->description,
+        '#type'          => 'textarea',
+        '#title'         => t('Description'),
+        '#description'   => t('Describe this !quiz type. The text will be displayed on the Add new !quiz page.', array('!quiz' => QUIZ_NAME)),
+        '#default_value' => $quiz_type->description,
     );
 
     $form['help'] = array(
-      '#type'          => 'textarea',
-      '#title'         => t('Explanation or submission guidelines'),
-      '#description'   => t('This text will be displayed at the top of the page when creating or editing !quiz of this type.', array('!quiz' => QUIZ_NAME)),
-      '#default_value' => $quiz_type->help,
+        '#type'          => 'textarea',
+        '#title'         => t('Explanation or submission guidelines'),
+        '#description'   => t('This text will be displayed at the top of the page when creating or editing !quiz of this type.', array('!quiz' => QUIZ_NAME)),
+        '#default_value' => $quiz_type->help,
     );
 
     // Machine-readable type name.
     $form['type'] = array(
-      '#type'          => 'machine_name',
-      '#default_value' => isset($quiz_type->type) ? $quiz_type->type : '',
-      '#maxlength'     => 32,
-      '#disabled'      => $quiz_type->isLocked() && $op !== 'clone',
-      '#machine_name'  => array(
-        'exists' => 'quiz_type_load',
-        'source' => array('label'),
-      ),
-      '#description'   => t('A unique machine-readable name for this !quiz type. It must only contain lowercase letters, numbers, and underscores.', array('!quiz' => QUIZ_NAME)),
+        '#type'          => 'machine_name',
+        '#default_value' => isset($quiz_type->type) ? $quiz_type->type : '',
+        '#maxlength'     => 32,
+        '#disabled'      => $quiz_type->isLocked() && $op !== 'clone',
+        '#machine_name'  => array('exists' => 'quiz_type_load', 'source' => array('label')),
+        '#description'   => t('A unique machine-readable name for this !quiz type. It must only contain lowercase letters, numbers, and underscores.', array('!quiz' => QUIZ_NAME)),
     );
 
     $form['actions'] = array('#type' => 'actions');
@@ -51,15 +48,13 @@ class QuizTypeForm {
 
     if (!$quiz_type->isLocked() && $op != 'add' && $op != 'clone') {
       $form['actions']['delete'] = array(
-        '#type'                    => 'submit',
-        '#value'                   => t('Delete !quiz type', array('!quiz' => QUIZ_NAME)),
-        '#weight'                  => 45,
-        '#limit_validation_errors' => array(),
-        '#submit'                  => array(array($this, 'submitDelete'))
+          '#type'                    => 'submit',
+          '#value'                   => t('Delete !quiz type', array('!quiz' => QUIZ_NAME)),
+          '#weight'                  => 45,
+          '#limit_validation_errors' => array(),
+          '#submit'                  => array('quiz_type_form_submit_delete')
       );
     }
-
-    $form['#submit'][] = array($this, 'submit');
 
     return $form;
   }
@@ -67,16 +62,12 @@ class QuizTypeForm {
   /**
    * Form API submit callback for the type form.
    */
-  function submit(&$form, &$form_state) {
+  public function submit(&$form, &$form_state) {
     $quiz_type = entity_ui_form_submit_build_entity($form, $form_state);
     $quiz_type->description = filter_xss_admin($quiz_type->description);
     $quiz_type->help = filter_xss_admin($quiz_type->help);
     $quiz_type->save();
     $form_state['redirect'] = 'admin/structure/quiz';
-  }
-
-  public function submitDelete($form, &$form_state) {
-    $form_state['redirect'] = 'admin/structure/quiz/manage/' . $form_state['quiz_type']->type . '/delete';
   }
 
 }

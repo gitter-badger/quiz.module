@@ -14,34 +14,31 @@ class QuizTakeController extends QuizTakeLegacyController {
   /** @var stdClass */
   private $account;
 
-  /**
-   * Callback for quiz/%/take
-   */
-  public static function staticCallback($quiz) {
-    global $user;
-
-    try {
-      if (isset($quiz->rendered_content)) {
-        return $quiz->rendered_content;
-      }
-
-      $controller = new static($quiz, $user);
-      $controller->initQuizResult();
-      if ($controller->getResultId()) {
-        drupal_goto($controller->getQuestionTakePath());
-      }
-    }
-    catch (RuntimeException $e) {
-      throw $e;
-      return array(
-          'body' => array('#markup' => $e->getMessage())
-      );
-    }
-  }
-
   public function __construct($quiz, $account) {
     $this->quiz = $quiz;
     $this->account = $account;
+  }
+
+  public function render() {
+    try {
+      if (isset($this->quiz->rendered_content)) {
+        return $this->quiz->rendered_content;
+      }
+
+      $this->initQuizResult();
+      if ($this->getResultId()) {
+        drupal_goto($this->getQuestionTakePath());
+      }
+    }
+    catch (\RuntimeException $e) {
+      return array(
+          'body' => array(
+              '#prefix' => '<div class="error">',
+              '#suffix' => '</div>',
+              '#markup' => $e->getMessage()
+          )
+      );
+    }
   }
 
   public function initQuizResult() {

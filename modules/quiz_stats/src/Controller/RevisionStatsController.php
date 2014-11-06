@@ -2,27 +2,20 @@
 
 namespace Drupal\quiz_stats\Controller;
 
-use stdClass;
-
 class RevisionStatsController {
 
-  private $vid;
+  private $quiz_vid;
   private $uid;
 
   /**
-   * @param int $vid
+   * @param int $quiz_vid
    *   quiz revision id
    * @param int $uid
    *   User id
    */
-  public function __construct($vid, $uid = 0) {
-    $this->vid = $vid;
+  public function __construct($quiz_vid, $uid = 0) {
+    $this->quiz_vid = $quiz_vid;
     $this->uid = $uid;
-  }
-
-  public static function staticCallback($vid, $uid = 0) {
-    $obj = new static($vid, $uid);
-    return $obj->render($vid, $uid);
   }
 
   /**
@@ -45,7 +38,7 @@ class RevisionStatsController {
     return array(
         'takeup'      => $this->getDateVSTakeupCountChart(),
         // line chart/graph showing quiz takeup date along x-axis and count along y-axis
-        'status'      => $this->getQuizStatusChart($this->vid, $this->uid),
+        'status'      => $this->getQuizStatusChart($this->quiz_vid, $this->uid),
         // 3D pie chart showing percentage of pass, fail, incomplete quiz status
         'top_scorers' => $this->getQuizTopScorersChart(),
         // Bar chart displaying top scorers
@@ -65,7 +58,7 @@ class RevisionStatsController {
             DATE_FORMAT(FROM_UNIXTIME(time_start), '%Y-%m-%e') AS date
             FROM {quiz_results}
             WHERE vid = :vid AND time_start > (UNIX_TIMESTAMP(NOW()) - (86400*$end))";
-    $sql_args[':vid'] = $this->vid;
+    $sql_args[':vid'] = $this->quiz_vid;
     if ($this->uid) {
       $sql .= " AND uid = :uid";
       $sql_args[':uid'] = $this->uid;
@@ -96,7 +89,7 @@ class RevisionStatsController {
     // get the pass rate of the given quiz by vid
     $pass_rate = db_query("SELECT pass_rate "
       . " FROM {quiz_entity_revision} "
-      . " WHERE vid = :vid", array(':vid' => $this->vid))->fetchField();
+      . " WHERE vid = :vid", array(':vid' => $this->quiz_vid))->fetchField();
     if (!$pass_rate) {
       return;
     }
@@ -108,7 +101,7 @@ class RevisionStatsController {
       . "   SUM(score < $pass_rate) AS no_fail, "
       . "   SUM(is_evaluated = 0) AS no_incomplete "
       . " FROM {quiz_results} "
-      . " WHERE quiz_vid = :vid", array(':vid' => $this->vid))->fetchAssoc();
+      . " WHERE quiz_vid = :vid", array(':vid' => $this->quiz_vid))->fetchAssoc();
 
     if (($quiz['no_pass'] + $quiz['no_fail'] + $quiz['no_incomplete']) < 1) {
       return FALSE; // no sufficient data
@@ -137,7 +130,7 @@ class RevisionStatsController {
       FROM {quiz_results} qnr
       LEFT JOIN {users} u ON (u.uid = qnr.uid)
       WHERE quiz_vid = :vid';
-    $arg[':vid'] = $this->vid;
+    $arg[':vid'] = $this->quiz_vid;
     if ($this->uid) {
       $sql .= ' AND qnr.uid = :uid';
       $arg[':uid'] = $this->uid;
@@ -176,7 +169,7 @@ class RevisionStatsController {
               SUM(score >= 80 && score <= 100) AS eighty_to_hundred
             FROM {quiz_results}
             WHERE quiz_vid = :vid';
-    $arg[':vid'] = $this->vid;
+    $arg[':vid'] = $this->quiz_vid;
     if ($this->uid) {
       $sql .= ' AND uid = :uid';
       $arg[':uid'] = $this->uid;

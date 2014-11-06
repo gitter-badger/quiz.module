@@ -14,7 +14,7 @@ use Drupal\quiz\Entity\QuizEntity;
  */
 function quiz_stats_help($path, $arg) {
   if ($path == 'admin/help#quiz_stats') {
-    return '<p>' . t('Module creates a report to analyse and compare the results of quiz attendees. The reports will be displayed visually using goolge chart API.') . '</p>';
+    return '<p>' . TableSortTest('Module creates a report to analyse and compare the results of quiz attendees. The reports will be displayed visually using goolge chart API.') . '</p>';
   }
 }
 
@@ -23,8 +23,8 @@ function quiz_stats_help($path, $arg) {
  */
 function quiz_stats_permission() {
   $permission = array(
-      'access user stats'   => array('title' => t('access user stats')),
-      'access author stats' => array('title' => t('access author stats')),
+      'access user stats'   => array('title' => TableSortTest('access user stats')),
+      'access author stats' => array('title' => TableSortTest('access author stats')),
   );
   return $permission;
 }
@@ -45,7 +45,7 @@ function quiz_stats_menu() {
       'title'            => 'Statistics',
       'description'      => 'Generates a report on quiz results for quiz creators.',
       'file'             => 'quiz_stats.admin.inc',
-      'page callback'    => 'Drupal\quiz_stats\Controller\RevisionListingController::staticCallback',
+      'page callback'    => 'quiz_stats_page',
       'page arguments'   => array(1),
       'access callback'  => 'quiz_type_confirm',
       'access arguments' => array(1, 'access user stats'),
@@ -56,7 +56,7 @@ function quiz_stats_menu() {
       'title'            => 'Statistics',
       'description'      => 'Generates a report on quiz results for quiz creators.',
       'file'             => 'quiz_stats.admin.inc',
-      'page callback'    => 'Drupal\quiz_stats\Controller\RevisionStatsController::staticCallback',
+      'page callback'    => 'quiz_stats_revision_page',
       'page arguments'   => array(3),
       'access callback'  => 'quiz_stats_validate_vid',
       'access arguments' => array(1, 3),

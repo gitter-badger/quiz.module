@@ -10,21 +10,26 @@ class QuizUiController extends EntityDefaultUIController {
     $items = parent::hook_menu();
     $items['admin/content/quiz']['type'] = MENU_LOCAL_TASK;
 
-    $this->addQuizAddLinks($items);
-    $this->addQuizCRUDItems($items);
-    $this->addQuizTabItems($items);
-    $this->addQuizTakeItems($items);
+    $base = array(
+        'file path' => drupal_get_path('module', 'quiz'),
+        'file'      => 'quiz.pages.inc',
+    );
+
+    $this->addQuizAddLinks($items, $base);
+    $this->addQuizCRUDItems($items, $base);
+    $this->addQuizTabItems($items, $base);
+    $this->addQuizTakeItems($items, $base);
 
     return $items;
   }
 
-  private function addQuizCRUDItems(&$items) {
-    $items['quiz/%quiz'] = array(
+  private function addQuizCRUDItems(&$items, $base) {
+    $items['quiz/%quiz'] = $base + array(
         'title callback'   => 'entity_class_label',
         'title arguments'  => array(1),
         'access callback'  => 'quiz_entity_access_callback',
         'access arguments' => array('view'),
-        'page callback'    => 'Drupal\quiz\Controller\QuizEntityViewController::staticCallback',
+        'page callback'    => 'quiz_page',
         'page arguments'   => array(1),
     );
 
@@ -52,24 +57,24 @@ class QuizUiController extends EntityDefaultUIController {
     );
   }
 
-  private function addQuizTabItems(&$items) {
+  private function addQuizTabItems(&$items, $base) {
     // Define menu structure for /quiz/%/revisions
-    $items['quiz/%quiz/revisions'] = array(
+    $items['quiz/%quiz/revisions'] = $base + array(
         'title'            => 'Revisions',
         'type'             => MENU_LOCAL_TASK,
         'access callback'  => 'entity_access',
         'access arguments' => array('update', 'quiz_entity', 1),
-        'page callback'    => 'Drupal\quiz\Controller\Admin\QuizRevisionsAdminController::staticCallback',
+        'page callback'    => 'quiz_revisions_page',
         'page arguments'   => array(1),
     );
 
     // Define menu structure for /quiz/%/questions
-    $items['quiz/%quiz/questions'] = array(
+    $items['quiz/%quiz/questions'] = $base + array(
         'title'            => 'Questions',
         'type'             => MENU_LOCAL_TASK,
         'access callback'  => 'entity_access',
         'access arguments' => array('update', 'quiz_entity', 1),
-        'page callback'    => 'Drupal\quiz\Controller\Admin\QuizQuestionAdminController::staticCallback',
+        'page callback'    => 'quiz_question_admin_page',
         'page arguments'   => array(1),
         'weight'           => 5,
     );
@@ -80,23 +85,23 @@ class QuizUiController extends EntityDefaultUIController {
         'type'             => MENU_LOCAL_TASK,
         'access callback'  => 'entity_access',
         'access arguments' => array('update', 'quiz_entity', 1),
-        'page callback'    => 'Drupal\quiz\Controller\Admin\QuizResultsAdminController::staticCallback',
+        'page callback'    => 'quiz_results_page',
         'page arguments'   => array(1),
         'weight'           => 6,
     );
 
     // Define menu structure for /quiz/%/results
-    $items['quiz/%quiz/my-results'] = array(
+    $items['quiz/%quiz/my-results'] = $base + array(
         'title'            => 'My results',
         'type'             => MENU_LOCAL_TASK,
         'access callback'  => 'entity_access',
         'access arguments' => array('update', 'quiz_entity', 1),
-        'page callback'    => 'Drupal\quiz\Controller\QuizMyResultsController::staticCallback',
+        'page callback'    => 'quiz_results_user_page',
         'page arguments'   => array(1),
         'weight'           => 6,
     );
 
-    $items['quiz/%quiz/questions/term_ahah'] = array(
+    $items['quiz/%quiz/questions/term_ahah'] = $base + array(
         'type'             => MENU_CALLBACK,
         'access callback'  => 'entity_access',
         'access arguments' => array('create', 'quiz_entity', 1),
@@ -126,7 +131,9 @@ class QuizUiController extends EntityDefaultUIController {
       $items['quiz/add'] = array(
           'title'           => 'Add ' . QUIZ_NAME,
           'access callback' => 'quiz_can_create_quiz_entity',
-          'page callback'   => 'Drupal\quiz\Controller\QuizEntityAddController::staticCallback',
+          'file path'       => drupal_get_path('module', 'quiz'),
+          'file'            => 'quiz.pages.inc',
+          'page callback'   => 'quiz_entity_adding_landing_page',
       );
 
       foreach (array_keys($types) as $name) {
@@ -135,7 +142,7 @@ class QuizUiController extends EntityDefaultUIController {
             'title arguments'  => array('add', 'quiz_entity'),
             'access callback'  => 'entity_access',
             'access arguments' => array('create', 'quiz_entity'),
-            'page callback'    => 'Drupal\quiz\Form\QuizEntityForm::staticCallback',
+            'page callback'    => 'quiz_entity_adding_page',
             'page arguments'   => array('add', $name),
             'file path'        => drupal_get_path('module', 'quiz'),
             'file'             => 'quiz.pages.inc',
@@ -144,27 +151,29 @@ class QuizUiController extends EntityDefaultUIController {
     }
   }
 
-  private function addQuizTakeItems(&$items) {
+  private function addQuizTakeItems(&$items, $base) {
     // Define menu item structure for /quiz/%/take
-    $items['quiz/%quiz/take'] = array(
-        'page callback'    => 'Drupal\quiz\Controller\QuizTakeController::staticCallback',
+    $items['quiz/%quiz/take'] = $base + array(
+        'page callback'    => 'quiz_take_page',
         'page arguments'   => array(1),
         'access arguments' => array('access quiz'),
     );
 
     // Define menu item structure for /quiz/%/take/%
-    $items['quiz/%quiz/take/%question_number'] = array(
+    $items['quiz/%quiz/take/%question_number'] = $base + array(
         'access callback'  => 'quiz_access_question',
         'access arguments' => array(1, 3),
-        'page callback'    => 'Drupal\quiz\Controller\QuizTakeQuestionController::staticCallback',
-        'page arguments'   => array(1, 3),
         'file path'        => drupal_get_path('module', 'quiz'),
         'file'             => 'quiz.pages.inc',
+        'page callback'    => 'quiz_question_take_page',
+        'page arguments'   => array(1, 3),
     );
 
     $items['quiz/%quiz/take/%question_number/feedback'] = array(
         'title'            => 'Feedback',
-        'page callback'    => 'Drupal\quiz\Controller\QuizQuestionFeedbackController::staticCallback',
+        'file path'        => drupal_get_path('module', 'quiz'),
+        'file'             => 'quiz.pages.inc',
+        'page callback'    => 'quiz_question_feedback_page',
         'page arguments'   => array(1, 3),
         'access callback'  => 'quiz_question_feedback_access',
         'access arguments' => array(1, 3),

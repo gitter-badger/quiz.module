@@ -14,7 +14,7 @@ class HookMenu {
         'title'            => 'User results',
         'access callback'  => 'quiz_access_my_result',
         'access arguments' => array(1),
-        'page callback'    => 'Drupal\quiz\Controller\QuizUserResultController::staticCallback',
+        'page callback'    => 'quiz_result_page',
         'page arguments'   => array(1),
         'file'             => 'quiz.pages.inc',
     );
@@ -92,12 +92,12 @@ class HookMenu {
     // User pages.
     $items['user/%/quiz-results/%quiz_result/view'] = array(
         'title'            => 'User results',
-        'page callback'    => 'Drupal\quiz\Controller\QuizUserResultController::staticCallback',
-        'page arguments'   => array(3),
         'access arguments' => array(3),
         'access callback'  => 'quiz_access_my_result',
-        'type'             => MENU_CALLBACK,
         'file'             => 'quiz.pages.inc',
+        'page callback'    => 'quiz_result_page',
+        'page arguments'   => array(3),
+        'type'             => MENU_CALLBACK,
     );
 
     return $items;

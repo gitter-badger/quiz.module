@@ -12,16 +12,6 @@ class RevisionListingController {
     $this->quiz = $quiz;
   }
 
-  /**
-   * Page for selecting between several quiz revisions
-   *
-   * @return string
-   */
-  public static function staticCallback(QuizEntity $quiz) {
-    $obj = new self($quiz);
-    return $obj->render();
-  }
-
   public function render() {
     $vids = db_query('SELECT qr.vid'
       . ' FROM {quiz_entity_revision} qr'

@@ -2,7 +2,7 @@
 
 namespace Drupal\quiz\Controller;
 
-use Drupal\quiz\Entity\QuizEntity;
+use Drupal\quiz\Entity\Result;
 use Drupal\quiz\Helper\Quiz\TakingHelper;
 
 class QuizTakeQuestionController extends TakingHelper {
@@ -11,35 +11,10 @@ class QuizTakeQuestionController extends TakingHelper {
   private $question;
   private $page_number;
 
-  /** @var \Drupal\quiz\Entity\Result */
+  /** @var Result */
   private $result;
   private $quiz_uri;
   private $quiz_id;
-
-  /**
-   * Callback for quiz/%/take/%. Take a quiz questions.
-   *
-   * @param QuizEntity $quiz A quiz entity
-   * @param int $page_number
-   *   A question number, starting at 1. Pages do not have question numbers. Quiz
-   *   directions are considered part of the numbering.
-   */
-  public static function staticCallback($quiz, $page_number) {
-    $result = $layout_item = NULL;
-    $quiz_id = $quiz->qid;
-
-    if (isset($_SESSION['quiz'][$quiz_id]['result_id'])) {
-      $result = quiz_result_load($_SESSION['quiz'][$quiz_id]['result_id']);
-    }
-
-    // Load the page that the requested question belongs to.
-    if ($result && ($_layout_item = $result->getPageItem($page_number))) {
-      $layout_item = node_load($_layout_item['nid']);
-    }
-
-    $controller = new static($quiz, $result, $page_number, $layout_item);
-    return $controller->render();
-  }
 
   public function __construct($quiz, $result, $question_number, $question) {
     drupal_set_title($quiz->title);

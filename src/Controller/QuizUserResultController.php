@@ -2,9 +2,6 @@
 
 namespace Drupal\quiz\Controller;
 
-use Drupal\quiz\Entity\QuizEntity;
-use Drupal\quiz\Entity\Result;
-
 /**
  * Callback for:
  *
@@ -14,16 +11,6 @@ use Drupal\quiz\Entity\Result;
  * Show result page for a given result
  */
 class QuizUserResultController extends QuizResultBaseController {
-
-  /**
-   * @param Result $result
-   */
-  public static function staticCallback($result) {
-    $quiz = quiz_load($result->quiz_qid);
-    $quiz_revision = quiz_load($result->quiz_qid, $result->quiz_vid);
-    $obj = new static($quiz, $quiz_revision, $result);
-    return $obj->render();
-  }
 
   /**
    * Render user's result.
