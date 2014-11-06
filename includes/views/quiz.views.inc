@@ -20,7 +20,7 @@ function quiz_views_handlers() {
           'quiz_views_handler_field_takes'                => array(
               'parent' => 'views_handler_field',
           ),
-          'quiz_views_handler_field_node_link_take'       => array(
+          'quiz_views_handler_field_quiz_link_take'       => array(
               'parent' => 'views_handler_field_node_link',
           ),
           'quiz_views_handler_field_time'                 => array(
