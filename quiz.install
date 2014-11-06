@@ -497,9 +497,9 @@ function quiz_update_7509() {
 }
 
 /**
- * Update schema for quiz when it becomeds entity.
+ * Update schema for quiz when it becomes entity.
  */
-function quiz_update_7510() {
+function quiz_update_7600() {
   db_rename_table('quiz_node_relationship', 'quiz_relationship');
   db_change_field('quiz_relationship', 'qnr_id', 'qr_id', array('type' => 'serial', 'size' => 'normal', 'unsigned' => TRUE, 'not null' => TRUE));
   db_change_field('quiz_relationship', 'parent_nid', 'quiz_qid', array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE));
@@ -520,7 +520,7 @@ function quiz_update_7510() {
 /**
  * Convert quiz nodes to quiz entity
  */
-function quiz_update_7511() {
+function quiz_update_7601() {
   // create temp columns quiz_revision.{node_nid, node_vid} to save old data
   db_add_field('quiz_entity', 'node_nid', array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0));
   db_add_index('quiz_entity', 'quiz_node', array('node_qid'));
@@ -539,7 +539,7 @@ function quiz_update_7511() {
   $select->orderBy('r.vid', 'ASC');
   $result = $select->execute();
   while ($row = $result->fetchAll()) {
-    _quiz_update_7511($row);
+    _quiz_update_7601($row);
   }
 }
 
@@ -548,7 +548,7 @@ function quiz_update_7511() {
  *
  * @param stdClass $row
  */
-function _quiz_update_7511($row) {
+function _quiz_update_7601($row) {
   // find quiz revision
   if ($quiz_id = db_query('SELECT qid FROM {quiz_entity} WHERE node_nid = :nid', array(':nid' => $row->nid))) {
     $quiz = quiz_load($quiz_id);
@@ -574,7 +574,7 @@ function _quiz_update_7511($row) {
 /**
  * Convet quiz-node fields data to quiz entity
  */
-function quiz_update_7512() {
+function quiz_update_7602() {
   // quiz node type is defined by quiz.module, but this modules no longer powers
   // it. Reown to core 'node' module.
   db_update("UDPATE {node_type} set module = 'node' WHERE type='quiz'");
@@ -602,11 +602,11 @@ function quiz_update_7512() {
   $result = $select->execute();
   while ($row = $result->fetchAll()) {
     $quiz_node = node_load($row->nid, $row->vid);
-    _quiz_update_7512($quiz_node, $field_names);
+    _quiz_update_7602($quiz_node, $field_names);
   }
 }
 
-function _quiz_update_7512($quiz_node, $field_names) {
+function _quiz_update_7602($quiz_node, $field_names) {
   $sql = 'SELECT vid FROM {quiz_entity_revision} WHERE node_vid = :vid';
   if ($quiz_vid = db_query($sql, array(':vid' => $quiz_node->vid))->fetchColumn()) {
     $quiz = quiz_load(NULL, $quiz_vid);
@@ -629,7 +629,7 @@ function _quiz_update_7512($quiz_node, $field_names) {
 /**
  * Change path aliases from quiz-node to quiz-entity
  */
-function quiz_update_7513() {
+function quiz_update_7603() {
   $select = db_select('quiz_entity');
   $select->fields('quiz_entity', array('qid, node_nid'));
   $result = $select->execute();
@@ -644,7 +644,7 @@ function quiz_update_7513() {
 /**
  * Clean up data of when quiz was node.
  */
-function quiz_update_7514() {
+function quiz_update_7604() {
   # db_drop_table('quiz_node_properties');
   # delete all quiz nodes?
   # delete quiz node type?

@@ -119,7 +119,7 @@ function quiz_question_update_7500() {
 /**
  * Rename quiz_question_latest_quizzes.quiz_nid to quiz_question_latest_quizzes.quiz_qid
  */
-function quiz_question_update_7501() {
+function quiz_question_update_7601() {
   $specs = array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE); # @TODO: Missing specs
   db_change_field('quiz_question_latest_quizzes', 'quiz_nid', 'quiz_qid', $specs);
 }
