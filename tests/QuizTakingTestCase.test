@@ -1,6 +1,6 @@
 <?php
 
-class QuizEntityTakingTestCase extends QuizTestCase {
+class QuizTakingTestCase extends QuizTestCase {
 
   protected $extraModules = array('truefalse');
 
@@ -23,10 +23,7 @@ class QuizEntityTakingTestCase extends QuizTestCase {
         'review_options'       => array('question' => array('answer_feedback' => 'answer_feedback')),
     ));
 
-    $question_node = $this->drupalCreateNode(array(
-        'type'           => 'truefalse',
-        'correct_answer' => 1,
-    ));
+    $question_node = $this->drupalCreateNode(array('type' => 'truefalse', 'correct_answer' => 1));
     $this->linkQuestionToQuiz($question_node, $quiz);
 
     $this->drupalLogin($this->user);
