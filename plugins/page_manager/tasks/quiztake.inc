@@ -1,18 +1,19 @@
 <?php
 
+use Drupal\quiz\Entity\QuizEntity;
+
 /**
  * Specialized implementation of hook_page_manager_task_tasks(). See api-task.html for
  * more information.
  */
 function quiz_quiztake_page_manager_tasks() {
-
   return array(
       // This is a 'page' task and will fall under the page admin UI
       'task type'                => 'page',
       'title'                    => t('Take @quiz', array('@quiz' => QUIZ_NAME)),
       'admin title'              => t('The take page for @quiz.', array('@quiz' => QUIZ_NAME)),
       'admin description'        => t('When enabled, this overrides the default view at quiz/%quiz/take'),
-      'admin path'               => 'node/%node/take',
+      'admin path'               => 'quiz/%quiz/take',
       // Menu hooks so that we can alter the node/%node menu entry to point to us.
       'hook menu alter'          => 'quiz_quiztake_menu_alter',
       // This is task uses 'context' handlers and must implement these to give the
@@ -29,27 +30,26 @@ function quiz_quiztake_page_manager_tasks() {
 /**
  * Callback defined by quiz_quiztake_page_manager_tasks().
  *
- * Alter menu item so that node/%node/take comes here.
+ * Alter menu item so that quiz/%quiz/take comes here.
  */
 function quiz_quiztake_menu_alter(&$items, $task) {
-
   if (variable_get('quiz_quiztake_disabled', TRUE)) {
     return;
   }
 
-  $callback = $items['node/%node/take']['page callback'];
-  // Override the node edit handler for our purpose.
-  if ($callback == 'quiz_take' || variable_get('page_manager_override_anyway', FALSE)) {
-    $items['node/%node/take']['page callback'] = 'quiz_quiztake';
-    $items['node/%node/take']['file path'] = $task['path'];
-    $items['node/%node/take']['file'] = $task['file'];
+  $callback = $items['quiz/%quiz/take']['page callback'];
+
+  // Override the quiz edit handler for our purpose.
+  if ($callback === 'quiz_take' || variable_get('page_manager_override_anyway', FALSE)) {
+    $items['quiz/%quiz/take']['file path'] = $task['path'];
+    $items['quiz/%quiz/take']['file'] = $task['file'];
+    $items['quiz/%quiz/take']['page callback'] = 'quiz_quiztake';
   }
-  else {
-    //variable_set('quiz_quiztake_disabled', TRUE);
-    if (!empty($GLOBALS['page_manager_enabling_quiz'])) {
-      drupal_set_message(t('Page manager module is unable to enable Qui take Node because some other module already has overridden with %callback.', array('%callback' => $callback)), 'warning');
-    }
-    return;
+  elseif (!empty($GLOBALS['page_manager_enabling_quiz'])) {
+    $msg = t('Page manager module is unable to enable Quiz take entity because some other module already has overridden with %callback.', array(
+        '%callback' => $callback
+    ));
+    drupal_set_message($msg, 'warning');
   }
 }
 
@@ -59,22 +59,21 @@ function quiz_quiztake_menu_alter(&$items, $task) {
  * This function asks its assigned handlers who, if anyone, would like
  * to run with it. If no one does, it passes through to the main node draft page.
  */
-function quiz_quiztake($node) {
+function quiz_quiztake(QuizEntity $quiz) {
   // Load my task plugin
   $task = page_manager_get_task('quiztake');
 
   // Load the node into a context.
   ctools_include('context');
   ctools_include('context-task-handler');
-  $contexts = ctools_context_handler_get_task_contexts($task, '', array($node));
+  $contexts = ctools_context_handler_get_task_contexts($task, '', array($quiz));
 
-  $output = ctools_context_handler_render($task, '', $contexts, array($node->nid));
+  $output = ctools_context_handler_render($task, '', $contexts, array($quiz->nid));
   if ($output !== FALSE) {
     return $output;
   }
 
-  module_load_include('inc', 'quiz', 'quiz.node');
-  $function = 'quiz_take';
+  $function = 'Drupal\quiz\Controller\QuizTakeController::staticCallback';
   foreach (module_implements('page_manager_override') as $module) {
     $call = $module . '_page_manager_override';
     if (($rc = $call('quiz')) && function_exists($rc)) {
@@ -83,8 +82,7 @@ function quiz_quiztake($node) {
     }
   }
 
-  // Otherwise, fall back.
-  return $function($node);
+  return $function($quiz);
 }
 
 /**
@@ -92,6 +90,7 @@ function quiz_quiztake($node) {
  */
 function quiz_quiztake_enable($cache, $status) {
   variable_set('quiz_quiztake_disabled', $status);
+
   // Set a global flag so that the menu routine knows it needs
   // to set a message if enabling cannot be done.
   if (!$status) {
@@ -108,10 +107,10 @@ function quiz_quiztake_enable($cache, $status) {
 function quiz_quiztake_get_arguments($task, $subtask_id) {
   return array(
       array(
-          'keyword'    => 'node',
-          'identifier' => t('Node being taken'),
+          'keyword'    => 'quiz_entity',
+          'identifier' => t('@quiz being taken', array('@quiz' => QUIZ_NAME)),
           'id'         => 1,
-          'name'       => 'entity_id:node',
+          'name'       => 'entity_id:quiz_entity',
           'settings'   => array(),
       ),
   );
@@ -121,5 +120,7 @@ function quiz_quiztake_get_arguments($task, $subtask_id) {
  * Callback to get context placeholders provided by this handler.
  */
 function quiz_quiztake_get_contexts($task, $subtask_id) {
-  return ctools_context_get_placeholders_from_argument(page_manager_node_view_get_arguments($task, $subtask_id));
+  return ctools_context_get_placeholders_from_argument(
+    quiz_quiztake_get_arguments($task, $subtask_id)
+  );
 }
