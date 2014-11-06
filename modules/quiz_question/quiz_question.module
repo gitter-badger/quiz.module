@@ -224,6 +224,7 @@ function _quiz_question_get_instance(&$node, $use_cached = FALSE) {
 function _quiz_question_response_get_instance($result_id, $question, $answer = NULL, $nid = NULL, $vid = NULL) {
   // We cache responses to improve performance
   static $quiz_responses = array();
+
   if (is_object($question) && isset($quiz_responses[$result_id][$question->vid])) {
     // We refresh the question node in case it has been changed since we cached the response
     $quiz_responses[$result_id][$question->vid]->refreshQuestionNode($question);
@@ -236,24 +237,30 @@ function _quiz_question_response_get_instance($result_id, $question, $answer = N
       return $quiz_responses[$result_id][$vid];
     }
   }
+
   if (!isset($quiz_responses[$result_id])) {
     // Prepare to cache responses for this result id
     $quiz_responses[$result_id] = array();
   }
+
   // If the question node isn't set we fetch it from the QuizQuestion instance this responce belongs to
   if (!isset($question)) {
     $question_node = node_load($nid, $vid);
     $question = _quiz_question_get_instance($question_node, TRUE)->node;
   }
+
   if (!$question) {
     return FALSE;
   }
+
   $info = _quiz_question_get_implementations();
   $constructor = $info[$question->type]['response provider'];
   $to_return = new $constructor($result_id, $question, $answer);
+
   // All responce classes must extend QuizQuestionResponse
   if (!($to_return instanceof QuizQuestionResponse)) {
-    drupal_set_message(t('The question-response isn\'t a QuizQuestionResponse. It needs to extend the QuizQuestionResponse interface, or extend the abstractQuizQuestionResponse class.'), 'error', FALSE);
+    $msg = t('The question-response isn\'t a QuizQuestionResponse. It needs to extend the QuizQuestionResponse interface, or extend the abstractQuizQuestionResponse class.');
+    drupal_set_message($msg, 'error', FALSE);
   }
   // Cache the responce instance
   $quiz_responses[$result_id][$question->vid] = $to_return;

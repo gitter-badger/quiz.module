@@ -1,58 +1,34 @@
 <?php
 
 /**
- * The installer file for quiz_question.
  * @file
+ * quiz_question.install
+ *
+ * The installer file for quiz_question.
  */
-
-/**
- * Implements hook_install().
- */
-function quiz_question_install() {
-
-}
 
 /**
  * Implements hook_schema().
  */
 function quiz_question_schema() {
   $schema = array();
+
   $schema['quiz_question_properties'] = array(
-      'description' => 'Properties common for all quizzes',
+      'description' => 'Properties common for all quizzes.',
       'fields'      => array(
-          'qqp_id'          => array(
-              'type' => 'serial',
-          ),
-          'nid'             => array(
-              'type'     => 'int',
-              'unsigned' => TRUE,
-              'not null' => TRUE,
-          ),
-          'vid'             => array(
-              'type'     => 'int',
-              'unsigned' => TRUE,
-              'not null' => TRUE,
-          ),
-          'max_score'       => array(
-              'type'     => 'int',
-              'unsigned' => TRUE,
-              'default'  => 0,
-          ),
-          'feedback'        => array(
-              'type' => 'text',
-          ),
-          'feedback_format' => array(
-              'type'     => 'varchar',
-              'length'   => 255,
-              'not null' => FALSE,
-          ),
+          'qqp_id'          => array('type' => 'serial'),
+          'nid'             => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE,),
+          'vid'             => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE),
+          'max_score'       => array('type' => 'int', 'unsigned' => TRUE, 'default' => 0),
+          'feedback'        => array('type' => 'text'),
+          'feedback_format' => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE),
       ),
       'primary key' => array('qqp_id'),
       'indexes'     => array('question_id' => array('vid', 'nid')),
   );
 
   $schema['quiz_question_latest_quizzes'] = array(
-      'description' => 'Stores the latest quizzes each user has been involved in',
+      'description' => 'Stores the latest quizzes each user has been involved in.',
       'fields'      => array(
           'id'       => array('type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE),
           'quiz_qid' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE),
@@ -60,27 +36,18 @@ function quiz_question_schema() {
       ),
       'primary key' => array('id'),
   );
+
+//  $schema[] = array(
+//  );
+
   return $schema;
 }
-
-/**
- * Implements hook_uninstall().
- */
-function quiz_question_uninstall() {
-
-}
-
-/**
- * Implements hook_update_N()
- */
 
 /**
  * Make the question body visible by default for the question view mode
  */
 function quiz_question_update_7401() {
-  $question_types = array_keys(_quiz_question_get_implementations());
-
-  foreach ($question_types as $question_type) {
+  foreach (array_keys(_quiz_question_get_implementations()) as $question_type) {
     $instance = field_read_instance('node', 'body', $question_type);
 
     $instance['display']['question'] = array(
@@ -120,6 +87,6 @@ function quiz_question_update_7500() {
  * Rename quiz_question_latest_quizzes.quiz_nid to quiz_question_latest_quizzes.quiz_qid
  */
 function quiz_question_update_7601() {
-  $specs = array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE); # @TODO: Missing specs
+  $specs = array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE);
   db_change_field('quiz_question_latest_quizzes', 'quiz_nid', 'quiz_qid', $specs);
 }

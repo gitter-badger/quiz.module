@@ -18,9 +18,7 @@ function quiz_question_entity_info() {
           'label'                  => t('Quiz question properties'),
           'controller class'       => 'EntityAPIController',
           'base table'             => 'quiz_question_properties',
-          'entity keys'            => array(
-              'id' => 'qqp_id',
-          ),
+          'entity keys'            => array('id' => 'qqp_id'),
           'views controller class' => 'EntityDefaultViewsController',
       ),
   );
