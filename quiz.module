@@ -79,6 +79,15 @@ function quiz_result_controller() {
 }
 
 /**
+ * Get controller for answer entity.
+ *
+ * @return \Drupal\quiz\Entity\AnswerController
+ */
+function quiz_answer_controller() {
+  return entity_get_controller('quiz_result_answer');
+}
+
+/**
  * Gets an array of all quiz types, keyed by the type name.
  *
  * @return \Drupal\quiz\Entity\QuizEntityType[]
@@ -160,13 +169,6 @@ function quiz_has_been_answered($quiz) {
 }
 
 /**
- * Load a specific result answer.
- */
-function quiz_result_answer_load($result_id, $question_nid, $question_vid) {
-  return quiz()->getQuizHelper()->getResultHelper()->loadAnswerResult($result_id, $question_nid, $question_vid);
-}
-
-/**
  * Action to add questions to the current quiz.
  */
 function quiz_add_question_to_quiz($question) {
@@ -202,8 +204,10 @@ function quiz_question_module_for_type($question_type) {
  *   TRUE if the question has been answered in the attempt.
  */
 function quiz_result_is_question_answered($result, $question) {
-  $answer = quiz_result_answer_load($result->result_id, $question->nid, $question->vid);
-  return !empty($answer->answer_timestamp);
+  if ($answer = quiz_answer_controller()->loadByResultAndQuestion($result->result_id, $question->vid)) {
+    return !empty($answer->answer_timestamp);
+  }
+  return FALSE;
 }
 
 // ---------------------

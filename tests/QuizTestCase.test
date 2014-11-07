@@ -111,7 +111,7 @@ abstract class QuizTestCase extends DrupalWebTestCase {
             'end' => drupal_map_assoc(array_keys(quiz()->getQuizHelper()->getFeedbackHelper()->getOptions()))
         ),
     ));
-    entity_save('quiz_entity', $quiz);
+    $quiz->save();
     return $quiz;
   }
 

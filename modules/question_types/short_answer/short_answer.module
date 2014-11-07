@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\quiz\Entity\Result;
+
 /**
  * The main file for short_answer.
  *
@@ -23,11 +25,11 @@ function short_answer_help($path, $args) {
  */
 function short_answer_permission() {
   return array(
-    'use regex for short answer' => array(
-      'title' => t('use regex for short answer'),
-      'description' => t('Use PHP "regular expressions" the advanced option for automated response evaluation.'),
-      'restrict access' => TRUE,
-    ),
+      'use regex for short answer' => array(
+          'title'           => t('use regex for short answer'),
+          'description'     => t('Use PHP "regular expressions" the advanced option for automated response evaluation.'),
+          'restrict access' => TRUE,
+      ),
   );
 }
 
@@ -36,24 +38,24 @@ function short_answer_permission() {
  */
 function short_answer_menu() {
   $items['admin/quiz/reports/score-short-answer'] = array(
-    'title' => 'Score short answer questions',
-    'description' => 'Score the answers from quizzes that use short answer questions.',
-    'page callback' => 'short_answer_view_unscored',
-    'access arguments' => array('score any quiz', 'score own quiz', 'score taken quiz answer'),
-    'access callback' => 'quiz_access_multi_or',
-    'type' => MENU_NORMAL_ITEM,
-    'file' => 'short_answer.admin.inc',
+      'title'            => 'Score short answer questions',
+      'description'      => 'Score the answers from quizzes that use short answer questions.',
+      'page callback'    => 'short_answer_view_unscored',
+      'access arguments' => array('score any quiz', 'score own quiz', 'score taken quiz answer'),
+      'access callback'  => 'quiz_access_multi_or',
+      'type'             => MENU_NORMAL_ITEM,
+      'file'             => 'short_answer.admin.inc',
   );
   // Pass vid and rid to this path.
   $items['admin/quiz/reports/score-short-answer/%/%'] = array(
-    'title' => 'Score short answer response',
-    'description' => 'Score a response to a short answer question.',
-    'page callback' => 'short_answer_edit_score',
-    'page arguments' => array(4, 5),
-    'type' => MENU_NORMAL_ITEM,
-    'access arguments' => array(4, 5),
-    'access callback' => 'quiz_question_access_to_score',
-    'file' => 'short_answer.admin.inc'
+      'title'            => 'Score short answer response',
+      'description'      => 'Score a response to a short answer question.',
+      'page callback'    => 'short_answer_edit_score',
+      'page arguments'   => array(4, 5),
+      'type'             => MENU_NORMAL_ITEM,
+      'access arguments' => array(4, 5),
+      'access callback'  => 'quiz_question_access_to_score',
+      'file'             => 'short_answer.admin.inc'
   );
 
   return $items;
@@ -64,13 +66,13 @@ function short_answer_menu() {
  */
 function short_answer_quiz_question_info() {
   return array(
-    'short_answer' => array(
-      'name' => t('Short answer question'),
-      'description' => t('Quiz questions that allow a user to enter a line of text.'),
-      'question provider' => 'ShortAnswerQuestion',
-      'response provider' => 'ShortAnswerResponse',
-      'module' => 'quiz_question', // All wrapper functions are in that module.
-    ),
+      'short_answer' => array(
+          'name'              => t('Short answer question'),
+          'description'       => t('Quiz questions that allow a user to enter a line of text.'),
+          'question provider' => 'ShortAnswerQuestion',
+          'response provider' => 'ShortAnswerResponse',
+          'module'            => 'quiz_question', // All wrapper functions are in that module.
+      ),
   );
 }
 
@@ -79,10 +81,10 @@ function short_answer_quiz_question_info() {
  */
 function short_answer_quiz_question_config() {
   $form['short_answer_default_max_score'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Default max score'),
-    '#description' => t('Choose the default maximum score for a short answer question.'),
-    '#default_value' => variable_get('short_answer_default_max_score', 5),
+      '#type'          => 'textfield',
+      '#title'         => t('Default max score'),
+      '#description'   => t('Choose the default maximum score for a short answer question.'),
+      '#default_value' => variable_get('short_answer_default_max_score', 5),
   );
   $form['#validate'][] = 'short_answer_config_validate';
   return $form;
@@ -103,26 +105,26 @@ function short_answer_config_validate($form, $form_state) {
 function short_answer_theme($existing, $type, $theme, $path) {
   $module_path = drupal_get_path('module', 'short_answer');
   return array(
-    'short_answer_view_unscored' => array(
-      'variables' => array('unscored' => array()),
-      'path' => $module_path . '/theme',
-      'file' => 'short_answer.theme.inc',
-    ),
-    'short_answer_response_form' => array(
-      'render element' => 'form',
-      'path' => $module_path . '/theme',
-      'file' => 'short_answer.theme.inc',
-    ),
-    'short_answer_user_answer' => array(
-      'variables' => array('answer' => NULL, 'correct' => NULL),
-      'path' => $module_path . '/theme',
-      'file' => 'short_answer.theme.inc',
-    ),
-    'short_answer_answering_form' => array(
-      'render element' => 'form',
-      'path' => $module_path . '/theme',
-      'template' => 'short-answer-answering-form',
-    ),
+      'short_answer_view_unscored'  => array(
+          'variables' => array('unscored' => array()),
+          'path'      => $module_path . '/theme',
+          'file'      => 'short_answer.theme.inc',
+      ),
+      'short_answer_response_form'  => array(
+          'render element' => 'form',
+          'path'           => $module_path . '/theme',
+          'file'           => 'short_answer.theme.inc',
+      ),
+      'short_answer_user_answer'    => array(
+          'variables' => array('answer' => NULL, 'correct' => NULL),
+          'path'      => $module_path . '/theme',
+          'file'      => 'short_answer.theme.inc',
+      ),
+      'short_answer_answering_form' => array(
+          'render element' => 'form',
+          'path'           => $module_path . '/theme',
+          'template'       => 'short-answer-answering-form',
+      ),
   );
 }
 
@@ -133,14 +135,12 @@ function short_answer_theme($existing, $type, $theme, $path) {
  * The function updates all of the necessary data sources so that the individual answer results should be
  * reflected in the total scoring table.
  *
- * @param $quiz
- *  Quiz entity.
+ * @param Result $result
+ * @param \Drupal\quiz\Entity\QuizEntity $quiz
  * @param $nid
  *  Node ID of question.
  * @param $vid
  *  Version ID of question.
- * @param $result_id
- *  Result ID for the quiz results.
  * @param $score
  *  The numeric score to assign the result.
  * @param $update_total
@@ -149,27 +149,38 @@ function short_answer_theme($existing, $type, $theme, $path) {
  * @return int
  *  Number of scores adjusted. If a change was made, this should be 1.
  */
-function short_answer_score_an_answer($values, $update_total = TRUE) {
+function short_answer_score_an_answer(Result $result, $values, $update_total = TRUE) {
   extract($values);
-  // When we set the score we make sure that the max score in the quiz the question belongs to is considered
-  $question_max_score = db_query('SELECT max_score FROM {quiz_question_properties} WHERE nid = :nid AND vid = :vid', array(':nid' => $nid, ':vid' => $vid))->FetchField();
 
-  $quiz_max_score = db_query('SELECT max_score FROM {quiz_relationship} WHERE quiz_vid = :pvid AND question_vid = :cvid', array(':pvid' => $quiz->vid, ':cvid' => $vid))->fetchField();
+  // When we set the score we make sure that the max score in the quiz the question belongs to is considered
+  $question_max_score = db_query(
+    'SELECT max_score '
+    . ' FROM {quiz_question_properties} '
+    . ' WHERE nid = :nid AND vid = :vid', array(':vid' => $vid))->FetchField();
+
+  $quiz_max_score = db_query(
+    'SELECT max_score '
+    . ' FROM {quiz_relationship} '
+    . ' WHERE quiz_vid = :pvid AND question_vid = :cvid', array(
+      ':pvid' => $quiz->vid,
+      ':cvid' => $vid))->fetchField();
 
   $changed = db_update('quiz_short_answer_user_answers')
     ->fields(array(
-      'score' => $score * $question_max_score / $quiz_max_score,
-      'is_evaluated' => 1,
-      'answer_feedback' => empty($answer_feedback['value']) ? '' : $answer_feedback['value'],
-      'answer_feedback_format' => empty($answer_feedback['format']) ? '' : $answer_feedback['format'],
+        'score'                  => $score * $question_max_score / $quiz_max_score,
+        'is_evaluated'           => 1,
+        'answer_feedback'        => empty($answer_feedback['value']) ? '' : $answer_feedback['value'],
+        'answer_feedback_format' => empty($answer_feedback['format']) ? '' : $answer_feedback['format'],
     ))
-    ->condition('question_nid', $nid)
     ->condition('question_vid', $vid)
-    ->condition('result_id', $result_id)
+    ->condition('result_id', $result->result_id)
     ->execute();
   // Now the short answer user data has been updated. We also need to update the data in the quiz tables
   if ($changed > 0) {
-    $max = db_query('SELECT max_score FROM {quiz_question_properties} WHERE vid = :vid', array(':vid' => $vid))->fetchField();
+    $max = db_query('SELECT max_score'
+      . ' FROM {quiz_question_properties} '
+      . ' WHERE vid = :vid', array(
+        ':vid' => $vid))->fetchField();
     if ($max <= 0) {
       $is_correct = 0;
       $points_awarded = 0;
@@ -181,26 +192,29 @@ function short_answer_score_an_answer($values, $update_total = TRUE) {
 
     db_update('quiz_results_answers')
       ->fields(array(
-        'points_awarded' => $points_awarded,
-        'is_correct' => $is_correct,
+          'points_awarded' => $points_awarded,
+          'is_correct'     => $is_correct,
       ))
       ->condition('question_vid', $vid)
-      ->condition('result_id', $result_id)
+      ->condition('result_id', $result->result_id)
       ->execute();
 
     // Third, we update the main quiz results table
     if ($update_total) {
-      quiz()->getQuizHelper()->getResultHelper()->updateTotalScore($quiz, $result_id);
+      quiz_result_controller()->getScoreIO()->updateTotalScore($result);
     }
   }
   return $changed;
 }
 
 /**
- * Submit the result report for short answer
+ * Submit the result report for short answer.
+ *
+ * @see ShortAnswerResponse::getReportFormSubmit(),
  */
 function short_answer_report_submit($values) {
-  short_answer_score_an_answer($values, FALSE);
+  $result = quiz_result_load($values['result_id']);
+  short_answer_score_an_answer($result, $values, FALSE);
 }
 
 /**
@@ -240,13 +254,13 @@ function short_answer_get_answer($question_nid, $question_vid, $result_id) {
  */
 function short_answer_field_extra_fields() {
   $extra['node']['short_answer'] = array(
-    'form' => array(
-      'answer' => array(
-        'label' => t('Answer'),
-        'description' => t('Provide the answer and the method by which the answer will be evaluated.'),
-        'weight' => -4,
+      'form' => array(
+          'answer' => array(
+              'label'       => t('Answer'),
+              'description' => t('Provide the answer and the method by which the answer will be evaluated.'),
+              'weight'      => -4,
+          ),
       ),
-    ),
   );
   return $extra;
 }

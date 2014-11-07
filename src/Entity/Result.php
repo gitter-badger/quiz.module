@@ -6,18 +6,56 @@ use Entity;
 
 class Result extends Entity {
 
+  /** @var int */
   public $result_id;
+
+  /** @var \Drupal\quiz\Entity\QuizEntity */
+  private $quiz;
+
+  /** @var int */
   public $quiz_qid;
+
+  /** @var int */
   public $quiz_vid;
+
+  /** @var int Author ID */
   public $uid;
+
+  /** @var int Start timestamp */
   public $time_start;
+
+  /** @var int End timestamp */
   public $time_end;
+
+  /** @var bool */
   public $released;
+
+  /** @var ??? */
   public $score;
+
+  /** @var bool */
   public $is_invalid;
+
+  /** @var bool */
   public $is_evaluated;
+
+  /** @var int */
   public $time_left;
+
+  /** @var array */
   public $layout = array();
+
+  /**
+   * Get quiz entity.
+   * 
+   * @return \Drupal\quiz\Entity\QuizEntity
+   */
+  public function getQuiz() {
+    if (NULL == $this->quiz) {
+      $this->quiz = quiz_load(NULL, $this->quiz_vid);
+    }
+    return $this->quiz;
+  }
 
   public function countPages() {
     $count = 0;
@@ -69,7 +107,6 @@ class Result extends Entity {
   /**
    * Dtermine if a user has access to view a specific quiz result.
    *
-   * @param \Drupal\quiz\Entity\Result|int $result
    * @return boolean
    *  True if access, false otherwise
    */
@@ -79,9 +116,7 @@ class Result extends Entity {
       return TRUE;
     }
 
-    if ($this->canAccessOwnScore($account)) {
-      return TRUE;
-    }
+    return $this->canAccessOwnScore($account) ? TRUE : FALSE;
   }
 
 }

@@ -147,7 +147,7 @@ class DefaultPropertiesIO extends FormHelper {
   private function saveQuizSettings(QuizEntity $quiz) {
     $quiz->title = '';
     $quiz->status = -1;
-    return entity_save('quiz_entity', $quiz);
+    return $quiz->save();
   }
 
 }

@@ -568,7 +568,7 @@ function _quiz_update_7601($row) {
 
   $quiz->is_new_revision = 1;
   $quiz->log = $row->log;
-  entity_save('quiz_entity', $quiz);
+  $quiz->save();
 }
 
 /**
@@ -622,7 +622,7 @@ function _quiz_update_7602($quiz_node, $field_names) {
         $quiz->{$field_name} = $quiz_node->{$field_name};
       }
     }
-    entity_save('quiz_entity', $quiz);
+    $quiz->save();
   }
 }
 

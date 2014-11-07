@@ -150,7 +150,7 @@ class QuizTakingTestCase extends QuizTestCase {
 
     // Restrict change after answer.
     $quiz->allow_change = 0;
-    entity_save('quiz_entity', $quiz);
+    $quiz->save();
 
     // Check that the answer cannot be changed.
     $this->drupalGet("quiz/{$quiz->qid}/take/1");

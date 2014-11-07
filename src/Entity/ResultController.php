@@ -3,34 +3,36 @@
 namespace Drupal\quiz\Entity;
 
 use DatabaseTransaction;
+use Drupal\quiz\Entity\Result\ScoreIO;
+use Drupal\quiz\Entity\Result\Writer;
 use EntityAPIController;
 
 class ResultController extends EntityAPIController {
 
-  private $score_calculator;
+  private $score_io;
 
-  /** @var \Drupal\quiz\Entity\Result\Writer */
+  /** @var Writer */
   private $writer;
 
   public function getWriter() {
     if (NULL === $this->writer) {
-      $this->writer = new \Drupal\quiz\Entity\Result\Writer();
+      $this->writer = new Writer();
     }
     return $this->writer;
   }
 
   /**
-   * @return \Drupal\quiz\Entity\Result\ScoreCalculator
+   * @return ScoreIO
    */
-  public function getScoreCalculator() {
-    if (NULL === $this->score_calculator) {
-      $this->score_calculator = new \Drupal\quiz\Entity\Result\ScoreCalculator();
+  public function getScoreIO() {
+    if (NULL === $this->score_io) {
+      $this->score_io = new ScoreIO();
     }
-    return $this->score_calculator;
+    return $this->score_io;
   }
 
   public function setScoreCalculator($score_calculator) {
-    $this->score_calculator = $score_calculator;
+    $this->score_io = $score_calculator;
     return $this;
   }
 

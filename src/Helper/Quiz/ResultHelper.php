@@ -7,62 +7,6 @@ use Drupal\quiz\Entity\QuizEntity;
 class ResultHelper {
 
   /**
-   * Update a score for a quiz.
-   *
-   * This updates the quiz entity results table.
-   *
-   * It is used in cases where a quiz score is changed after the quiz has been
-   * taken. For example, if a long answer question is scored later by a human,
-   * then the quiz should be updated when that answer is scored.
-   *
-   * Important: The value stored in the table is the *percentage* score.
-   *
-   * @param $quiz
-   *   The quiz entity for the quiz that is being scored.
-   * @param $result_id
-   *   The result ID to update.
-   * @return
-   *   The score as an integer representing percentage. E.g. 55 is 55%.
-   */
-  public function updateTotalScore(QuizEntity $quiz, $result_id) {
-    global $user;
-
-    $score = quiz_result_controller()->getScoreCalculator()->calculate($quiz, $result_id);
-    db_update('quiz_results')
-      ->fields(array('score' => $score['percentage_score']))
-      ->condition('result_id', $result_id)
-      ->execute();
-
-    if ($score['is_evaluated']) {
-      // Call hook_quiz_scored().
-      module_invoke_all('quiz_scored', $quiz, $score, $result_id);
-
-      $this->maintainResult($user, $quiz, $result_id);
-      db_update('quiz_results')
-        ->fields(array('is_evaluated' => 1))
-        ->condition('result_id', $result_id)
-        ->execute();
-    }
-
-    return $score['percentage_score'];
-  }
-
-  /**
-   * Load a specific result answer.
-   */
-  public function loadAnswerResult($result_id, $question_nid, $question_vid) {
-    $sql = 'SELECT * '
-      . ' FROM {quiz_results_answers} '
-      . ' WHERE result_id = :result_id '
-      . '   AND question_nid = :nid '
-      . '   AND question_vid = :vid';
-    $params = array(':result_id' => $result_id, ':nid' => $question_nid, ':vid' => $question_vid);
-    if ($row = db_query($sql, $params)->fetch()) {
-      return entity_load_single('quiz_result_answer', $row->result_answer_id);
-    }
-  }
-
-  /**
    * Deletes results for a quiz according to the keep results setting
    *
    * @param QuizEntity $quiz
@@ -131,34 +75,6 @@ class ResultHelper {
         entity_delete_multiple('quiz_result', $result_ids);
         return !empty($result_ids);
     }
-  }
-
-  /**
-   * Delete quiz responses for quizzes that haven't been finished.
-   *
-   * This was _quiz_delete_old_in_progress()
-   *
-   * @param $quiz
-   *   A quiz entity where old in progress results shall be deleted.
-   * @param $uid
-   *   The userid of the user the old in progress results belong to.
-   */
-  public function deleteIncompletedResultsByUserId($quiz, $uid) {
-    $res = db_query('SELECT qnr.result_id
-          FROM {quiz_results} qnr
-          WHERE qnr.uid = :uid
-            AND qnr.quiz_qid = :qid
-            AND qnr.time_end = :time_end
-            AND qnr.quiz_vid < :vid', array(
-        ':uid'      => $uid,
-        ':qid'      => $quiz->qid,
-        ':time_end' => 1,
-        ':vid'      => $quiz->vid));
-    $result_ids = array();
-    while ($result_id = $res->fetchField()) {
-      $result_ids[] = $result_id;
-    }
-    entity_delete_multiple('quiz_result', $result_ids);
   }
 
 }

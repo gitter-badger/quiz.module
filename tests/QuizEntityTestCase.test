@@ -50,14 +50,14 @@ class QuizEntityTestCase extends QuizTestCase {
     // ---------------------
     // Insert entity
     // ---------------------
-    entity_save('quiz_entity', $quiz);
+    $quiz->save();
     $this->assertNotNull($quiz, 'Quiz entity is created successully.');
 
     // ---------------------
     // Update entity
     // ---------------------
     $quiz->title = 'Updated demo quiz';
-    entity_save('quiz_entity', $quiz);
+    $quiz->save();
 
     // Reload entity
     $quiz = entity_load_single('quiz_entity', $quiz->identifier());
@@ -72,7 +72,7 @@ class QuizEntityTestCase extends QuizTestCase {
     $quiz->title .= ' [new revision]';
     $quiz->is_new_revision = true;
     $quiz->log = 'Trying revision supporting';
-    entity_save('quiz_entity', $quiz);
+    $quiz->save();
 
     // Load old revision
     $quiz_1 = quiz_load($quiz->qid, $old_revision_id);
