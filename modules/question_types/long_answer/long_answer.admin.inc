@@ -162,10 +162,10 @@ function long_answer_score_form_validate($form, $form_state) {
  * Submit handler for the long answer score form
  */
 function long_answer_score_form_submit($form, &$form_state) {
-  $result_object = quiz_result_load($form_state['values']['result_id']);
+  $result = quiz_result_load($form_state['values']['result_id']);
 
   $return = long_answer_score_an_answer(array(
-      'quiz'            => quiz_load($result_object->quiz_qid, $result_object->quiz_vid),
+      'quiz'            => $result->getQuiz(),
       'nid'             => $form_state['values']['question_nid'],
       'vid'             => $form_state['values']['question_vid'],
       'result_id'       => $form_state['values']['result_id'],

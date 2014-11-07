@@ -3,6 +3,7 @@
 namespace Drupal\quiz\Entity\Result;
 
 use Drupal\quiz\Entity\QuizEntity;
+use Drupal\quiz\Entity\Result;
 use stdClass;
 
 class ScoreCalculator {
@@ -80,6 +81,46 @@ class ScoreCalculator {
         'percentage_score' => ($possible_score == 0) ? 0 : round(($total_score * 100) / $possible_score),
         'is_evaluated'     => $is_evaluated,
     );
+  }
+
+  /**
+   * Update a score for a quiz.
+   *
+   * This updates the quiz entity results table.
+   *
+   * It is used in cases where a quiz score is changed after the quiz has been
+   * taken. For example, if a long answer question is scored later by a human,
+   * then the quiz should be updated when that answer is scored.
+   *
+   * Important: The value stored in the table is the *percentage* score.
+   *
+   * @param Result $result
+   *
+   * @return
+   *   The score as an integer representing percentage. E.g. 55 is 55%.
+   */
+  public function updateTotalScore(Result $result) {
+    global $user;
+
+    $quiz = $result->getQuiz();
+    $score = $this->calculate($quiz, $result->result_id);
+
+    db_update('quiz_results')
+      ->fields(array('score' => $score['percentage_score']))
+      ->condition('result_id', $result->result_id)
+      ->execute();
+
+    if ($score['is_evaluated']) {
+      module_invoke_all('quiz_scored', $quiz, $score, $result->result_id);
+      quiz()->getQuizHelper()->getResultHelper()->maintainResult($user, $quiz, $result->result_id);
+
+      db_update('quiz_results')
+        ->fields(array('is_evaluated' => 1))
+        ->condition('result_id', $result->result_id)
+        ->execute();
+    }
+
+    return $score['percentage_score'];
   }
 
 }
