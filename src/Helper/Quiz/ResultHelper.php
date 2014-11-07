@@ -50,7 +50,7 @@ class ResultHelper {
   /**
    * Load a specific result answer.
    */
-  public function loadAnswerResult($result_id, $question_nid, $question_vid) {
+  public function loadAnswer($result_id, $question_nid, $question_vid) {
     $sql = 'SELECT * '
       . ' FROM {quiz_results_answers} '
       . ' WHERE result_id = :result_id '
