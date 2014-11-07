@@ -6,7 +6,7 @@ use Drupal\quiz\Entity\QuizEntity;
 use Drupal\quiz\Entity\Result;
 use stdClass;
 
-class ScoreCalculator {
+class ScoreIO {
 
   /**
    * Calculates the score user received on quiz.

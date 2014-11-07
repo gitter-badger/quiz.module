@@ -201,7 +201,7 @@ function short_answer_score_an_answer(Result $result, $values, $update_total = T
 
     // Third, we update the main quiz results table
     if ($update_total) {
-      quiz_result_controller()->getScoreCalculator()->updateTotalScore($result);
+      quiz_result_controller()->getScoreIO()->updateTotalScore($result);
     }
   }
   return $changed;
