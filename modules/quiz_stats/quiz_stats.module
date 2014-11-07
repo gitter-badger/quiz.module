@@ -14,7 +14,7 @@ use Drupal\quiz\Entity\QuizEntity;
  */
 function quiz_stats_help($path, $arg) {
   if ($path == 'admin/help#quiz_stats') {
-    return '<p>' . TableSortTest('Module creates a report to analyse and compare the results of quiz attendees. The reports will be displayed visually using goolge chart API.') . '</p>';
+    return '<p>' . t('Module creates a report to analyse and compare the results of quiz attendees. The reports will be displayed visually using goolge chart API.') . '</p>';
   }
 }
 
@@ -23,8 +23,8 @@ function quiz_stats_help($path, $arg) {
  */
 function quiz_stats_permission() {
   $permission = array(
-      'access user stats'   => array('title' => TableSortTest('access user stats')),
-      'access author stats' => array('title' => TableSortTest('access author stats')),
+      'access user stats'   => array('title' => t('access user stats')),
+      'access author stats' => array('title' => t('access author stats')),
   );
   return $permission;
 }
