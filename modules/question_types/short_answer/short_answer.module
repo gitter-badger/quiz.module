@@ -156,7 +156,7 @@ function short_answer_score_an_answer(Result $result, $values, $update_total = T
   $question_max_score = db_query(
     'SELECT max_score '
     . ' FROM {quiz_question_properties} '
-    . ' WHERE nid = :nid AND vid = :vid', array(':vid' => $vid))->FetchField();
+    . ' WHERE vid = :vid', array(':vid' => $vid))->FetchField();
 
   $quiz_max_score = db_query(
     'SELECT max_score '
