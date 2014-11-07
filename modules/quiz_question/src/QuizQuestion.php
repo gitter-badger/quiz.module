@@ -367,7 +367,7 @@ abstract class QuizQuestion {
       if (quiz_has_been_answered($quiz)) {
         // We need to revise the quiz if it has been answered
         $quiz->is_new_revision = 1;
-        entity_save('quiz_entity', $quiz);
+        $quiz->save();
 
         $ids[0] = $quiz_id;
         $ids[1] = $quiz->vid;

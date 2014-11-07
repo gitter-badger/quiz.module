@@ -9,14 +9,30 @@ class Result extends Entity {
   public $result_id;
   public $quiz_qid;
   public $quiz_vid;
+
+  /** @var int Author ID */
   public $uid;
+
+  /** @var int Start timestamp */
   public $time_start;
+
+  /** @var int End timestamp */
   public $time_end;
+
+  /** @var bool */
   public $released;
   public $score;
+
+  /** @var bool */
   public $is_invalid;
+
+  /** @var bool */
   public $is_evaluated;
+
+  /** @var int */
   public $time_left;
+
+  /** @var array */
   public $layout = array();
 
   public function countPages() {
@@ -69,7 +85,6 @@ class Result extends Entity {
   /**
    * Dtermine if a user has access to view a specific quiz result.
    *
-   * @param \Drupal\quiz\Entity\Result|int $result
    * @return boolean
    *  True if access, false otherwise
    */
@@ -79,9 +94,7 @@ class Result extends Entity {
       return TRUE;
     }
 
-    if ($this->canAccessOwnScore($account)) {
-      return TRUE;
-    }
+    return $this->canAccessOwnScore($account) ? TRUE : FALSE;
   }
 
 }

@@ -186,7 +186,7 @@ class QuizCategorizedForm extends BaseForm {
 
     // We save the node to update its timestamp and let other modules react to the update.
     // We also do this in case a new revision is required…
-    entity_save('quiz_entity', $quiz);
+    $quiz->save();
   }
 
   /**

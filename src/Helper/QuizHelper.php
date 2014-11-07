@@ -135,7 +135,7 @@ class QuizHelper {
   public function setQuestions(&$quiz, $questions, $set_new_revision = FALSE) {
     if ($set_new_revision) {
       $quiz->is_new_revision = 1; # Create a new Quiz VID, even if nothing changed.
-      entity_save('quiz_entity', $quiz);
+      $quiz->save();
     }
 
     // When node_save() calls all of the node API hooks, old quiz info is

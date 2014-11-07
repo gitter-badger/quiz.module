@@ -58,7 +58,7 @@ class QuizFeedbackTestCase extends QuizTestCase {
     // Check feedback after the Question
     foreach ($review_options as $option => $text) {
       $quiz->review_options = array('question' => array($option => $option));
-      entity_save('quiz_entity', $quiz);
+      $quiz->save();
 
       $this->drupalGet("quiz/{$quiz->qid}/take/1/feedback");
       $this->assertRaw('<th>' . $text . '</th>');
@@ -80,7 +80,7 @@ class QuizFeedbackTestCase extends QuizTestCase {
     // Check feedback after the Quiz
     foreach ($review_options as $option => $text) {
       $quiz->review_options = array('end' => array($option => $option));
-      entity_save('quiz_entity', $quiz);
+      $quiz->save();
 
       $this->drupalGet("quiz-result/1");
       $this->assertRaw('<th>' . $text . '</th>');
