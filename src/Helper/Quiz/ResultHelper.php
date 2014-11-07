@@ -133,32 +133,4 @@ class ResultHelper {
     }
   }
 
-  /**
-   * Delete quiz responses for quizzes that haven't been finished.
-   *
-   * This was _quiz_delete_old_in_progress()
-   *
-   * @param $quiz
-   *   A quiz entity where old in progress results shall be deleted.
-   * @param $uid
-   *   The userid of the user the old in progress results belong to.
-   */
-  public function deleteIncompletedResultsByUserId($quiz, $uid) {
-    $res = db_query('SELECT qnr.result_id
-          FROM {quiz_results} qnr
-          WHERE qnr.uid = :uid
-            AND qnr.quiz_qid = :qid
-            AND qnr.time_end = :time_end
-            AND qnr.quiz_vid < :vid', array(
-        ':uid'      => $uid,
-        ':qid'      => $quiz->qid,
-        ':time_end' => 1,
-        ':vid'      => $quiz->vid));
-    $result_ids = array();
-    while ($result_id = $res->fetchField()) {
-      $result_ids[] = $result_id;
-    }
-    entity_delete_multiple('quiz_result', $result_ids);
-  }
-
 }
