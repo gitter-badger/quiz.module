@@ -2,7 +2,7 @@
 
   Drupal.behaviors.multichoiceAlternativeBehavior = {
     attach: function (context, settings) {
-      $('.multichoice_row', context).once()
+      $('.multichoice-row', context).once()
               .filter(':has(:checkbox:checked)')
               .addClass('selected').end()
               .click(function (event) {
@@ -14,7 +14,7 @@
 
                   $(':radio', this).attr('checked', true);
                   if ($(':radio', this).html() != null) {
-                    $('.multichoice_row').removeClass('selected');
+                    $('.multichoice-row').removeClass('selected');
                     $(this).addClass('selected');
                   }
                 }

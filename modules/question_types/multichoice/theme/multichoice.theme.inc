@@ -63,78 +63,27 @@ function theme_multichoice_answer_node_view($variables) {
     }
 
     $rows[] = array(
-      array(
-        'data'  => array(
-          '#theme'      => 'html_tag',
-          '#tag'        => 'span',
-          '#attributes' => array(
-            'class' => array(
-              'multichoice-icon',
-              $image,
+        array(
+            'data'  => array(
+                '#theme'      => 'html_tag',
+                '#tag'        => 'span',
+                '#attributes' => array(
+                    'class' => array(
+                        'multichoice-icon',
+                        $image,
+                    ),
+                    'title' => $show_correct ?
+                      t('Score if chosen: @sc Score if not chosen: @nc', array(
+                          '@sc' => $short['score_if_chosen'],
+                          '@nc' => $short['score_if_not_chosen'])
+                      ) :
+                      t('You are not allowed to view the solution for this question'),
+                ),
             ),
-            'title' => $show_correct ?
-              t('Score if chosen: @sc Score if not chosen: @nc', array(
-                '@sc' => $short['score_if_chosen'],
-                '@nc' => $short['score_if_not_chosen'])
-              ) :
-              t('You are not allowed to view the solution for this question'),
-          ),
+            'class' => array('multichoice-icon-cell'),
         ),
-        'class' => array('multichoice-icon-cell'),
-      ),
-      $answer_markup
+        $answer_markup
     );
   }
   return theme('table', array('header' => $header, 'rows' => $rows));
-}
-
-/**
- * Theme function for the multichoice report
- *
- * @param $data
- *  Array of data to be presented in the report
- */
-function theme_multichoice_response($variables) {
-  static $css_added;
-  if (!$css_added) {
-    drupal_add_css(drupal_get_path('module', 'multichoice') . '/theme/multichoice.css');
-    $css_added = TRUE;
-  }
-
-  $rows = array();
-  foreach ($variables['data'] as &$alternative) {
-    if ($alternative['is_chosen']) {
-      switch ($alternative['is_correct']) {
-        case 0:
-          $icon = '<span class="multichoice-icon wrong" title="' . t('This option is wrong.') . '"></span>';
-          break;
-        case 1:
-          $icon = '<span class="multichoice-icon almost" title="' . t('This option is correct, but there is another that gives a higher score.') . '"></span>';
-          break;
-        case 2:
-          $icon = '<span class="multichoice-icon correct" title="' . t('This option is correct.') . '"></span>';
-          break;
-        case 3:
-          // The answer is unknown.
-          $icon = '<span class="multichoice-icon unknown" title="' . t('This option is unknown.') . '"></span>';
-          break;
-      }
-    }
-    else {
-      $icon = $alternative['is_correct'] == 2 ? '<span class="multichoice-icon should" title="' . t("This option is correct, but you didn't select it.") . '"></span>' : '';
-    }
-    $rowspan = $alternative['feedback'] ? 2 : 1;
-    $rows[] = array(
-      array(
-        'data'    => $icon,
-        'rowspan' => $rowspan,
-        'class'   => 'selector-td multichoice-icon-cell',
-      ),
-      $alternative['answer']
-    );
-    if ($rowspan == 2) {
-      $rows[] = array('<div class="multichoice-label">' . t('Feedback') . ':</div><div class="multichoice-feedback">' . $alternative['feedback'] . '</div>');
-    }
-  }
-  return theme('table', array('header' => NULL, 'rows' => $rows));
 }

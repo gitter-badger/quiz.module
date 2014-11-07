@@ -81,19 +81,11 @@ function quiz_question_node_info() {
  * Implements hook_node_presave().
  */
 function quiz_question_node_presave($node) {
-  $q_types = _quiz_question_get_implementations();
-  foreach ($q_types as $q_type => $info) {
-    if ($node->type == $q_type) {
-      if (drupal_strlen($node->title) == 0 || !user_access('edit question titles')) {
-        $body = field_get_items('node', $node, 'body');
-        $markup = strip_tags(check_markup($body[0]['value'], $body[0]['format']));
-        if (drupal_strlen($markup) > variable_get('quiz_autotitle_length', 50)) {
-          $node->title = drupal_substr($markup, 0, variable_get('quiz_autotitle_length', 50) - 3) . '…';
-        }
-        else {
-          $node->title = $markup;
-        }
-      }
+  foreach (array_keys(_quiz_question_get_implementations()) as $q_type) {
+    if (($node->type === $q_type) && (!drupal_strlen($node->title) || !user_access('edit question titles'))) {
+      $body = field_view_field('node', $node, 'body');
+      $max_length = variable_get('quiz_autotitle_length', 50);
+      $node->title = truncate_utf8(strip_tags(drupal_render($body)), $max_length, TRUE, TRUE);
     }
   }
 }

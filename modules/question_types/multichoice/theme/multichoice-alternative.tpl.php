@@ -23,14 +23,15 @@ foreach ($options as $key => $value) {
 unset($form['user_answer']['#options']);
 print drupal_render_children($form);
 
-// We use the stored checkboxes and titles to generate a table for the
-// alternatives
+// We use the stored checkboxes and titles to generate a table for the alternatives
 foreach ($titles as $key => $value) {
   $rows[] = array(
-    'class' => array('multichoice_row'),
-    'data'  => array(
-      array('data' => drupal_render($fullOptions[$key]), 'width' => 35, 'class' => 'selector-td'),
-      $value
-  ));
+      'class' => array('multichoice-row'),
+      'data'  => array(
+          array('data' => drupal_render($fullOptions[$key]), 'width' => 35),
+          $value
+      )
+  );
 }
+
 print theme('table', array('header' => array(), 'rows' => $rows));
