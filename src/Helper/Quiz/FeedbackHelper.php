@@ -42,7 +42,7 @@ class FeedbackHelper {
       $quiz_result = quiz_result_load($result_id);
       $qinfo = $quiz_result->layout[$question_index];
 
-      if ($answer = quiz_result_answer_load($result_id, $qinfo['nid'], $qinfo['vid'])) {
+      if ($answer = quiz_answer_controller()->loadByResultAndQuestion($result_id, $qinfo['vid'])) {
         return TRUE;
       }
     }

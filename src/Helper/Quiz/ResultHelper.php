@@ -48,21 +48,6 @@ class ResultHelper {
   }
 
   /**
-   * Load a specific result answer.
-   */
-  public function loadAnswer($result_id, $question_nid, $question_vid) {
-    $sql = 'SELECT * '
-      . ' FROM {quiz_results_answers} '
-      . ' WHERE result_id = :result_id '
-      . '   AND question_nid = :nid '
-      . '   AND question_vid = :vid';
-    $params = array(':result_id' => $result_id, ':nid' => $question_nid, ':vid' => $question_vid);
-    if ($row = db_query($sql, $params)->fetch()) {
-      return entity_load_single('quiz_result_answer', $row->result_answer_id);
-    }
-  }
-
-  /**
    * Deletes results for a quiz according to the keep results setting
    *
    * @param QuizEntity $quiz

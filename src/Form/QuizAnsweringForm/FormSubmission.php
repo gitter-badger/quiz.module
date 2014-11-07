@@ -65,7 +65,7 @@ class FormSubmission extends TakingHelper {
         ->delete();
 
       // Mark our question attempt as skipped, reset the correct and points flag.
-      $answer = quiz_result_answer_load($this->result->result_id, $question->nid, $question->vid);
+      $answer = quiz_answer_controller()->loadByResultAndQuestion($this->result->result_id, $question->vid);
       $answer->is_skipped = 1;
       $answer->is_correct = 0;
       $answer->points_awarded = 0;
@@ -182,7 +182,7 @@ class FormSubmission extends TakingHelper {
       }
 
       // Load the Quiz answer submission from the database.
-      if (!$answer = quiz_result_answer_load($this->result->result_id, $qinfo['nid'], $qinfo['vid'])) {
+      if (!$answer = quiz_answer_controller()->loadByResultAndQuestion($this->result->result_id, $qinfo['vid'])) {
         $qi_instance = _quiz_question_response_get_instance($this->result->result_id, $current_question, NULL);
         $qi_instance->delete();
         $response = $qi_instance->toBareObject();
