@@ -312,7 +312,7 @@ function quiz_question_refresh_latest_quizzes($qid) {
 
   // Inserts as new entry to get new id. Latest quizzes are ordered by id(descending)
   db_insert('quiz_question_latest_quizzes')
-    ->fields(array('uid' => $user->uid, 'quiz_nid' => $qid))
+    ->fields(array('uid' => $user->uid, 'quiz_qid' => $qid))
     ->execute();
 
   // If we have to many entries for current user, delete the oldest entries…
