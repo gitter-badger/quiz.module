@@ -14,10 +14,10 @@ class Generator {
   /** @var string[] */
   private $question_types;
 
-  /** @var int */
+  /** @var int Maximum number of quizzes per type. */
   private $quiz_limit;
 
-  /** @var int */
+  /** @var int Maximum number of questions per quiz. */
   private $question_limit;
 
   public function __construct($quiz_types, $question_types, $quiz_limit, $question_limit) {
@@ -31,8 +31,11 @@ class Generator {
   }
 
   public function generate() {
-    for ($i = 0; $i < $this->quiz_limit; ++$i) {
-      $this->doGenerate($quiz_type = array_rand($this->quiz_types));
+    foreach ($this->quiz_types as $quiz_type) {
+      $limit = rand(1, $this->quiz_limit);
+      for ($i = 0; $i < $limit; ++$i) {
+        $this->doGenerate($quiz_type);
+      }
     }
   }
 
