@@ -159,7 +159,6 @@ function short_answer_score_form_submit($form, &$form_state) {
 
   $return = short_answer_score_an_answer($result, array(
       'quiz'            => $result->getQuiz(),
-      'nid'             => $form_state['values']['question_nid'],
       'vid'             => $form_state['values']['question_vid'],
       'score'           => $form_state['values']['score'],
       'max_score'       => $form_state['values']['rel_max_score'],
