@@ -21,26 +21,22 @@ class HookPermission {
   }
 
   private function getQuizEntityPermissions() {
-    return array(
-        // Managing quizzes
-        'access quiz'             => array(
-            'title'       => t('Take quiz'),
-            'description' => t('Can access (take) all quizzes.'),
-        ),
-        'create quiz content'     => array(
-            'title' => t('Create quiz content'),
-        ),
-        'edit any quiz content'   => array(
-            'title' => t('Edit any quiz content'),
-        ),
-        // Control revisioning, only assign this permission to users who understand
-        // who permissions work. Note: If a quiz or question is changed and not
-        // revisioned you will also change existing result reports.
-        'manual quiz revisioning' => array(
-            'title'       => t('Manual quiz revisioning'),
-            'description' => t('Quizzes are revisioned automatically each time they are changed. This allows you to do revisions manually.'),
-        ),
+    $items = array();
+    $items['access quiz']['title'] = array(
+        'title'       => t('Take quiz'),
+        'description' => t('Can access (take) all quizzes.'),
     );
+    $items['create quiz content']['title'] = t('Create quiz content');
+    $items['edit any quiz content']['title'] = t('Edit any quiz content');
+
+    // Control revisioning, only assign this permission to users who understand
+    // who permissions work. Note: If a quiz or question is changed and not
+    // revisioned you will also change existing result reports.
+    $items['manual quiz revisioning'] = array(
+        'title'       => t('Manual quiz revisioning'),
+        'description' => t('Quizzes are revisioned automatically each time they are changed. This allows you to do revisions manually.'),
+    );
+    return $items;
   }
 
   private function getResultPermissions() {

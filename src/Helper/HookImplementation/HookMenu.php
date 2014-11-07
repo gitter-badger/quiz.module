@@ -19,6 +19,17 @@ class HookMenu {
         'file'             => 'quiz.pages.inc',
     );
 
+    if (module_exists('devel')) {
+      $items['admin/config/development/generate/quiz'] = array(
+          'title'            => 'Generate quiz',
+          'description'      => 'Generate a given number of quizzes',
+          'access arguments' => array('create quiz content'),
+          'page callback'    => 'drupal_get_form',
+          'page arguments'   => array('quiz_generate_form'),
+          'file'             => 'quiz.devel.inc',
+      );
+    }
+
     return $items;
   }
 
