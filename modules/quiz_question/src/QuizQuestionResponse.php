@@ -403,7 +403,7 @@ abstract class QuizQuestionResponse {
   public function canReview($option) {
     $can_review = &drupal_static(__METHOD__, array());
     if (!isset($can_review[$option])) {
-    $result = quiz_result_load($this->result_id);
+      $result = quiz_result_load($this->result_id);
       $can_review[$option] = quiz()->getQuizHelper()->getFeedbackHelper()->canReview($option, $result);
     }
     return $can_review[$option];
