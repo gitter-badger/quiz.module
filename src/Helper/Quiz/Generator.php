@@ -3,6 +3,7 @@
 namespace Drupal\quiz\Helper\Quiz;
 
 use Drupal\quiz\Entity\QuizEntity;
+use Drupal\quiz\Entity\Result;
 use RuntimeException;
 use ShortAnswerQuestion;
 
@@ -20,7 +21,10 @@ class Generator {
   /** @var int Maximum number of questions per quiz. */
   private $question_limit;
 
-  public function __construct($quiz_types, $question_types, $quiz_limit, $question_limit) {
+  /** @var int Maximum number of results per quiz. */
+  private $result_limit;
+
+  public function __construct($quiz_types, $question_types, $quiz_limit, $question_limit, $result_limit) {
     module_load_include('inc', 'devel_generate', 'devel_generate.fields');
     module_load_include('inc', 'devel_generate', 'devel_generate');
 
@@ -28,6 +32,7 @@ class Generator {
     $this->question_types = $question_types;
     $this->quiz_limit = $quiz_limit;
     $this->question_limit = $question_limit;
+    $this->result_limit = $result_limit;
   }
 
   public function generate() {
@@ -53,6 +58,10 @@ class Generator {
     $limit = rand(1, $this->question_limit);
     for ($i = 0; $i < $limit; ++$i) {
       $this->doGenerateQuestions($quiz, array_rand($this->question_types));
+    }
+
+    for ($i = 0; $i < $this->result_limit; ++$i) {
+      $this->doGenerateResults($quiz);
     }
 
     drupal_set_message('Geneated quiz: ' . l($quiz->title, 'quiz/' . $quiz->qid));
@@ -147,6 +156,23 @@ class Generator {
     }
 
     return $array;
+  }
+
+  private function doGenerateResults(QuizEntity $quiz) {
+    /* @var $result Result */
+    $result = entity_create('quiz_result', array(
+        'quiz_qid'     => $quiz->qid,
+        'quiz_vid'     => $quiz->vid,
+        'uid'          => rand(0, 1),
+        'time_start'   => REQUEST_TIME,
+        'time_end'     => REQUEST_TIME + rand(15, 300),
+        'released'     => '???',
+        'score'        => '???',
+        'is_invalid'   => FALSE,
+        'is_evaluated' => '???',
+        'time_left'    => 0,
+    ));
+    $result->save();
   }
 
 }
