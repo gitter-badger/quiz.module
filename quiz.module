@@ -79,6 +79,15 @@ function quiz_result_controller() {
 }
 
 /**
+ * Get controller for answer entity.
+ *
+ * @return \Drupal\quiz\Entity\AnswerController
+ */
+function quiz_answer_controller() {
+  return entity_get_controller('quiz_result_answer');
+}
+
+/**
  * Gets an array of all quiz types, keyed by the type name.
  *
  * @return \Drupal\quiz\Entity\QuizEntityType[]
