@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\quiz\Entity\Result;
+
 /**
  * The main file for short_answer.
  *
@@ -133,14 +135,12 @@ function short_answer_theme($existing, $type, $theme, $path) {
  * The function updates all of the necessary data sources so that the individual answer results should be
  * reflected in the total scoring table.
  *
- * @param $quiz
- *  Quiz entity.
+ * @param Result $result
+ * @param \Drupal\quiz\Entity\QuizEntity $quiz
  * @param $nid
  *  Node ID of question.
  * @param $vid
  *  Version ID of question.
- * @param $result_id
- *  Result ID for the quiz results.
  * @param $score
  *  The numeric score to assign the result.
  * @param $update_total
@@ -149,7 +149,7 @@ function short_answer_theme($existing, $type, $theme, $path) {
  * @return int
  *  Number of scores adjusted. If a change was made, this should be 1.
  */
-function short_answer_score_an_answer($values, $update_total = TRUE) {
+function short_answer_score_an_answer(Result $result, $values, $update_total = TRUE) {
   extract($values);
 
   // When we set the score we make sure that the max score in the quiz the question belongs to is considered
@@ -176,7 +176,7 @@ function short_answer_score_an_answer($values, $update_total = TRUE) {
     ))
     ->condition('question_nid', $nid)
     ->condition('question_vid', $vid)
-    ->condition('result_id', $result_id)
+    ->condition('result_id', $result->result_id)
     ->execute();
   // Now the short answer user data has been updated. We also need to update the data in the quiz tables
   if ($changed > 0) {
@@ -199,11 +199,11 @@ function short_answer_score_an_answer($values, $update_total = TRUE) {
           'is_correct'     => $is_correct,
       ))
       ->condition('question_vid', $vid)
-      ->condition('result_id', $result_id)
+      ->condition('result_id', $result->result_id)
       ->execute();
 
     // Third, we update the main quiz results table
-    if ($update_total && $result = quiz_result_load($result_id)) {
+    if ($update_total) {
       quiz_result_controller()->getScoreCalculator()->updateTotalScore($result);
     }
   }
@@ -211,10 +211,13 @@ function short_answer_score_an_answer($values, $update_total = TRUE) {
 }
 
 /**
- * Submit the result report for short answer
+ * Submit the result report for short answer.
+ *
+ * @see ShortAnswerResponse::getReportFormSubmit(),
  */
 function short_answer_report_submit($values) {
-  short_answer_score_an_answer($values, FALSE);
+  $result = quiz_result_load($values['result_id']);
+  short_answer_score_an_answer($result, $values, FALSE);
 }
 
 /**

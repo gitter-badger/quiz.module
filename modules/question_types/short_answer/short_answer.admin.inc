@@ -157,11 +157,10 @@ function short_answer_score_form_validate($form, $form_state) {
 function short_answer_score_form_submit($form, &$form_state) {
   $result = quiz_result_load($form_state['values']['result_id']);
 
-  $return = short_answer_score_an_answer(array(
-      'quiz'            => quiz_load($result->quiz_qid, $result->quiz_vid),
+  $return = short_answer_score_an_answer($result, array(
+      'quiz'            => $result->getQuiz(),
       'nid'             => $form_state['values']['question_nid'],
       'vid'             => $form_state['values']['question_vid'],
-      'result_id'       => $form_state['values']['result_id'],
       'score'           => $form_state['values']['score'],
       'max_score'       => $form_state['values']['rel_max_score'],
       'answer_feedback' => $form_state['values']['answer_feedback']
