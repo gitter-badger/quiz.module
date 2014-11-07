@@ -137,6 +137,7 @@ function long_answer_theme() {
  */
 function long_answer_score_an_answer($values, $update_total = TRUE) {
   extract($values);
+
   // Quiz scoring information is spread out across three tables:
   // 1. The module should retain its own scoring information in any case where scoring is non-trivial.
   // 2. The Quiz moduleretains a limited amount of scoring information.

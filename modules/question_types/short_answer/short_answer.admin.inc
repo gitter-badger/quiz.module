@@ -155,11 +155,9 @@ function short_answer_score_form_validate($form, $form_state) {
  * Submit the score form
  */
 function short_answer_score_form_submit($form, &$form_state) {
-  $result = db_query('SELECT quiz_qid, quiz_vid FROM {quiz_results} WHERE result_id = :result_id', array(
-      ':result_id' => $form_state['values']['result_id']
-    ))->fetchobject();
+  $result = quiz_result_load($form_state['values']['result_id']);
 
-  $result = short_answer_score_an_answer(array(
+  $return = short_answer_score_an_answer(array(
       'quiz'            => quiz_load($result->quiz_qid, $result->quiz_vid),
       'nid'             => $form_state['values']['question_nid'],
       'vid'             => $form_state['values']['question_vid'],
@@ -169,7 +167,7 @@ function short_answer_score_form_submit($form, &$form_state) {
       'answer_feedback' => $form_state['values']['answer_feedback']
   ));
 
-  if ($result == 1) {
+  if ($return == 1) {
     drupal_set_message("The score has been saved.");
     $form_state['redirect'] = 'admin/quiz/reports/score-short-answer';
   }

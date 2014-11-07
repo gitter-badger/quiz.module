@@ -162,12 +162,10 @@ function long_answer_score_form_validate($form, $form_state) {
  * Submit handler for the long answer score form
  */
 function long_answer_score_form_submit($form, &$form_state) {
-  $result = db_query('SELECT quiz_qid, quiz_vid FROM {quiz_results} WHERE result_id = :result_id', array(
-      ':result_id' => $form_state['values']['result_id']
-    ))->fetch();
+  $result_object = quiz_result_load($form_state['values']['result_id']);
 
-  $result = long_answer_score_an_answer(array(
-      'quiz'            => quiz_load($result->quiz_qid, $result->quiz_vid),
+  $return = long_answer_score_an_answer(array(
+      'quiz'            => quiz_load($result_object->quiz_qid, $result_object->quiz_vid),
       'nid'             => $form_state['values']['question_nid'],
       'vid'             => $form_state['values']['question_vid'],
       'result_id'       => $form_state['values']['result_id'],
@@ -176,7 +174,7 @@ function long_answer_score_form_submit($form, &$form_state) {
       'answer_feedback' => $form_state['values']['answer_feedback']
   ));
 
-  if ($result == 1) {
+  if ($return == 1) {
     drupal_set_message(t('The score has been saved.'));
     $form_state['redirect'] = 'admin/quiz/reports/score-long-answer';
   }
