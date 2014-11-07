@@ -160,7 +160,7 @@ function short_answer_score_form_submit($form, &$form_state) {
     ))->fetchobject();
 
   $result = short_answer_score_an_answer(array(
-      'quiz'            => node_load($result->quiz_qid, $result->quiz_vid),
+      'quiz'            => quiz_load($result->quiz_qid, $result->quiz_vid),
       'nid'             => $form_state['values']['question_nid'],
       'vid'             => $form_state['values']['question_vid'],
       'result_id'       => $form_state['values']['result_id'],
