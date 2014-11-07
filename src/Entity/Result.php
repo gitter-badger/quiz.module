@@ -6,8 +6,16 @@ use Entity;
 
 class Result extends Entity {
 
+  /** @var int */
   public $result_id;
+
+  /** @var \Drupal\quiz\Entity\QuizEntity */
+  private $quiz;
+
+  /** @var int */
   public $quiz_qid;
+
+  /** @var int */
   public $quiz_vid;
 
   /** @var int Author ID */
@@ -21,6 +29,8 @@ class Result extends Entity {
 
   /** @var bool */
   public $released;
+
+  /** @var ??? */
   public $score;
 
   /** @var bool */
@@ -34,6 +44,18 @@ class Result extends Entity {
 
   /** @var array */
   public $layout = array();
+
+  /**
+   * Get quiz entity.
+   * 
+   * @return \Drupal\quiz\Entity\QuizEntity
+   */
+  public function getQuiz() {
+    if (NULL == $this->quiz) {
+      $this->quiz = quiz_load(NULL, $this->quiz_vid);
+    }
+    return $this->quiz;
+  }
 
   public function countPages() {
     $count = 0;
