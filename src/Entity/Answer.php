@@ -2,7 +2,9 @@
 
 namespace Drupal\quiz\Entity;
 
-class Answer {
+use Entity;
+
+class Answer extends Entity {
 
   public $result_answer_id;
   public $result_id;
