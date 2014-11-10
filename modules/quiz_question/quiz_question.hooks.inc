@@ -183,7 +183,6 @@ function quiz_question_view($node, $view_mode) {
   }
   else {
     // normal node view
-    //$question = _quiz_question_get_instance($node, TRUE);
     $content = _quiz_question_get_instance($node, TRUE)->getNodeView();
   }
 
@@ -269,7 +268,7 @@ function quiz_question_form(&$node, &$form_state) {
  *  Node containing all of the items from the question plus the user's answer.
  */
 function quiz_question_get_report($nid, $vid, $result_id) {
-  $response_instance = _quiz_question_response_get_instance($result_id, NULL, NULL, $nid, $vid);
+  $response_instance = quiz_answer_controller()->getInstance($result_id, NULL, NULL, $nid, $vid);
   if (!$response_instance) {
     drupal_set_message(t('Unable to load question with nid %nid and vid %vid', array('%nid' => $nid, '%vid' => $vid)), 'error');
     return FALSE;
@@ -303,7 +302,7 @@ function quiz_question_quiz_question_score($quiz, $question_nid, $question_vid =
   $score->question_vid = $question->node->vid;
 
   if (isset($result_id)) {
-    $response = _quiz_question_response_get_instance($result_id, $question->node);
+    $response = quiz_answer_controller()->getInstance($result_id, $question->node);
     $score->attained = $score->possible > 0 ? $response->getScore() : 0;
     $score->possible = $response->getMaxScore();
     $score->is_evaluated = $response->isEvaluated();
@@ -322,7 +321,7 @@ function quiz_question_quiz_question_score($quiz, $question_nid, $question_vid =
  *  Question node version id
  */
 function quiz_question_delete_result($result_id, $question_nid, $question_vid) {
-  $response = _quiz_question_response_get_instance($result_id, NULL, NULL, $question_nid, $question_vid);
+  $response = quiz_answer_controller()->getInstance($result_id, NULL, NULL, $question_nid, $question_vid);
   if ($response) {
     $response->delete();
   }

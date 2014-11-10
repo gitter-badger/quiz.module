@@ -319,7 +319,7 @@ abstract class QuizQuestion {
     $current_question = node_load($question_nid);
 
     // There was an answer submitted.
-    $response = _quiz_question_response_get_instance($_SESSION['quiz'][$quiz->qid]['result_id'], $current_question, $answer);
+    $response = quiz_answer_controller()->getInstance($_SESSION['quiz'][$quiz->qid]['result_id'], $current_question, $answer);
     if ($quiz->repeat_until_correct && !$response->isCorrect()) {
       form_set_error('', t('The answer was incorrect. Please try again.'));
 
