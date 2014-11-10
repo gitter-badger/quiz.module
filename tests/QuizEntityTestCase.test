@@ -21,6 +21,9 @@ class QuizEntityTestCase extends QuizTestCase {
     parent::setUp($modules, $admin_permissions, $user_permissions);
   }
 
+  /**
+   * Reduce runtime from 1m to ~30s.
+   */
   public function testQuizEntityWrapper() {
     $this->checkInitQuizEntityType();
     $this->checkQuizEntity();
