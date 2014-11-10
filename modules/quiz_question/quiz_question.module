@@ -54,25 +54,31 @@ function quiz_get_question_types() {
  */
 function quiz_question_access_to_score($vid, $result_id) {
   global $user;
-  $sql = 'SELECT * FROM {quiz_results_answers} WHERE result_id = :result_id AND question_vid = :question_vid';
-  $answer = db_query($sql, array(':result_id' => $result_id, ':question_vid' => $vid))->fetch();
-  if (!$answer) {
+
+  $sql = 'SELECT *'
+    . ' FROM {quiz_results_answers}'
+    . ' WHERE result_id = :result_id AND question_vid = :question_vid';
+  if (!$answer = db_query($sql, array(':result_id' => $result_id, ':question_vid' => $vid))->fetch()) {
     return FALSE;
   }
+
   if (user_access('score any quiz')) {
     return TRUE;
   }
+
   if (user_access('score taken quiz answer')) {
-    $uid = db_query('SELECT uid from {quiz_results} qnr WHERE qnr.result_id = :result_id', array(':result_id' => $result_id))->fetchField();
-    if ($uid == $user->uid) {
+    $sql = 'SELECT uid FROM {quiz_results} qnr WHERE qnr.result_id = :result_id';
+    if ($user->uid == db_query($sql, array(':result_id' => $result_id))->fetchField()) {
       return TRUE;
     }
   }
+
   if (user_access('score own quiz')) {
-    return db_query('SELECT r.uid FROM {node_revision} r
-            JOIN {quiz_results} qnr ON (r.nid = qnr.nid)
-            WHERE qnr.result_id = :result_id
-            ', array(':result_id' => $result_id))->fetchField() == $user->uid;
+    $sql = 'SELECT r.uid'
+      . ' FROM {node_revision} r'
+      . ' JOIN {quiz_results} qnr ON (r.nid = qnr.nid)'
+      . ' WHERE qnr.result_id = :result_id';
+    return $user->uid == db_query($sql, array(':result_id' => $result_id))->fetchField();
   }
 }
 
@@ -85,8 +91,8 @@ function quiz_question_access_to_score($vid, $result_id) {
  *  TRUE if a user has submitted an answer for this question.
  */
 function quiz_question_has_been_answered($question) {
-  if ($question_instance = _quiz_question_get_instance($question, true)) {
-    return $question_instance->hasBeenAnswered();
+  if ($instance = _quiz_question_get_instance($question, true)) {
+    return $instance->hasBeenAnswered();
   }
 }
 
