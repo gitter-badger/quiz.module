@@ -95,7 +95,8 @@ class QuestionLoader {
     $questions = array();
 
     // Get required questions first.
-    $query = db_query('SELECT n.nid, n.vid, n.type, qnr.qr_id, qnr.qr_pid
+    $query = db_query('
+        SELECT qnr.question_nid as nid, qnr.question_vid as vid, n.type, qnr.qr_id, qnr.qr_pid
         FROM {quiz_relationship} qnr
           JOIN {node} n ON qnr.question_nid = n.nid
           LEFT JOIN {quiz_relationship} qnr2 ON (qnr.qr_pid = qnr2.qr_id OR (qnr.qr_pid IS NULL AND qnr.qr_id = qnr2.qr_id))
