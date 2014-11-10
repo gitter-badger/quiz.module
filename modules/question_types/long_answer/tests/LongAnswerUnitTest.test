@@ -15,8 +15,10 @@ class LongAnswerTestCase extends QuizQuestionTestCase {
     );
   }
 
-  public function setUp() {
-    parent::setUp(array('long_answer'), array('score any quiz'));
+  public function setUp($modules = array(), $admin_permissions = array(), $user_permissions = array()) {
+    $modules[] = 'long_answer';
+    $admin_permissions[] = 'score any quiz';
+    parent::setUp($modules, $admin_permissions, $user_permissions);
   }
 
   /**
