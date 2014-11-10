@@ -210,7 +210,7 @@ function quiz_question_delete(&$node) {
  */
 function quiz_question_load($nodes) {
   foreach ($nodes as &$node) {
-    foreach (_quiz_question_get_instance($node, TRUE)->getNodeProperties() as $property => &$value) {
+    foreach (_quiz_question_get_instance($node, TRUE)->getNodeProperties() as $property => $value) {
       $node->$property = $value;
     }
   }
