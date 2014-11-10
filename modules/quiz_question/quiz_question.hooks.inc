@@ -14,7 +14,7 @@ function quiz_question_help($path, $args) {
  */
 function quiz_question_entity_info() {
   return array(
-      'quiz_question' => array(
+      'quiz_question_properties' => array(
           'label'                  => t('Quiz question properties'),
           'controller class'       => 'EntityAPIController',
           'base table'             => 'quiz_question_properties',

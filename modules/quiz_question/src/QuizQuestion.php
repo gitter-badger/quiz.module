@@ -131,7 +131,7 @@ abstract class QuizQuestion {
     );
 
     if (!empty($this->node->nid)) {
-      if ($properties = entity_load('quiz_question', FALSE, array('nid' => $this->node->nid, 'vid' => $this->node->vid))) {
+      if ($properties = entity_load('quiz_question_properties', FALSE, array('nid' => $this->node->nid, 'vid' => $this->node->vid))) {
         $quiz_question = reset($properties);
       }
     }
