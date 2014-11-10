@@ -89,7 +89,7 @@ function quiz_question_config($form, $context) {
   $form['#validate'] = array();
 
   // Go through all question types and merge their config forms
-  foreach (_quiz_question_get_implementations() as $type => $values) {
+  foreach (quiz_question_get_info() as $type => $values) {
     $function = $type . '_quiz_question_config';
     if ($admin_form = $function()) {
       $form[$type] = $admin_form;
@@ -151,7 +151,7 @@ function _quiz_question_get_instance(&$node, $use_cached = FALSE) {
   }
 
   // No cached instance of QuizQuestion has been returned. We construct a new instance
-  $info = _quiz_question_get_implementations();
+  $info = quiz_question_get_info();
   $constructor = $info[$name]['question provider'];
   if (empty($constructor)) {
     return FALSE;
@@ -187,20 +187,20 @@ function _quiz_question_get_instance(&$node, $use_cached = FALSE) {
  *  An array of information about quiz question implementations.
  * @see quiz_question_quiz_question_info() for an example of a quiz question info hook.
  */
-function _quiz_question_get_implementations($name = NULL, $reset = FALSE) {
+function quiz_question_get_info($name = NULL, $reset = FALSE) {
   static $info = array();
+
   if (empty($info) || $reset) {
     $qtypes = module_invoke_all('quiz_question_info');
     foreach ($qtypes as $type => $definition) {
-      // We only want the ones with classes.
-      if (!empty($definition['question provider'])) {
-        // Cache the info
+      if (!empty($definition['question provider'])) { # We only want the ones with classes.
         $info[$type] = $definition;
       }
     }
     drupal_alter('quiz_question_info', $info);
   }
-  return $info;
+
+  return NULL !== $name ? $info[$name] : $info;
 }
 
 /**
@@ -303,11 +303,4 @@ function theme_quiz_question_feedback($variables) {
   $rows = $variables['data'];
   $headers = array_intersect_key($variables['labels'], $rows[0]);
   return theme('table', array('header' => $headers, 'rows' => $rows));
-}
-
-/**
- * Helper function to faciliate icon display, like "correct" or "selected".
- */
-function quiz_icon($icon) {
-  return theme('quiz_answer_result', array('type' => $icon));
 }

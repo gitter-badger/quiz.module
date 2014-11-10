@@ -66,14 +66,15 @@ function quiz_question_theme() {
  */
 function quiz_question_node_info() {
   $node_info = array();
-  foreach (_quiz_question_get_implementations(NULL, TRUE) as $type => $definition) {
+
+  foreach (quiz_question_get_info(NULL, TRUE) as $type => $definition) {
     $node_info[$type] = array(
         'name'        => $definition['name'],
         'base'        => 'quiz_question',
         'description' => $definition['description']
     );
-    //$info[$type] = $node_info + $defaults;
   }
+
   return $node_info;
 }
 
@@ -81,7 +82,7 @@ function quiz_question_node_info() {
  * Implements hook_node_presave().
  */
 function quiz_question_node_presave($node) {
-  foreach (array_keys(_quiz_question_get_implementations()) as $q_type) {
+  foreach (array_keys(quiz_question_get_info()) as $q_type) {
     if (($node->type === $q_type) && (!drupal_strlen($node->title) || !user_access('edit question titles'))) {
       $body = field_view_field('node', $node, 'body');
       $max_length = variable_get('quiz_autotitle_length', 50);
@@ -113,7 +114,7 @@ function quiz_question_node_prepare($node) {
  * Implements hook_node_revision_delete().
  */
 function quiz_question_node_revision_delete($node) {
-  $q_types = _quiz_question_get_implementations();
+  $q_types = quiz_question_get_info();
   foreach ($q_types as $q_type => $info) {
     if ($node->type == $q_type) {
       _quiz_delete_question($node, TRUE); // true for only this version
@@ -126,9 +127,9 @@ function quiz_question_node_revision_delete($node) {
  */
 function quiz_question_node_access_records($node) {
   $grants = array();
+
   // Restricting view access to question nodes outside quizzes.
-  $question_types = _quiz_question_get_implementations();
-  $question_types = array_keys($question_types);
+  $question_types = array_keys(quiz_question_get_info());
   if (in_array($node->type, $question_types)) {
     // This grant is for users having 'view quiz question outside of a quiz'
     // permission. We set a priority of 2 because OG has a 1 priority and we
@@ -142,6 +143,7 @@ function quiz_question_node_access_records($node) {
         'priority'     => 2,
     );
   }
+
   return $grants;
 }
 
@@ -150,11 +152,8 @@ function quiz_question_node_access_records($node) {
  */
 function quiz_question_node_grants($account, $op) {
   $grants = array();
-  if ($op == 'view') {
-    if (user_access('view quiz question outside of a quiz')) {
-      // Granting view access
-      $grants['quiz_question'][] = 1;
-    }
+  if (($op === 'view') && user_access('view quiz question outside of a quiz', $account)) {
+    $grants['quiz_question'][] = 1; # Granting view access
   }
   return $grants;
 }
@@ -210,9 +209,8 @@ function quiz_question_delete(&$node) {
  * Implements hook_load().
  */
 function quiz_question_load($nodes) {
-  foreach ($nodes as $nid => &$node) {
-    $node_additions = _quiz_question_get_instance($node, TRUE)->getNodeProperties();
-    foreach ($node_additions as $property => &$value) {
+  foreach ($nodes as &$node) {
+    foreach (_quiz_question_get_instance($node, TRUE)->getNodeProperties() as $property => &$value) {
       $node->$property = $value;
     }
   }
@@ -243,9 +241,7 @@ function quiz_question_insert(stdClass $question) {
  * Implements hook_form().
  */
 function quiz_question_form(&$node, &$form_state) {
-  $question = _quiz_question_get_instance($node);
-  $form = $question->getNodeForm($form_state);
-  return $form;
+  return _quiz_question_get_instance($node)->getNodeForm($form_state);
 }
 
 // QUIZ HOOK IMPLEMENTATIONS
@@ -257,11 +253,11 @@ function quiz_question_form(&$node, &$form_state) {
  *  Node containing all of the items from the question plus the user's answer.
  */
 function quiz_question_get_report($nid, $vid, $result_id) {
-  $response_instance = quiz_answer_controller()->getInstance($result_id, NULL, NULL, $nid, $vid);
-  if (!$response_instance) {
+  if (!$response_instance = quiz_answer_controller()->getInstance($result_id, NULL, NULL, $nid, $vid)) {
     drupal_set_message(t('Unable to load question with nid %nid and vid %vid', array('%nid' => $nid, '%vid' => $vid)), 'error');
     return FALSE;
   }
+
   $result = $response_instance->getReport();
   $response_instance->question->answers[$result['answer_id']] = $result;
   $response_instance->question->correct = $result['is_correct'];
@@ -310,13 +306,11 @@ function quiz_question_quiz_question_score($quiz, $question_nid, $question_vid =
  *  Question node version id
  */
 function quiz_question_delete_result($result_id, $question_nid, $question_vid) {
-  $response = quiz_answer_controller()->getInstance($result_id, NULL, NULL, $question_nid, $question_vid);
-  if ($response) {
-    $response->delete();
-  }
-  else {
+  if (!$response = quiz_answer_controller()->getInstance($result_id, NULL, NULL, $question_nid, $question_vid)) {
     drupal_set_message(t('Unable to delete result. A constructor could not be found for the question-type'), 'error');
+    return;
   }
+  $response->delete();
 }
 
 // QUIZ HOOK IMPLEMENTATIONS

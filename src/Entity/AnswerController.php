@@ -73,7 +73,7 @@ class AnswerController extends EntityAPIController {
   }
 
   private function doGetInstance($question, $result_id, $answer) {
-    $info = _quiz_question_get_implementations();
+    $info = quiz_question_get_info();
     $response_provider = new $info[$question->type]['response provider']($result_id, $question, $answer);
 
     if (!$response_provider instanceof QuizQuestionResponse) {
