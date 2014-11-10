@@ -15,8 +15,9 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
     );
   }
 
-  public function setUp() {
-    parent::setUp(array('multichoice'));
+  public function setUp($modules = array(), $admin_permissions = array(), $user_permissions = array()) {
+    $modules[] = 'multichoice';
+    parent::setUp($modules, $admin_permissions, $user_permissions);
   }
 
   /**

@@ -1,4 +1,4 @@
-Quiz.module [![Build Status](https://travis-ci.org/andytruong/quiz.svg?branch=7.x-6.x)](https://travis-ci.org/andytruong/quiz)
+Quiz.module [![Build Status](https://travis-ci.org/atdrupal/quiz.module.svg?branch=7.x-6.x)](https://travis-ci.org/atdrupal/quiz.module)
 ====
 
 Overview
