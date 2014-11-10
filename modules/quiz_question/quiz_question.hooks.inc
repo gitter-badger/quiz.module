@@ -114,17 +114,7 @@ function quiz_question_node_prepare($node) {
  */
 function quiz_question_node_insert($node) {
   // Make sure the latest quizzes table is maintained when a quiz changes
-  if ($node->type == 'quiz') {
-    quiz_question_refresh_latest_quizzes($node->nid);
-  }
-}
-
-/**
- * Implements hook_node_update().
- */
-function quiz_question_node_update($node) {
-  // Make sure the latest quizzes table is maintained when a quiz changes
-  if ($node->type == 'quiz') {
+  if ($node->type === 'quiz') {
     quiz_question_refresh_latest_quizzes($node->nid);
   }
 }
@@ -235,16 +225,6 @@ function quiz_question_load($nodes) {
     foreach ($node_additions as $property => &$value) {
       $node->$property = $value;
     }
-  }
-}
-
-/**
- * Implements hook_node_delete().
- */
-function quiz_question_node_delete($node) {
-  // Make sure the latest quizzes table is maintained when a quiz changes
-  if ($node->type == 'quiz') {
-    quiz_question_remove_latest_quizzes($node->nid);
   }
 }
 

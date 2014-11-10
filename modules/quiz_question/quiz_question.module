@@ -204,56 +204,6 @@ function _quiz_question_get_implementations($name = NULL, $reset = FALSE) {
 }
 
 /**
- * Refreshes the quiz_question_latest_quizzes table when a user has modified a new quiz.
- *
- * The latest quizzes table is used to know what quizzes the user has been using lately.
- *
- * @param int $qid
- *   ID of the last quiz the current user modified
- */
-function quiz_question_refresh_latest_quizzes($qid) {
-  global $user;
-
-  // Delete entry if it allready exists
-  db_delete('quiz_question_latest_quizzes')
-    ->condition('uid', $user->uid)
-    ->condition('quiz_qid', $qid)
-    ->execute();
-
-  // Inserts as new entry to get new id. Latest quizzes are ordered by id(descending)
-  db_insert('quiz_question_latest_quizzes')
-    ->fields(array('uid' => $user->uid, 'quiz_qid' => $qid))
-    ->execute();
-
-  // If we have to many entries for current user, delete the oldest entries…
-  $min_id = db_select('quiz_question_latest_quizzes', 'lq')
-    ->fields('lq', array('id'))
-    ->condition('uid', $user->uid)
-    ->orderBy('id', 'DESC')
-    ->range(QUIZ_QUESTION_NUM_LATEST - 1, 1)
-    ->execute()
-    ->fetchField();
-
-  // Delete all table entries older than the nth row, if nth row was found.
-  if ($min_id) {
-    db_delete('quiz_question_latest_quizzes')
-      ->condition('id', $min_id, '<')
-      ->condition('uid', $user->uid)
-      ->execute();
-  }
-}
-
-/**
- * Removes a quiz from the quiz_question_latest_quizzes table.
- *
- * @param $qid
- *   ID of a quiz entity that shall be removed
- */
-function quiz_question_remove_latest_quizzes($qid) {
-  db_delete('quiz_question_latest_quizzes')->condition('quiz_qid', $qid)->execute();
-}
-
-/**
  * Get the max score for a question
  *
  * @param $nid
