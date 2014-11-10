@@ -77,22 +77,6 @@ function quiz_question_access_to_score($vid, $result_id) {
 }
 
 /**
- * Form for teaser display
- *
- * @param $node
- *  The question node
- * @return
- *  Content array
- */
-function _quiz_question_teaser_content($node) {
-  $content['question_type'] = array(
-      '#markup' => '<div class="question_type_name">' . node_type_get_type($node)->name . '</div>',
-      '#weight' => -100,
-  );
-  return $content;
-}
-
-/**
  * Check if a question has already been answered by anyone.
  *
  * This is to see if a new revision of a question should be made when saving.

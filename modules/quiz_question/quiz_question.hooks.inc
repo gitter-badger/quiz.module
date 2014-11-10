@@ -173,8 +173,13 @@ function quiz_question_view($node, $view_mode) {
   }
   $content = '';
 
-  if ($view_mode == 'teaser') {
-    $node->content['question_teaser'] = _quiz_question_teaser_content($node);
+  if ($view_mode === 'teaser') {
+    $node->content['question_teaser'] = array(
+        '#prefix' => '<div class="question_type_name">',
+        '#markup' => node_type_get_type($node)->name,
+        '#suffix' => '</div>',
+        '#weight' => -100,
+    );
   }
   else {
     // normal node view
