@@ -232,7 +232,7 @@ function theme_quiz_stats_get_basic_stats($variables) {
   $p = drupal_get_path('module', 'quiz_stats');
   $chart_icon = theme('image', array('path' => "$p/chart.png", 'width' => t('Charts'), 'height' => t('See charts')));
   foreach ($results as $result) {
-    $title_link = user_access('access author stats') ? 'quiz/' . $result['quiz_qid'] . '/statistics' : 'user/' . arg(1) . '/stats/';
+    $title_link = user_access('access author stats') ? 'quiz/' . $result['qid'] . '/statistics' : 'user/' . arg(1) . '/stats/';
     $row = array(
         'title'   => l($chart_icon . ' ' . $result['title'], $title_link, array('html' => TRUE)),
         'creator' => l($result['name'], 'user/' . $result['uid']),
@@ -240,7 +240,7 @@ function theme_quiz_stats_get_basic_stats($variables) {
     );
     if (user_access('access author stats')) {
       $row['questions_count'] = quiz_controller()->getStats()->countAllQuestions($result['vid']);
-      $row['attempt_count'] = _quiz_get_attempt_count($result['nid']);
+      $row['attempt_count'] = _quiz_get_attempt_count($result['qid']);
     }
     $rows[] = $row;
   }
