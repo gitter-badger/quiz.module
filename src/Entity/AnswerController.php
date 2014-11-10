@@ -38,7 +38,7 @@ class AnswerController extends EntityAPIController {
    *  Question node id
    * @param int $question_vid
    *  Question node version id
-   * @return
+   * @return \Drupal\quiz_question\QuizQuestionResponse
    *  The appropriate QuizQuestionResponce extension instance
    */
   public function getInstance($result_id, $question, $answer = NULL, $question_nid = NULL, $question_vid = NULL) {
@@ -48,24 +48,25 @@ class AnswerController extends EntityAPIController {
     if (is_object($question) && isset($responses[$result_id][$question->vid])) {
       // We refresh the question node in case it has been changed since we cached the response
       $responses[$result_id][$question->vid]->refreshQuestionNode($question);
-      if ($responses[$result_id][$question->vid]->is_skipped !== FALSE) {
+      if (FALSE !== $responses[$result_id][$question->vid]->is_skipped) {
         return $responses[$result_id][$question->vid];
       }
     }
-    elseif (isset($responses[$result_id][$question_vid])) {
-      if ($responses[$result_id][$question_vid]->is_skipped !== FALSE) {
-        return $responses[$result_id][$question_vid];
-      }
+
+    if (isset($responses[$result_id][$question_vid]) && $responses[$result_id][$question_vid]->is_skipped !== FALSE) {
+      return $responses[$result_id][$question_vid];
     }
 
-    // Prepare to cache responses for this result id
-    if (!isset($responses[$result_id])) {
-      $responses[$result_id] = array();
-    }
+    // Cache the responce instance
+    $responses[$result_id][$question->vid] = $this->doGetInstance($question, $result_id, $answer, $question_nid, $question_vid);
 
-    // If the question node isn't set we fetch it from the QuizQuestion instance this responce belongs to
-    if (!isset($question)) {
-      $question_node = node_load($question_nid, $question_vid);
+    return $responses[$result_id][$question->vid];
+  }
+
+  private function doGetInstance($question, $result_id, $answer, $question_nid, $question_vid) {
+    // If the question node isn't set we fetch it from the QuizQuestion instance
+    // this responce belongs to
+    if (!isset($question) && ($question_node = node_load($question_nid, $question_vid))) {
       $question = _quiz_question_get_instance($question_node, TRUE)->node;
     }
 
@@ -74,18 +75,13 @@ class AnswerController extends EntityAPIController {
     }
 
     $info = _quiz_question_get_implementations();
-    $to_return = new $info[$question->type]['response provider']($result_id, $question, $answer);
+    $response_provider = new $info[$question->type]['response provider']($result_id, $question, $answer);
 
-    // All responce classes must extend QuizQuestionResponse
-    if (!($to_return instanceof QuizQuestionResponse)) {
-      $msg = t('The question-response isn\'t a QuizQuestionResponse. It needs to extend the QuizQuestionResponse interface, or extend the abstractQuizQuestionResponse class.');
-      drupal_set_message($msg, 'error', FALSE);
+    if (!$response_provider instanceof QuizQuestionResponse) {
+      throw new \RuntimeException('The question-response isn\'t a QuizQuestionResponse. It needs to extend the QuizQuestionResponse interface, or extend the abstractQuizQuestionResponse class.');
     }
 
-    // Cache the responce instance
-    $responses[$result_id][$question->vid] = $to_return;
-
-    return $to_return;
+    return $response_provider;
   }
 
 }
