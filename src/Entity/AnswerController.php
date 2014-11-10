@@ -57,23 +57,22 @@ class AnswerController extends EntityAPIController {
       return $responses[$result_id][$question_vid];
     }
 
-    // Cache the responce instance
-    $responses[$result_id][$question->vid] = $this->doGetInstance($question, $result_id, $answer, $question_nid, $question_vid);
-
-    return $responses[$result_id][$question->vid];
-  }
-
-  private function doGetInstance($question, $result_id, $answer, $question_nid, $question_vid) {
     // If the question node isn't set we fetch it from the QuizQuestion instance
     // this responce belongs to
     if (!isset($question) && ($question_node = node_load($question_nid, $question_vid))) {
       $question = _quiz_question_get_instance($question_node, TRUE)->node;
     }
 
-    if (!$question) {
-      return FALSE;
+    // Cache the responce instance
+    if ($question) {
+      $responses[$result_id][$question->vid] = $this->doGetInstance($question, $result_id, $answer);
+      return $responses[$result_id][$question->vid];
     }
 
+    return FALSE;
+  }
+
+  private function doGetInstance($question, $result_id, $answer) {
     $info = _quiz_question_get_implementations();
     $response_provider = new $info[$question->type]['response provider']($result_id, $question, $answer);
 
