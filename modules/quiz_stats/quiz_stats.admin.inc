@@ -219,18 +219,25 @@ function theme_date_vs_takeup_count($variables) {
  *   HTML table containing quiz title, author, questions count, attempt count
  */
 function theme_quiz_stats_get_basic_stats($variables) {
+  module_load_include('inc', 'quiz', 'quiz.pages');
+
   $results = $variables['results'];
   if (empty($results)) {
     return '<p>' . t('No questions were found.') . '</p>';
   }
+
   $rows = array();
   $header = array('title' => t('Quiz'), 'creator' => t('Author'), 'created' => t('Created'));
   if (user_access('access author stats')) {
     $header['questions_count'] = t('Questions');
     $header['attempt_count'] = t('Attempts');
   }
-  $p = drupal_get_path('module', 'quiz_stats');
-  $chart_icon = theme('image', array('path' => "$p/chart.png", 'width' => t('Charts'), 'height' => t('See charts')));
+
+  $chart_icon = theme('image', array(
+      'path'   => drupal_get_path('module', 'quiz_stats') . '/chart.png',
+      'width'  => t('Charts'),
+      'height' => t('See charts')
+  ));
   foreach ($results as $result) {
     $title_link = user_access('access author stats') ? 'quiz/' . $result['qid'] . '/statistics' : 'user/' . arg(1) . '/stats/';
     $row = array(
@@ -244,7 +251,10 @@ function theme_quiz_stats_get_basic_stats($variables) {
     }
     $rows[] = $row;
   }
-  module_load_include('inc', 'quiz', 'quiz.pages');
   $cc = '<em>' . t('Chart icon from !url', array('!url' => 'pinvoke.com')) . '</em>';
-  return theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'tablesorter'))) . $cc;
+  return theme('table', array(
+        'header'     => $header,
+        'rows'       => $rows,
+        'attributes' => array('id' => 'tablesorter')
+    )) . $cc;
 }
