@@ -7,8 +7,6 @@
  * Variables available:
  * - $form
  */
-// Add script for using the entire alternative row as a button
-drupal_add_js(drupal_get_path('module', 'multichoice') . '/js/multichoice.alternative.js');
 
 // We want to have the checkbox in one table cell, and the title in the next.
 // We store the checkbox and the titles
