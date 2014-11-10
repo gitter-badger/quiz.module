@@ -67,7 +67,7 @@ class ResultController extends EntityAPIController {
         WHERE result.result_id = :result_id AND n.nid = :nid";
       $extra = db_query($sql, array(
           ':result_id' => $result->result_id,
-          ':vid'       => $question->question_vid))->fetch();
+          ':nid'       => $question->question_nid))->fetch();
 
       $result->layout[$question->number] = array(
           'display_number' => $question->number,
