@@ -227,7 +227,7 @@ function quiz_question_take_page(QuizEntity $quiz, $page_number) {
 
   // Load the page that the requested question belongs to.
   if ($result && ($_layout_item = $result->getPageItem($page_number))) {
-    $layout_item = node_load($_layout_item['nid']);
+    $layout_item = node_load($_layout_item['nid'], $_layout_item['vid']);
   }
 
   $controller = new QuizTakeQuestionController($quiz, $result, $page_number, $layout_item);

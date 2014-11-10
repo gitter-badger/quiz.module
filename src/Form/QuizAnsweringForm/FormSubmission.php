@@ -103,12 +103,12 @@ class FormSubmission extends TakingHelper {
         foreach ($this->result->layout as $item) {
           if ($item['nid'] == $question_id) {
             $question_array = $item;
+            $current_question = node_load($item['nid'], $item['vid']);
           }
         }
 
-        $_question = node_load($question_id);
         $_answer = $form_state['values']['question'][$question_id];
-        $qi_instance = _quiz_question_response_get_instance($this->result->result_id, $_question, $_answer);
+        $qi_instance = _quiz_question_response_get_instance($this->result->result_id, $current_question, $_answer);
         $qi_instance->delete();
         $qi_instance->saveResult();
         $response = $qi_instance->toBareObject();
