@@ -2,6 +2,7 @@
 
 namespace Drupal\quiz\Entity;
 
+use Drupal\quiz_question\QuizQuestionResponse;
 use EntityAPIController;
 
 class AnswerController extends EntityAPIController {
@@ -11,7 +12,7 @@ class AnswerController extends EntityAPIController {
    *
    * @param int $result_id
    * @param int $question_vid
-   * @return \Drupal\quiz\Entity\Answer
+   * @return Answer
    */
   public function loadByResultAndQuestion($result_id, $question_vid) {
     $sql = 'SELECT * FROM {quiz_results_answers} WHERE result_id = :result_id AND question_vid = :vid';
@@ -73,14 +74,14 @@ class AnswerController extends EntityAPIController {
     }
 
     $info = _quiz_question_get_implementations();
-    $constructor = $info[$question->type]['response provider'];
-    $to_return = new $constructor($result_id, $question, $answer);
+    $to_return = new $info[$question->type]['response provider']($result_id, $question, $answer);
 
     // All responce classes must extend QuizQuestionResponse
     if (!($to_return instanceof QuizQuestionResponse)) {
       $msg = t('The question-response isn\'t a QuizQuestionResponse. It needs to extend the QuizQuestionResponse interface, or extend the abstractQuizQuestionResponse class.');
       drupal_set_message($msg, 'error', FALSE);
     }
+
     // Cache the responce instance
     $responses[$result_id][$question->vid] = $to_return;
 
