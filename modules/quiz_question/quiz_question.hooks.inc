@@ -88,6 +88,25 @@ function quiz_question_node_presave($node) {
       $node->title = truncate_utf8(strip_tags(drupal_render($body)), $max_length, TRUE, TRUE);
     }
   }
+
+  if (isset($node->is_quiz_question) && variable_get('quiz_auto_revisioning', 1)) {
+    $node->revision = 0;
+    if (($instance = _quiz_question_get_instance($node, true)) && $instance->hasBeenAnswered()) {
+      $node->revision = 1;
+    }
+  }
+}
+
+/**
+ * Implements hook_node_prepare().
+ */
+function quiz_question_node_prepare($node) {
+  if (isset($node->is_quiz_question) && variable_get('quiz_auto_revisioning', 1)) {
+    $node->revision = 0;
+    if (($instance = _quiz_question_get_instance($node, true)) && $instance->hasBeenAnswered()) {
+      $node->revision = 1;
+    }
+  }
 }
 
 /**
