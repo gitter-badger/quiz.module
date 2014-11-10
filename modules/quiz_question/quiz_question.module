@@ -83,20 +83,6 @@ function quiz_question_access_to_score($vid, $result_id) {
 }
 
 /**
- * Check if a question has already been answered by anyone.
- *
- * This is to see if a new revision of a question should be made when saving.
- *
- * @return bool
- *  TRUE if a user has submitted an answer for this question.
- */
-function quiz_question_has_been_answered($question) {
-  if ($instance = _quiz_question_get_instance($question, true)) {
-    return $instance->hasBeenAnswered();
-  }
-}
-
-/**
  * Get the configuration form for all enabled question types.
  */
 function quiz_question_config($form, $context) {
