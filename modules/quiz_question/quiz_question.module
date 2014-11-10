@@ -35,7 +35,7 @@ function quiz_get_question_types() {
 
   // Get question types from the modules that defines them.
   if (!$question_types = module_invoke_all('quiz_question_info')) {
-    $msg = t('You need to install and enable at least one question type(multichoice for instance) to use quiz.');
+    $msg = t('You need to install and enable at least one question type (multichoice for instance) to use quiz.');
     throw new RuntimeException($msg);
   }
 
