@@ -110,16 +110,6 @@ function quiz_question_node_prepare($node) {
 }
 
 /**
- * Implements hook_node_insert().
- */
-function quiz_question_node_insert($node) {
-  // Make sure the latest quizzes table is maintained when a quiz changes
-  if ($node->type === 'quiz') {
-    quiz_question_refresh_latest_quizzes($node->nid);
-  }
-}
-
-/**
  * Implements hook_node_revision_delete().
  */
 function quiz_question_node_revision_delete($node) {
