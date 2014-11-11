@@ -82,7 +82,7 @@ class QuizTakeController extends QuizTakeLegacyController {
    * If we allow resuming we can load it from the database.
    */
   public function initQuizResume() {
-    if (!$result_id = $this->activeResultId($this->account->uid, $this->quiz->vid)) {
+    if (!$result_id = $this->activeResultId($this->account->uid, $this->quiz->qid)) {
       return FALSE;
     }
 
@@ -185,6 +185,7 @@ class QuizTakeController extends QuizTakeLegacyController {
       throw new RuntimeException($msg);
     }
 
+    // Write the layout for this result.
     $quiz_result = entity_create('quiz_result', array(
         'quiz_qid'   => $this->getQuizId(),
         'quiz_vid'   => $this->quiz->vid,
@@ -192,8 +193,6 @@ class QuizTakeController extends QuizTakeLegacyController {
         'time_start' => REQUEST_TIME,
         'layout'     => $questions,
     ));
-
-    // Write the layout for this result.
     entity_save('quiz_result', $quiz_result);
 
     $i = 0;

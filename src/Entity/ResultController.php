@@ -79,6 +79,7 @@ class ResultController extends EntityAPIController {
           'qr_pid'         => $extra->qr_pid,
       );
     }
+    ksort($result->layout, SORT_NUMERIC);
   }
 
   /**
