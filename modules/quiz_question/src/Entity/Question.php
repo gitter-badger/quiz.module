@@ -15,6 +15,9 @@ class Question extends Entity {
   /** @var string */
   public $type;
 
+  /** @var \Drupal\quiz_question\QuizQuestion */
+  private $plugin;
+
   /** @var bool */
   public $status;
 
@@ -45,8 +48,25 @@ class Question extends Entity {
   /** @var string */
   public $feedback_format;
 
+  /**
+   * @return \Drupal\quiz_question\QuizQuestion
+   */
   public function getPlugin() {
-    return quiz_question_get_plugin($this);
+    if (NULL === $this->plugin) {
+      $this->plugin = $this->doGetPlugin();
+    }
+    return $this->plugin;
+  }
+
+  /**
+   * @return \Drupal\quiz_question\QuizQuestion
+   */
+  private function doGetPlugin() {
+    if ($question_type = quiz_question_type_load($this->type)) {
+      $plugin_info = quiz_question_get_info($question_type->plugin);
+      return new $plugin_info['question provider']($this);
+    }
+    throw new \RuntimeException('Question plugin not found.');
   }
 
 }
