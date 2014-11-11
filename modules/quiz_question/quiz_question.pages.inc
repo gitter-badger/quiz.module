@@ -4,6 +4,22 @@
  * @file
  * User page callbacks for the quiz_question module.
  */
+function quiz_question_type_form($form, $form_state, $question_type, $op) {
+  $obj = new \Drupal\quiz_question\Form\QuestionTypeForm();
+  return $obj->get($form, $form_state, $question_type, $op);
+}
+
+function quiz_question_type_form_submit($form, &$form_state) {
+  $obj = new \Drupal\quiz_question\Form\QuestionTypeForm();
+  return $obj->submit($form, $form_state);
+}
+
+/**
+ * Submit handler for question type form when user click 'delete' button.
+ */
+function quiz_question_type_form_submit_delete($form, &$form_state) {
+  $form_state['redirect'] = 'admin/structure/quiz-questions/manage/' . $form_state['quiz_question_type']->type . '/delete';
+}
 
 /**
  * Create the form for the revision actions page
