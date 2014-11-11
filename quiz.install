@@ -54,7 +54,7 @@ function quiz_schema() {
           'title'   => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => '', 'description' => 'The title of this quiz, always treated as non-markup plain text.'),
           'created' => array('type' => 'int', 'not null' => FALSE, 'description' => 'The Unix timestamp when the quiz was created.'),
           'changed' => array('type' => 'int', 'not null' => FALSE, 'description' => 'The Unix timestamp when the quiz was most recently saved.'),
-          'uid'     => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
+          'uid'     => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'description' => 'Author ID of the quiz.'),
       ),
       'primary key' => array('qid'),
   );
