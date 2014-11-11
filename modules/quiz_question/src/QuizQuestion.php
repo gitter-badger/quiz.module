@@ -67,7 +67,7 @@ abstract class QuizQuestion {
    * @param $node
    *   The node object
    */
-  public function __construct(stdClass &$node) {
+  public function __construct(&$node) {
     $this->node = $node;
   }
 
