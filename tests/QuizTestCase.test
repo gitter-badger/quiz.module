@@ -88,17 +88,17 @@ abstract class QuizTestCase extends DrupalWebTestCase {
   /**
    * Link a question to a new or provided quiz.
    *
-   * @param stdClass $question_node
+   * @param stdClass $question
    * @param QuizEntity|null $quiz
    * @return QuizEntity
    */
-  public function linkQuestionToQuiz($question_node, $quiz = NULL) {
+  public function linkQuestionToQuiz($question, $quiz = NULL) {
     if (is_null($quiz)) {
       $quiz = $this->drupalCreateQuiz();
     }
-    $question_node->quiz_qid = $quiz->qid;
-    $question_node->quiz_vid = $quiz->vid;
-    quiz_question_get_plugin($question_node)->saveRelationships();
+    $question->quiz_qid = $quiz->qid;
+    $question->quiz_vid = $quiz->vid;
+    quiz_question_get_plugin($question)->saveRelationships();
     return $quiz;
   }
 
