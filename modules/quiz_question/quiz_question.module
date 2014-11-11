@@ -22,6 +22,8 @@ require_once dirname(__FILE__) . '/quiz_question.hooks.inc';
 /**
  * Retrieve list of question types.
  *
+ * @TODO Duplication of quiz_question_get_info.
+ *
  * @return
  *  Array of question types.
  */
@@ -40,6 +42,32 @@ function quiz_get_question_types() {
   }
 
   return $question_types;
+}
+
+/**
+ * Get the information about various implementations of quiz questions.
+ *
+ * @param string $name
+ *  Name of question type.
+ * @param boolean $reset
+ *  If this is true, the cache will be reset.
+ * @return
+ *  An array of information about quiz question implementations.
+ * @see quiz_question_quiz_question_info() for an example of a quiz question info hook.
+ */
+function quiz_question_get_info($name = NULL, $reset = FALSE) {
+  $info = &drupal_static(__FUNCTION__, array());
+
+  if (empty($info) || $reset) {
+    foreach (module_invoke_all('quiz_question_info') as $type => $definition) {
+      if (!empty($definition['question provider'])) { # We only want the ones with classes.
+        $info[$type] = $definition;
+      }
+    }
+    drupal_alter('quiz_question_info', $info);
+  }
+
+  return NULL !== $name ? $info[$name] : $info;
 }
 
 /**
@@ -176,31 +204,6 @@ function _quiz_question_get_instance(&$node, $use_cached = FALSE) {
   $question_instances[$vid] = $to_return;
 
   return $to_return;
-}
-
-/**
- * Get the information about various implementations of quiz questions.
- *
- * @param $reset
- *  If this is true, the cache will be reset.
- * @return
- *  An array of information about quiz question implementations.
- * @see quiz_question_quiz_question_info() for an example of a quiz question info hook.
- */
-function quiz_question_get_info($name = NULL, $reset = FALSE) {
-  static $info = array();
-
-  if (empty($info) || $reset) {
-    $qtypes = module_invoke_all('quiz_question_info');
-    foreach ($qtypes as $type => $definition) {
-      if (!empty($definition['question provider'])) { # We only want the ones with classes.
-        $info[$type] = $definition;
-      }
-    }
-    drupal_alter('quiz_question_info', $info);
-  }
-
-  return NULL !== $name ? $info[$name] : $info;
 }
 
 /**
