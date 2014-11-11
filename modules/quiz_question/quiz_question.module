@@ -18,6 +18,7 @@ define('QUIZ_QUESTION_NUM_LATEST', 10);
  * Include hook implementations.
  */
 require_once dirname(__FILE__) . '/quiz_question.hooks.inc';
+require_once dirname(__FILE__) . '/quiz_question.todo.php';
 
 /**
  * Retrieve list of question types.
