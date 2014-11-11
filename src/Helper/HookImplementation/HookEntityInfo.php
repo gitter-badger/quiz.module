@@ -28,7 +28,7 @@ class HookEntityInfo {
         'entity keys'      => array('id' => 'id', 'name' => 'type', 'label' => 'label'),
         'access callback'  => 'quiz_type_access',
         'module'           => 'quiz',
-        'admin ui'         => array(// Enable the entity API's admin UI.
+        'admin ui'         => array(
             'path'             => 'admin/structure/quiz',
             'file'             => 'quiz.pages.inc',
             'controller class' => 'Drupal\quiz\Entity\QuizTypeUIController',
@@ -38,7 +38,7 @@ class HookEntityInfo {
 
   private function getQuizEntityInfo() {
     $entity_info = array(
-        'label'                     => t('Quiz properties'),
+        'label'                     => t('Quiz'),
         'description'               => t('!quiz entity', array('!quiz' => QUIZ_NAME)),
         'entity class'              => 'Drupal\quiz\Entity\QuizEntity',
         'controller class'          => 'Drupal\quiz\Entity\QuizEntityController',
@@ -57,7 +57,7 @@ class HookEntityInfo {
         'view modes'                => array(
             'question' => array('label' => t('Question'), 'custom settings' => TRUE),
         ),
-        'admin ui'                  => array(// Enable the entity API's admin UI.
+        'admin ui'                  => array(
             'path'             => 'admin/content/quiz',
             'file'             => 'quiz.pages.inc',
             'controller class' => 'Drupal\quiz\Entity\QuizUIController',
