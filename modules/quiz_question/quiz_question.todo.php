@@ -1,6 +1,13 @@
 <?php
 
 /**
+ * Get all question types.
+ */
+function quiz_question_get_types() {
+  return entity_load_multiple_by_name('quiz_question_type');
+}
+
+/**
  * Load question type.
  *
  * @param string $name

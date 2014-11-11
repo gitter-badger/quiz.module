@@ -1,16 +1,18 @@
 <?php
 
+use Drupal\quiz_question\Form\QuestionTypeForm;
+
 /**
  * @file
  * User page callbacks for the quiz_question module.
  */
 function quiz_question_type_form($form, $form_state, $question_type, $op) {
-  $obj = new \Drupal\quiz_question\Form\QuestionTypeForm();
+  $obj = new QuestionTypeForm();
   return $obj->get($form, $form_state, $question_type, $op);
 }
 
 function quiz_question_type_form_submit($form, &$form_state) {
-  $obj = new \Drupal\quiz_question\Form\QuestionTypeForm();
+  $obj = new QuestionTypeForm();
   return $obj->submit($form, $form_state);
 }
 
@@ -19,6 +21,15 @@ function quiz_question_type_form_submit($form, &$form_state) {
  */
 function quiz_question_type_form_submit_delete($form, &$form_state) {
   $form_state['redirect'] = 'admin/structure/quiz-questions/manage/' . $form_state['quiz_question_type']->type . '/delete';
+}
+
+/**
+ * Page callback for /quiz-question/add
+ */
+function quiz_question_adding_landing_page() {
+  return theme_render_template(drupal_get_path('module', 'quiz_question') . '/theme/quiz-question-adding-landing.tpl.php', array(
+      'question_types' => quiz_question_get_types()
+  ));
 }
 
 /**
