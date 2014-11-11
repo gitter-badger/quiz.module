@@ -35,7 +35,7 @@ function quiz_question_entity_info() {
       'exportable'       => TRUE,
       'entity keys'      => array('id' => 'id', 'name' => 'type', 'label' => 'label'),
       'access callback'  => 'quiz_question_type_access',
-      'module'           => 'quiz',
+      'module'           => 'quiz_question',
       'admin ui'         => array(
           'path'             => 'admin/structure/quiz-questions',
           'file'             => 'quiz_question.pages.inc',
@@ -71,9 +71,9 @@ function quiz_question_entity_info() {
   );
 
   // Add bundle info but bypass entity_load() as we cannot use it here.
-  foreach (db_select('quiz_question_type', 'qt')->fields('qt')->execute()->fetchAllAssoc('type') as $type => $info) {
-    $info['bundles'][$type] = array(
-        'label' => $info->label,
+  foreach (db_select('quiz_question_type', 'qt')->fields('qt')->execute()->fetchAllAssoc('type') as $type => $_info) {
+    $info['quiz_question'][$type] = array(
+        'label' => $_info->label,
         'admin' => array(
             'path'             => 'admin/structure/quiz/manage/%quiz_question_type',
             'real path'        => 'admin/structure/quiz/manage/' . $type,
