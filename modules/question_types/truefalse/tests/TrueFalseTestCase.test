@@ -22,11 +22,10 @@ class TrueFalseTestCase extends QuizQuestionTestCase {
 
   /**
    * Test adding and taking a truefalse question.
+   *
+   * @TODO: This is helper (internal) method, not a test case.
    */
   function testCreateQuizQuestion() {
-    // Login as our privileged user.
-    $this->drupalLogin($this->admin);
-
     $question_node = $this->drupalCreateNode(array(
         'type'           => 'truefalse',
         'title'          => 'TF 1 title',
@@ -50,6 +49,7 @@ class TrueFalseTestCase extends QuizQuestionTestCase {
     $qq->saveRelationships();
 
     // Test that question appears in lists.
+    $this->drupalLogin($this->admin);
     $this->drupalGet("quiz/$quiz->qid/questions");
     $this->assertText('TF 1 title');
 
@@ -79,19 +79,16 @@ class TrueFalseTestCase extends QuizQuestionTestCase {
   }
 
   function testQuestionFeedback() {
-    // Login as our privileged user.
-    $this->drupalLogin($this->admin);
-
     // Create the quiz and question.
     $question_node = $this->testCreateQuizQuestion();
 
     // Link the question.
     $quiz = $this->linkQuestionToQuiz($question_node);
 
-    // Test incorrect question with all feedbacks on.
     // Login as non-admin.
     $this->drupalLogin($this->user);
-    // Take the quiz.
+
+    // Test incorrect question with all feedbacks on.
     $this->drupalGet("quiz/$quiz->qid/take");
     $this->drupalPost(NULL, array("question[$question_node->nid]" => 1), t('Finish'));
     $this->assertRaw('quiz-score-icon correct');
