@@ -206,7 +206,7 @@ class QuizQuestionsForm extends BaseForm {
     foreach ($questions as $question) {
       // @todo replace entire form with usage of question instance
       $question_node = node_load($question->nid, $question->vid);
-      $instance = _quiz_question_get_instance($question_node);
+      $instance = quiz_question_get_plugin($question_node);
       $fieldset = 'question_list';
       $id = $question->nid . '-' . $question->vid;
 

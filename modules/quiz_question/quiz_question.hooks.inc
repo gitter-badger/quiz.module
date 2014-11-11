@@ -156,7 +156,7 @@ function quiz_question_node_presave($node) {
 
   if (isset($node->is_quiz_question) && variable_get('quiz_auto_revisioning', 1)) {
     $node->revision = 0;
-    if (($instance = _quiz_question_get_instance($node, true)) && $instance->hasBeenAnswered()) {
+    if (($instance = quiz_question_get_plugin($node, true)) && $instance->hasBeenAnswered()) {
       $node->revision = 1;
     }
   }
@@ -168,7 +168,7 @@ function quiz_question_node_presave($node) {
 function quiz_question_node_prepare($node) {
   if (isset($node->is_quiz_question) && variable_get('quiz_auto_revisioning', 1)) {
     $node->revision = 0;
-    if (($instance = _quiz_question_get_instance($node, true)) && $instance->hasBeenAnswered()) {
+    if (($instance = quiz_question_get_plugin($node, true)) && $instance->hasBeenAnswered()) {
       $node->revision = 1;
     }
   }
@@ -245,7 +245,7 @@ function quiz_question_view($node, $view_mode) {
   }
   else {
     // normal node view
-    $content = _quiz_question_get_instance($node, TRUE)->getNodeView();
+    $content = quiz_question_get_plugin($node, TRUE)->getNodeView();
   }
 
   // put it into the node->content
@@ -259,7 +259,7 @@ function quiz_question_view($node, $view_mode) {
  * Implements hook_update().
  */
 function quiz_question_update($node) {
-  _quiz_question_get_instance($node)->save();
+  quiz_question_get_plugin($node)->save();
 }
 
 /**
@@ -274,7 +274,7 @@ function quiz_question_delete(&$node) {
  */
 function quiz_question_load($nodes) {
   foreach ($nodes as &$node) {
-    foreach (_quiz_question_get_instance($node, TRUE)->getNodeProperties() as $property => $value) {
+    foreach (quiz_question_get_plugin($node, TRUE)->getNodeProperties() as $property => $value) {
       $node->$property = $value;
     }
   }
@@ -288,14 +288,14 @@ function quiz_question_validate($node, &$form) {
   if (empty($node->body)) {
     form_set_error('body', t('Question text is empty.'));
   }
-  _quiz_question_get_instance($node)->validateNode($form);
+  quiz_question_get_plugin($node)->validateNode($form);
 }
 
 /**
  * Implements hook_insert().
  */
 function quiz_question_insert(stdClass $question) {
-  _quiz_question_get_instance($question)->save(TRUE);
+  quiz_question_get_plugin($question)->save(TRUE);
   if (isset($question->quiz_qid) && $question->quiz_qid > 0) {
     quiz_question_refresh_latest_quizzes($question->quiz_qid);
   }
@@ -307,8 +307,8 @@ if ('quiz-question' === arg(0)) {
    * Define quiz-entity editing form.
    */
   function quiz_question_form($form, &$form_state, $question, $op = 'edit') {
-    kpr($question);
-    exit;
+    $obj = new \Drupal\quiz_question\Form\QuestionForm();
+    return $obj->get($form, $form_state, $question, $op);
   }
 
 }
@@ -318,7 +318,7 @@ else {
    * Implements hook_form().
    */
   function quiz_question_form(&$node, &$form_state) {
-    return _quiz_question_get_instance($node)->getNodeForm($form_state);
+    return quiz_question_get_plugin($node)->getNodeForm($form_state);
   }
 
 }
@@ -356,7 +356,7 @@ function quiz_question_quiz_question_score($quiz, $question_nid, $question_vid =
   $dummy_node->nid = $question_nid;
   $dummy_node->vid = $question_vid;
 
-  if (!$question = _quiz_question_get_instance($dummy_node, TRUE)) {
+  if (!$question = quiz_question_get_plugin($dummy_node, TRUE)) {
     return FALSE;
   }
 
@@ -405,7 +405,7 @@ function quiz_question_delete_result($result_id, $question_nid, $question_vid) {
  */
 function _quiz_delete_question(&$node, $only_this_version) {
   // let each question class delete its own stuff
-  _quiz_question_get_instance($node, TRUE)->delete($only_this_version);
+  quiz_question_get_plugin($node, TRUE)->delete($only_this_version);
 
   // FIXME QuizQuestion class makes these relationships, so it should handle their 'deletion' too
   // FIXME alternately, move the relationship handling out of QuizQuestion class
