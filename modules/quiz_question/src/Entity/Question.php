@@ -46,8 +46,7 @@ class Question extends Entity {
   public $feedback_format;
 
   public function getPlugin() {
-    if ($question_type = quiz_question_type_load($this->type)) {
-    }
+    return quiz_question_get_plugin($this);
   }
 
 }

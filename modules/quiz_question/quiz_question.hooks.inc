@@ -156,7 +156,7 @@ function quiz_question_node_presave($node) {
 
   if (isset($node->is_quiz_question) && variable_get('quiz_auto_revisioning', 1)) {
     $node->revision = 0;
-    if (($instance = quiz_question_get_plugin($node, true)) && $instance->hasBeenAnswered()) {
+    if (($plugin = quiz_question_get_plugin($node, TRUE)) && $plugin->hasBeenAnswered()) {
       $node->revision = 1;
     }
   }
@@ -168,7 +168,7 @@ function quiz_question_node_presave($node) {
 function quiz_question_node_prepare($node) {
   if (isset($node->is_quiz_question) && variable_get('quiz_auto_revisioning', 1)) {
     $node->revision = 0;
-    if (($instance = quiz_question_get_plugin($node, true)) && $instance->hasBeenAnswered()) {
+    if (($plugin = quiz_question_get_plugin($node, TRUE)) && $plugin->hasBeenAnswered()) {
       $node->revision = 1;
     }
   }
