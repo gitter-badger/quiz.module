@@ -45,4 +45,8 @@ class Question extends Entity {
   /** @var string */
   public $feedback_format;
 
+  public function getPlugin() {
+    return quiz_question_get_plugin($this);
+  }
+
 }

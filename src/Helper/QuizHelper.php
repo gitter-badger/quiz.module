@@ -110,7 +110,7 @@ class QuizHelper {
     // Otherwise let's add a relationship!
     $question->quiz_qid = $quiz->qid;
     $question->quiz_vid = $quiz->vid;
-    _quiz_question_get_instance($question)->saveRelationships();
+    quiz_question_get_plugin($question)->saveRelationships();
     $this->updateMaxScoreProperties(array($quiz->vid));
   }
 

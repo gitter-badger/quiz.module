@@ -73,7 +73,7 @@ class QuizAnsweringForm {
     $form['#result'] = $this->result;
 
     foreach ($questions as $question) {
-      $question = _quiz_question_get_instance($question);
+      $question = quiz_question_get_plugin($question);
       $this->buildQuestionItem($question, $form, $form_state);
     }
 
@@ -194,7 +194,7 @@ class QuizAnsweringForm {
     foreach (array_keys($form_state['values']['question']) as $question_id) {
       if ($current_question = node_load($question_id)) {
         // There was an answer submitted.
-        _quiz_question_get_instance($current_question)->getAnsweringFormValidate($form, $form_state);
+        quiz_question_get_plugin($current_question)->getAnsweringFormValidate($form, $form_state);
       }
     }
   }

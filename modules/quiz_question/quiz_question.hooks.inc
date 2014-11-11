@@ -35,7 +35,7 @@ function quiz_question_entity_info() {
       'exportable'       => TRUE,
       'entity keys'      => array('id' => 'id', 'name' => 'type', 'label' => 'label'),
       'access callback'  => 'quiz_question_type_access',
-      'module'           => 'quiz',
+      'module'           => 'quiz_question',
       'admin ui'         => array(
           'path'             => 'admin/structure/quiz-questions',
           'file'             => 'quiz_question.pages.inc',
@@ -44,7 +44,8 @@ function quiz_question_entity_info() {
   );
 
   $info['quiz_question'] = array(
-      'label'                     => t('Questions'),
+      'label'                     => t('Question'),
+      'plural label'              => t('Questions'),
       'description'               => t('!quiz question entity', array('!quiz' => QUIZ_NAME)),
       'entity class'              => 'Drupal\quiz_question\Entity\Question',
       'controller class'          => 'Drupal\quiz_question\Entity\QuestionController',
@@ -71,12 +72,13 @@ function quiz_question_entity_info() {
   );
 
   // Add bundle info but bypass entity_load() as we cannot use it here.
-  foreach (db_select('quiz_question_type', 'qt')->fields('qt')->execute()->fetchAllAssoc('type') as $type => $info) {
-    $info['bundles'][$type] = array(
-        'label' => $info->label,
+  $rows = db_select('quiz_question_type', 'qt')->fields('qt')->execute()->fetchAllAssoc('type');
+  foreach ($rows as $name => $row) {
+    $info['quiz_question']['bundles'][$name] = array(
+        'label' => $row->label,
         'admin' => array(
             'path'             => 'admin/structure/quiz/manage/%quiz_question_type',
-            'real path'        => 'admin/structure/quiz/manage/' . $type,
+            'real path'        => 'admin/structure/quiz/manage/' . $name,
             'bundle argument'  => 4,
             'access arguments' => array('administer quiz'),
         ),
@@ -154,7 +156,7 @@ function quiz_question_node_presave($node) {
 
   if (isset($node->is_quiz_question) && variable_get('quiz_auto_revisioning', 1)) {
     $node->revision = 0;
-    if (($instance = _quiz_question_get_instance($node, true)) && $instance->hasBeenAnswered()) {
+    if (($plugin = quiz_question_get_plugin($node, TRUE)) && $plugin->hasBeenAnswered()) {
       $node->revision = 1;
     }
   }
@@ -166,7 +168,7 @@ function quiz_question_node_presave($node) {
 function quiz_question_node_prepare($node) {
   if (isset($node->is_quiz_question) && variable_get('quiz_auto_revisioning', 1)) {
     $node->revision = 0;
-    if (($instance = _quiz_question_get_instance($node, true)) && $instance->hasBeenAnswered()) {
+    if (($plugin = quiz_question_get_plugin($node, TRUE)) && $plugin->hasBeenAnswered()) {
       $node->revision = 1;
     }
   }
@@ -243,7 +245,7 @@ function quiz_question_view($node, $view_mode) {
   }
   else {
     // normal node view
-    $content = _quiz_question_get_instance($node, TRUE)->getNodeView();
+    $content = quiz_question_get_plugin($node, TRUE)->getNodeView();
   }
 
   // put it into the node->content
@@ -257,7 +259,7 @@ function quiz_question_view($node, $view_mode) {
  * Implements hook_update().
  */
 function quiz_question_update($node) {
-  _quiz_question_get_instance($node)->save();
+  quiz_question_get_plugin($node)->save();
 }
 
 /**
@@ -272,7 +274,7 @@ function quiz_question_delete(&$node) {
  */
 function quiz_question_load($nodes) {
   foreach ($nodes as &$node) {
-    foreach (_quiz_question_get_instance($node, TRUE)->getNodeProperties() as $property => $value) {
+    foreach (quiz_question_get_plugin($node, TRUE)->getNodeProperties() as $property => $value) {
       $node->$property = $value;
     }
   }
@@ -286,24 +288,39 @@ function quiz_question_validate($node, &$form) {
   if (empty($node->body)) {
     form_set_error('body', t('Question text is empty.'));
   }
-  _quiz_question_get_instance($node)->validateNode($form);
+  quiz_question_get_plugin($node)->validateNode($form);
 }
 
 /**
  * Implements hook_insert().
  */
 function quiz_question_insert(stdClass $question) {
-  _quiz_question_get_instance($question)->save(TRUE);
+  quiz_question_get_plugin($question)->save(TRUE);
   if (isset($question->quiz_qid) && $question->quiz_qid > 0) {
     quiz_question_refresh_latest_quizzes($question->quiz_qid);
   }
 }
 
-/**
- * Implements hook_form().
- */
-function quiz_question_form(&$node, &$form_state) {
-  return _quiz_question_get_instance($node)->getNodeForm($form_state);
+if ('quiz-question' === arg(0)) {
+
+  /**
+   * Define quiz-entity editing form.
+   */
+  function quiz_question_form($form, &$form_state, $question, $op = 'edit') {
+    $obj = new \Drupal\quiz_question\Form\QuestionForm();
+    return $obj->get($form, $form_state, $question, $op);
+  }
+
+}
+else {
+
+  /**
+   * Implements hook_form().
+   */
+  function quiz_question_form(&$node, &$form_state) {
+    return quiz_question_get_plugin($node)->getNodeForm($form_state);
+  }
+
 }
 
 // QUIZ HOOK IMPLEMENTATIONS
@@ -339,7 +356,7 @@ function quiz_question_quiz_question_score($quiz, $question_nid, $question_vid =
   $dummy_node->nid = $question_nid;
   $dummy_node->vid = $question_vid;
 
-  if (!$question = _quiz_question_get_instance($dummy_node, TRUE)) {
+  if (!$question = quiz_question_get_plugin($dummy_node, TRUE)) {
     return FALSE;
   }
 
@@ -388,7 +405,7 @@ function quiz_question_delete_result($result_id, $question_nid, $question_vid) {
  */
 function _quiz_delete_question(&$node, $only_this_version) {
   // let each question class delete its own stuff
-  _quiz_question_get_instance($node, TRUE)->delete($only_this_version);
+  quiz_question_get_plugin($node, TRUE)->delete($only_this_version);
 
   // FIXME QuizQuestion class makes these relationships, so it should handle their 'deletion' too
   // FIXME alternately, move the relationship handling out of QuizQuestion class
@@ -424,3 +441,31 @@ function _quiz_delete_question(&$node, $only_this_version) {
 }
 
 // END To be removed
+
+/**
+ * Implements hook_modules_enable().
+ *
+ * Create default question bundle base on new question plugins enabled.
+ *
+ * @param string[] $modules
+ */
+function quiz_question_modules_enabled($modules) {
+  foreach ($modules as $module) {
+    if (!$info = module_invoke($module, 'quiz_question_info')) {
+      continue;
+    }
+
+    $sql = 'SELECT 1 FROM {quiz_question_type} WHERE plugin = :module';
+    if ($has_question_type = db_query($sql, array(':module' => $module))->fetchColumn()) {
+      continue;
+    }
+
+    entity_create('quiz_question_type', array(
+        'type'        => 'default_' . $module,
+        'label'       => $info[$module]['name'],
+        'status'      => 0,
+        'plugin'      => $module,
+        'description' => isset($info[$module]['description']) ? $info[$module]['description'] : '',
+    ))->save();
+  }
+}

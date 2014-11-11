@@ -13,7 +13,7 @@ class QuestionType extends Entity {
   public $label;
 
   /** @var string */
-  public $provider;
+  public $plugin;
 
   /** @var string */
   public $description;
@@ -23,6 +23,9 @@ class QuestionType extends Entity {
 
   /** @var int */
   public $weight = 0;
+
+  /** @var bool */
+  public $status = 1;
 
   public function __construct(array $values = array()) {
     parent::__construct($values, 'quiz_question_type');

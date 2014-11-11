@@ -86,15 +86,13 @@ function quiz_entity_adding_landing_page() {
 }
 
 /**
- * Callback for /quiz/add/%quiz_type
+ * Callback for /quiz/add/%
+ *
+ * @param string $quiz_type_name
  */
-function quiz_entity_adding_page($op, $quiz_type) {
-  $quiz = NULL;
-  if ($op === 'add') {
-    $values['type'] = $quiz_type;
-    $quiz = entity_create('quiz_entity', $values);
-  }
-  return entity_ui_get_form('quiz_entity', $quiz, $op);
+function quiz_entity_adding_page($quiz_type_name) {
+  $quiz = entity_create('quiz_entity', array('type' => $quiz_type_name));
+  return entity_ui_get_form('quiz_entity', $quiz, 'add');
 }
 
 /**

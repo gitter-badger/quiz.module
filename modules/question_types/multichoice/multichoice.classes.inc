@@ -14,8 +14,6 @@ use Drupal\quiz_question\QuizQuestionResponse;
  * Based on:
  * Other question types in the quiz framework.
  *
- *
- *
  * @file
  * Question type, enabling the creation of multiple choice and multiple answer questions.
  */
@@ -32,7 +30,9 @@ class MultichoiceQuestion extends QuizQuestion {
     if ($this->node->choice_multi == 1) {
       for ($i = 0; isset($this->node->alternatives[$i]); $i++) {
         $short = &$this->node->alternatives[$i];
-        // If the scoring data doesn't make sense, use the data from the "correct" checkbox to set the score data
+
+        // If the scoring data doesn't make sense, use the data from the
+        // "correct" checkbox to set the score data
         if ($short['score_if_chosen'] == $short['score_if_not_chosen'] || !is_numeric($short['score_if_chosen']) || !is_numeric($short['score_if_not_chosen'])) {
           if (!empty($short['correct'])) {
             $short['score_if_chosen'] = 1;
@@ -52,8 +52,8 @@ class MultichoiceQuestion extends QuizQuestion {
       }
     }
     else {
-      // For questions with one, and only one, correct answer, there will be no points awarded for alternatives
-      // not chosen.
+      // For questions with one, and only one, correct answer, there will be no
+      // points awarded for alternatives not chosen.
       for ($i = 0; isset($this->node->alternatives[$i]); $i++) {
         $short = &$this->node->alternatives[$i];
         $short['score_if_not_chosen'] = 0;
@@ -76,6 +76,7 @@ class MultichoiceQuestion extends QuizQuestion {
         $num_corrects++;
       }
     }
+
     if ($num_corrects == 1 && $this->node->choice_multi == 1 || $num_corrects > 1 && $this->node->choice_multi == 0) {
       $link_options = array();
       if (isset($_GET['destination'])) {
@@ -83,12 +84,12 @@ class MultichoiceQuestion extends QuizQuestion {
       }
       $go_back = l(t('go back'), 'node/' . $this->node->nid . '/edit', $link_options);
       if ($num_corrects == 1) {
-        drupal_set_message(
-          t('Your question allows multiple answers. Only one of the alternatives have been marked as correct. If this wasn\'t intended please !go_back and correct it.', array('!go_back' => $go_back)), 'warning');
+        $msg = t('Your question allows multiple answers. Only one of the alternatives have been marked as correct. If this wasn\'t intended please !go_back and correct it.', array('!go_back' => $go_back));
+        drupal_set_message($msg, 'warning');
       }
       else {
-        drupal_set_message(
-          t('Your question doesn\'t allow multiple answers. More than one of the alternatives have been marked as correct. If this wasn\'t intended please !go_back and correct it.', array('!go_back' => $go_back)), 'warning');
+        $msg = t('Your question doesn\'t allow multiple answers. More than one of the alternatives have been marked as correct. If this wasn\'t intended please !go_back and correct it.', array('!go_back' => $go_back));
+        drupal_set_message($msg, 'warning');
       }
     }
   }
@@ -827,7 +828,7 @@ class MultichoiceResponse extends QuizQuestionResponse {
       if (isset($values['user_answer']) && is_array($values['user_answer'])) {
         foreach ($values['user_answer'] as $answer_id) {
           $this->user_answer_ids[] = $answer_id;
-          $this->answer = $this->user_answer_ids; //@todo: Stop using user_answer_ids and only use answer instead…
+          $this->answer = $this->user_answer_ids; // @todo: Stop using user_answer_ids and only use answer instead…
         }
       }
       elseif (isset($values['user_answer'])) {
@@ -910,10 +911,8 @@ class MultichoiceResponse extends QuizQuestionResponse {
             $score = 0;
           }
         }
-        else {
-          if ($alt['score_if_chosen'] > $alt['score_if_not_chosen']) {
-            $score = 0;
-          }
+        elseif ($alt['score_if_chosen'] > $alt['score_if_not_chosen']) {
+          $score = 0;
         }
       }
     }
@@ -994,8 +993,16 @@ class MultichoiceResponse extends QuizQuestionResponse {
     if (!$this->question->choice_random) {
       return;
     }
-    $result = db_query('SELECT choice_order FROM {quiz_multichoice_user_answers}
-            WHERE result_id = :result_id AND question_nid = :question_nid AND question_vid = :question_vid', array(':result_id' => $this->result_id, ':question_nid' => $this->question->nid, ':question_vid' => $this->question->vid))->fetchField();
+
+    $result = db_query(
+      'SELECT choice_order
+          FROM {quiz_multichoice_user_answers}
+          WHERE result_id = :result_id
+            AND question_nid = :question_nid
+            AND question_vid = :question_vid', array(
+        ':result_id'    => $this->result_id,
+        ':question_nid' => $this->question->nid,
+        ':question_vid' => $this->question->vid))->fetchField();
     if (!$result) {
       return;
     }

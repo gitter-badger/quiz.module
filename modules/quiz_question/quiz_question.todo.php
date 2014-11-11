@@ -1,6 +1,13 @@
 <?php
 
 /**
+ * Get all question types.
+ */
+function quiz_question_get_types() {
+  return entity_load_multiple_by_name('quiz_question_type');
+}
+
+/**
  * Load question type.
  *
  * @param string $name
@@ -22,7 +29,7 @@ function quiz_question_type_access() {
  * @param string $type
  * @param stdClass $account
  */
-function quiz_question_access_callback() {
+function quiz_question_access_callback($op, $type = NULL, $account = NULL) {
   switch ($op) {
     case 'create':
       return user_access('create question content', $account);
