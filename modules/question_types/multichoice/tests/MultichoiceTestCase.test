@@ -61,8 +61,7 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
     $settings['alternatives'][2]['score_if_chosen'] = 0;
     $settings['alternatives'][2]['score_if_not_chosen'] = 0;
 
-    $question = $this->drupalCreateNode($settings);
-    $question = node_load($question->nid);
+    $question = node_load($this->drupalCreateNode($settings)->nid);
 
     $this->assertNotNull($question->alternatives[0]['id'], 'Alternative A was created as part of question save.');
     $this->assertNotNull($question->alternatives[1]['id'], 'Alternative B was created as part of question save.');
@@ -88,9 +87,7 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
 
     // Test incorrect question. Feedback, answer.
     $this->drupalGet("quiz/$quiz->qid/take");
-    $this->drupalPost(NULL, array(
-        "question[$question->nid][user_answer]" => $question->alternatives[1]['id'],
-      ), t('Finish'));
+    $this->drupalPost(NULL, array("question[$question->nid][user_answer]" => $question->alternatives[1]['id']), t('Finish'));
     $this->assertPattern('/quiz-score-icon selected/', 'Found selected answer.');
     $this->assertPattern('/quiz-score-icon should/', 'Found should answer.');
     $this->assertPattern('/quiz-score-icon incorrect/', 'Found incorrect answer.');

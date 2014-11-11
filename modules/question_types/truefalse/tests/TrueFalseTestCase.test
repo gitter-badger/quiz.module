@@ -45,8 +45,7 @@ class TrueFalseTestCase extends QuizQuestionTestCase {
     // Link the question.
     $question_node->quiz_qid = $quiz->qid;
     $question_node->quiz_vid = $quiz->vid;
-    $qq = quiz_question_get_plugin($question_node);
-    $qq->saveRelationships();
+    quiz_question_get_plugin($question_node)->saveRelationships();
 
     // Test that question appears in lists.
     $this->drupalLogin($this->admin);

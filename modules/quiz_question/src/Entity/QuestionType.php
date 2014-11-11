@@ -41,4 +41,8 @@ class QuestionType extends Entity {
     return isset($this->status) && empty($this->is_new) && (($this->status & ENTITY_IN_CODE) || ($this->status & ENTITY_FIXED));
   }
 
+  public function getPlugin() {
+
+  }
+
 }
