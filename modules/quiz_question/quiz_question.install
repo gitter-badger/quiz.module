@@ -58,7 +58,7 @@ function quiz_question_schema() {
       'indexes'     => array(),
   );
 
-  $schema['quiz_question_types'] = array(
+  $schema['quiz_question_type'] = array(
       'description' => 'Stores information about all defined question types.',
       'fields'      => array(
           'id'          => array('type' => 'serial', 'not null' => TRUE, 'description' => 'Primary Key: Unique question type ID.'),
