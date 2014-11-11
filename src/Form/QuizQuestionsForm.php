@@ -206,7 +206,7 @@ class QuizQuestionsForm extends BaseForm {
     foreach ($questions as $question) {
       // @todo replace entire form with usage of question instance
       $question_node = node_load($question->nid, $question->vid);
-      $plugin = quiz_question_get_plugin($question_node);
+      $instance = quiz_question_get_plugin($question_node);
       $fieldset = 'question_list';
       $id = $question->nid . '-' . $question->vid;
 
@@ -233,7 +233,7 @@ class QuizQuestionsForm extends BaseForm {
 
       // Quiz directions don't have scoring…
       $form[$fieldset]['max_scores'][$id] = array(
-          '#type'          => $plugin->isGraded() ? 'textfield' : 'hidden',
+          '#type'          => $instance->isGraded() ? 'textfield' : 'hidden',
           '#size'          => 2,
           '#maxlength'     => 2,
           '#disabled'      => isset($question->auto_update_max_score) ? $question->auto_update_max_score : FALSE,
@@ -244,7 +244,7 @@ class QuizQuestionsForm extends BaseForm {
       );
 
       $form[$fieldset]['auto_update_max_scores'][$id] = array(
-          '#type'          => $plugin->isGraded() ? 'checkbox' : 'hidden',
+          '#type'          => $instance->isGraded() ? 'checkbox' : 'hidden',
           '#default_value' => isset($question->auto_update_max_score) ? $question->auto_update_max_score : 0,
       );
 

@@ -144,17 +144,17 @@ function quiz_question_config($form, $context) {
  *
  * @param \Drupal\quiz_question\Entity\Question $question
  *  Question entity
- * @param bool $refresh
+ * @param bool $cache
  *  Can we use a cached version of the node?
  * @return
  *  The appropriate QuizQuestion extension instance
  */
-function quiz_question_get_plugin(&$question, $refresh = FALSE) {
+function quiz_question_get_plugin(&$question, $cache = FALSE) {
   // We use static caching to improve performance
   $plugins = &drupal_static(__FUNCTION__, array());
 
   $question_vid = isset($question->vid) ? $question->vid : 0;
-  if (!$refresh && !empty($plugins[$question_vid])) {
+  if ($cache && isset($plugins[$question_vid])) {
     return $plugins[$question_vid];
   }
 

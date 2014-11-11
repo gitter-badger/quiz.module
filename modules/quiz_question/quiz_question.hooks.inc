@@ -156,7 +156,7 @@ function quiz_question_node_presave($node) {
 
   if (isset($node->is_quiz_question) && variable_get('quiz_auto_revisioning', 1)) {
     $node->revision = 0;
-    if (($instance = quiz_question_get_plugin($node)) && $instance->hasBeenAnswered()) {
+    if (($instance = quiz_question_get_plugin($node, true)) && $instance->hasBeenAnswered()) {
       $node->revision = 1;
     }
   }
@@ -168,7 +168,7 @@ function quiz_question_node_presave($node) {
 function quiz_question_node_prepare($node) {
   if (isset($node->is_quiz_question) && variable_get('quiz_auto_revisioning', 1)) {
     $node->revision = 0;
-    if (($instance = quiz_question_get_plugin($node)) && $instance->hasBeenAnswered()) {
+    if (($instance = quiz_question_get_plugin($node, true)) && $instance->hasBeenAnswered()) {
       $node->revision = 1;
     }
   }
@@ -245,7 +245,7 @@ function quiz_question_view($node, $view_mode) {
   }
   else {
     // normal node view
-    $content = quiz_question_get_plugin($node)->getNodeView();
+    $content = quiz_question_get_plugin($node, TRUE)->getNodeView();
   }
 
   // put it into the node->content
@@ -274,7 +274,7 @@ function quiz_question_delete(&$node) {
  */
 function quiz_question_load($nodes) {
   foreach ($nodes as &$node) {
-    foreach (quiz_question_get_plugin($node)->getNodeProperties() as $property => $value) {
+    foreach (quiz_question_get_plugin($node, TRUE)->getNodeProperties() as $property => $value) {
       $node->$property = $value;
     }
   }
@@ -356,7 +356,7 @@ function quiz_question_quiz_question_score($quiz, $question_nid, $question_vid =
   $dummy_node->nid = $question_nid;
   $dummy_node->vid = $question_vid;
 
-  if (!$question = quiz_question_get_plugin($dummy_node)) {
+  if (!$question = quiz_question_get_plugin($dummy_node, TRUE)) {
     return FALSE;
   }
 
@@ -400,12 +400,12 @@ function quiz_question_delete_result($result_id, $question_nid, $question_vid) {
  * linking table as "NEVER".  This is safer than deleting them
  * and allows for same tracing of what's happened if a question was deleted unintentionally.
  *
- * @param $question the question node
+ * @param $node the question node
  * @param $only_this_version whether to delete only the specific revision of the question
  */
-function _quiz_delete_question(&$question, $only_this_version) {
+function _quiz_delete_question(&$node, $only_this_version) {
   // let each question class delete its own stuff
-  quiz_question_get_plugin($question)->delete($only_this_version);
+  quiz_question_get_plugin($node, TRUE)->delete($only_this_version);
 
   // FIXME QuizQuestion class makes these relationships, so it should handle their 'deletion' too
   // FIXME alternately, move the relationship handling out of QuizQuestion class
@@ -415,11 +415,11 @@ function _quiz_delete_question(&$question, $only_this_version) {
   $select_sql = 'SELECT quiz_vid FROM {quiz_relationship}';
   if ($only_this_version) {
     $select_sql .= ' WHERE question_nid = :question_nid AND question_vid = :question_vid';
-    $filter_arg = array(':question_nid' => $question->nid, ':question_vid' => $question->vid);
+    $filter_arg = array(':question_nid' => $node->nid, ':question_vid' => $node->vid);
   }
   else {
     $select_sql .= ' WHERE question_nid = :question_nid';
-    $filter_arg = array(':question_nid' => $question->nid);
+    $filter_arg = array(':question_nid' => $node->nid);
   }
   //$res = db_query($select_sql . $filter_sql, $node->nid, $node->vid);
   $res = db_query($select_sql, $filter_arg);
@@ -427,9 +427,9 @@ function _quiz_delete_question(&$question, $only_this_version) {
   //db_query($base_sql . $filter_sql, $node->nid, $node->vid);
   $update = db_update('quiz_relationship')
     ->fields(array('question_status' => QUESTION_NEVER))
-    ->condition('question_nid', $question->nid);
+    ->condition('question_nid', $node->nid);
   if ($only_this_version) {
-    $update = $update->condition('question_vid', $question->vid);
+    $update = $update->condition('question_vid', $node->vid);
   }
   $update->execute();
 
