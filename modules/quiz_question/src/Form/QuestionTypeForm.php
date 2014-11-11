@@ -16,12 +16,13 @@ class QuestionTypeForm {
     }
 
     $form['plugin'] = array(
-        '#type'        => 'select',
-        '#required'    => TRUE,
-        '#title'       => t('Question plugin'),
-        '#description' => t('Can not be changed after question type created.'),
-        '#options'     => $provider_options,
-        '#disabled'    => !empty($question_type->provider),
+        '#type'          => 'select',
+        '#required'      => TRUE,
+        '#title'         => t('Question plugin'),
+        '#description'   => t('Can not be changed after question type created.'),
+        '#options'       => $provider_options,
+        '#disabled'      => !empty($question_type->plugin),
+        '#default_value' => $question_type->plugin,
     );
 
     $form['label'] = array(
