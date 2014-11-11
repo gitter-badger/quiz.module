@@ -66,7 +66,7 @@ function quiz_question_entity_info() {
       'admin ui'                  => array(
           'path'             => 'admin/content/quiz-questions',
           'file'             => 'quiz_question.pages.inc',
-          'controller class' => 'Drupal\quiz_question\Entity\QuizUIController',
+          'controller class' => 'Drupal\quiz_question\Entity\QuestionUIController',
       ),
   );
 
