@@ -425,3 +425,31 @@ function _quiz_delete_question(&$node, $only_this_version) {
 }
 
 // END To be removed
+
+/**
+ * Implements hook_modules_enable().
+ *
+ * Create default question bundle base on new question plugins enabled.
+ *
+ * @param string[] $modules
+ */
+function quiz_question_modules_enabled($modules) {
+  foreach ($modules as $module) {
+    if (!$info = module_invoke($module, 'quiz_question_info')) {
+      continue;
+    }
+
+    $sql = 'SELECT 1 FROM {quiz_question_type} WHERE plugin = :module';
+    if ($has_question_type = db_query($sql, array(':module' => $module))->fetchColumn()) {
+      continue;
+    }
+
+    entity_create('quiz_question_type', array(
+        'type'        => 'default_' . $module,
+        'label'       => $info[$module]['name'],
+        'status'      => 0,
+        'plugin'      => $module,
+        'description' => isset($info[$module]['description']) ? $info[$module]['description'] : '',
+    ))->save();
+  }
+}
