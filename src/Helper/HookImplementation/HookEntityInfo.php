@@ -38,7 +38,7 @@ class HookEntityInfo {
 
   private function getQuizEntityInfo() {
     $entity_info = array(
-        'label'                     => t('Quiz'),
+        'label'                     => QUIZ_NAME,
         'description'               => t('!quiz entity', array('!quiz' => QUIZ_NAME)),
         'entity class'              => 'Drupal\quiz\Entity\QuizEntity',
         'controller class'          => 'Drupal\quiz\Entity\QuizEntityController',
