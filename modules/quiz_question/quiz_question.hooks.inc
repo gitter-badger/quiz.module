@@ -44,7 +44,8 @@ function quiz_question_entity_info() {
   );
 
   $info['quiz_question'] = array(
-      'label'                     => t('Questions'),
+      'label'                     => t('Question'),
+      'plural label'              => t('Questions'),
       'description'               => t('!quiz question entity', array('!quiz' => QUIZ_NAME)),
       'entity class'              => 'Drupal\quiz_question\Entity\Question',
       'controller class'          => 'Drupal\quiz_question\Entity\QuestionController',
