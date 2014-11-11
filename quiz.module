@@ -29,17 +29,19 @@ define('QUIZ_VIEWS_DIR', drupal_get_path('module', 'quiz') . '/includes/views');
  */
 require_once dirname(__FILE__) . '/quiz.hooks.inc';
 
+/**
+ * Quiz name.
+ */
+if (!defined('QUIZ_NAME')) {
+  define('QUIZ_NAME', t(variable_get('quiz_name', 'Quiz')));
+}
+
 /*
  * Define question statuses…
  */
 define('QUESTION_RANDOM', 0);
 define('QUESTION_ALWAYS', 1);
 define('QUESTION_NEVER', 2);
-
-/**
- * Quiz name.
- */
-define('QUIZ_NAME', _quiz_get_quiz_name());
 
 /**
  * Define options for keeping results.
