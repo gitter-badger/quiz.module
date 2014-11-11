@@ -146,7 +146,7 @@ function quiz_question_config($form, $context) {
  *  Question entity
  * @param bool $cache
  *  Can we use a cached version of the node?
- * @return
+ * @return \QuizQuestion
  *  The appropriate QuizQuestion extension instance
  */
 function quiz_question_get_plugin(&$question, $cache = FALSE) {
