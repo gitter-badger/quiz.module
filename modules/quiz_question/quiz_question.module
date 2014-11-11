@@ -144,21 +144,20 @@ function quiz_question_config($form, $context) {
  *
  * @param \Drupal\quiz_question\Entity\Question $question
  *  Question entity
- * @param bool $use_cached
+ * @param bool $cache
  *  Can we use a cached version of the node?
  * @return
  *  The appropriate QuizQuestion extension instance
  */
-function quiz_question_get_plugin(&$question, $use_cached = FALSE) {
+function quiz_question_get_plugin(&$question, $cache = FALSE) {
   // We use static caching to improve performance
   $plugins = &drupal_static(__FUNCTION__, array());
 
   $question_vid = isset($question->vid) ? $question->vid : 0;
-  if ($use_cached && isset($plugins[$question_vid])) {
+  if ($cache && isset($plugins[$question_vid])) {
     return $plugins[$question_vid];
   }
 
-  $using_dummy_node = FALSE;
   if (is_object($question) && !isset($question->type)) { # If $question don't have a type it is a dummy node
     // To substanitally improve performance(especially on the result page) we avoid node_load()…
     // @todo why is this? consider getting rid of this as nodes are better
@@ -170,35 +169,30 @@ function quiz_question_get_plugin(&$question, $use_cached = FALSE) {
             JOIN {quiz_question_properties} p ON r.vid = p.vid
           WHERE r.vid = :vid', array(
         ':vid' => $question->vid))->fetch();
-    $using_dummy_node = TRUE;
+    $is_dummy = TRUE;
   }
-
-  $name = $question->type;
 
   // No cached instance of QuizQuestion has been returned. We construct a new instance
   $info = quiz_question_get_info();
-  if (!$constructor = $info[$name]['question provider']) {
+  if (!$constructor = $info[$question->type]['question provider']) {
     return FALSE;
   }
 
-  // We create a new instance of QuizQuestion
+  // We must create a new instance of QuizQuestion
   if (($plugin = new $constructor($question)) && !($plugin instanceof QuizQuestion)) {
-    // Make sure the constructor is creating an extension of QuizQuestion
-    $msg = t('The question-type %name isn\'t a QuizQuestion. It needs to extend the QuizQuestion class.', array('%name' => $name));
-    drupal_set_message($msg, 'error', FALSE);
+    drupal_set_message(t("The question-type %name isn't a QuizQuestion. It needs to extend the QuizQuestion class.", array(
+        '%name' => $question->type
+      )), 'error', FALSE);
   }
 
   // If we're using a dummy node we have to run getNodeProperties, and populate the node with those properties
-  if ($using_dummy_node && ($properties = $plugin->getNodeProperties())) {
+  if (!empty($is_dummy) && ($properties = $plugin->getNodeProperties())) {
     foreach ($properties as $key => $value) {
       $plugin->node->{$key} = $value;
     }
   }
 
-  // Cache the node
-  $plugins[$question_vid] = $plugin;
-
-  return $plugin;
+  return $plugins[$question_vid] = $plugin;
 }
 
 /**
