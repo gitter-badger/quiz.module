@@ -13,15 +13,77 @@ function quiz_question_help($path, $args) {
  * Implements hook_entity_info()
  */
 function quiz_question_entity_info() {
-  return array(
-      'quiz_question_properties' => array(
-          'label'                  => t('Quiz question properties'),
-          'controller class'       => 'EntityAPIController',
-          'base table'             => 'quiz_question_properties',
-          'entity keys'            => array('id' => 'qqp_id'),
-          'views controller class' => 'EntityDefaultViewsController',
+  $info = array();
+
+  $info['quiz_question_properties'] = array(
+      'label'                  => t('Quiz question properties'),
+      'controller class'       => 'EntityAPIController',
+      'base table'             => 'quiz_question_properties',
+      'entity keys'            => array('id' => 'qqp_id'),
+      'views controller class' => 'EntityDefaultViewsController',
+  );
+
+  $info['quiz_question_type'] = array(
+      'label'            => t('Question type'),
+      'plural label'     => t('Question types'),
+      'description'      => t('Types of question entity.'),
+      'entity class'     => 'Drupal\quiz_question\Entity\QuestionType',
+      'controller class' => 'Drupal\quiz_question\Entity\QuestionTypeController',
+      'base table'       => 'quiz_question_type',
+      'fieldable'        => FALSE,
+      'bundle of'        => 'quiz_question',
+      'exportable'       => TRUE,
+      'entity keys'      => array('id' => 'id', 'name' => 'type', 'label' => 'label'),
+      'access callback'  => 'quiz_question_type_access',
+      'module'           => 'quiz',
+      'admin ui'         => array(
+          'path'             => 'admin/structure/quiz-questions',
+          'file'             => 'quiz_question.pages.inc',
+          'controller class' => 'Drupal\quiz_question\Entity\QuestionTypeUIController',
       ),
   );
+
+  $info['quiz_question'] = array(
+      'label'                     => t('Questions'),
+      'description'               => t('!quiz question entity', array('!quiz' => QUIZ_NAME)),
+      'entity class'              => 'Drupal\quiz_question\Entity\Question',
+      'controller class'          => 'Drupal\quiz_question\Entity\QuestionController',
+      'metadata controller class' => 'Drupal\quiz_question\Entity\QuestionMetadataController',
+      'views controller class'    => 'Drupal\quiz_question\Entity\QuestionViewsController',
+      'base table'                => 'quiz_question',
+      'revision table'            => 'quiz_question_revision',
+      'fieldable'                 => TRUE,
+      'entity keys'               => array('id' => 'qid', 'bundle' => 'type', 'revision' => 'vid', 'label' => 'title'),
+      'bundle keys'               => array('bundle' => 'type'),
+      'access callback'           => 'quiz_question_access_callback',
+      'label callback'            => 'entity_class_label',
+      'uri callback'              => 'entity_class_uri',
+      'module'                    => 'quiz_question',
+      'bundles'                   => array(),
+      'view modes'                => array(
+          'question' => array('label' => t('Question'), 'custom settings' => TRUE),
+      ),
+      'admin ui'                  => array(
+          'path'             => 'admin/content/quiz-questions',
+          'file'             => 'quiz_question.pages.inc',
+          'controller class' => 'Drupal\quiz_question\Entity\QuestionUIController',
+      ),
+  );
+
+  // Add bundle info but bypass entity_load() as we cannot use it here.
+  foreach (db_select('quiz_question_type', 'qt')->fields('qt')->execute()->fetchAllAssoc('type') as $type => $info) {
+    $info['bundles'][$type] = array(
+        'label' => $info->label,
+        'admin' => array(
+            'path'             => 'admin/structure/quiz/manage/%quiz_question_type',
+            'real path'        => 'admin/structure/quiz/manage/' . $type,
+            'bundle argument'  => 4,
+            'access arguments' => array('administer quiz'),
+        ),
+    );
+  }
+
+  return $info;
 }
 
 /**
