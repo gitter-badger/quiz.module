@@ -82,7 +82,7 @@ class QuizTakeController extends QuizTakeLegacyController {
    * If we allow resuming we can load it from the database.
    */
   public function initQuizResume() {
-    if (!$result_id = $this->activeResultId($this->account->uid, $this->quiz->vid)) {
+    if (!$result_id = $this->activeResultId($this->account->uid, $this->quiz->qid)) {
       return FALSE;
     }
 
