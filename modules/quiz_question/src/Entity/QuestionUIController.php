@@ -10,8 +10,8 @@ class QuestionUIController extends \EntityDefaultUIController {
   public function hook_menu() {
     $items = parent::hook_menu();
 
-    // Define custom menu items
-    // …
+    // Custom default structure by entity.module
+    $items['admin/content/quiz-questions']['type'] = MENU_LOCAL_TASK;
 
     return $items;
   }
