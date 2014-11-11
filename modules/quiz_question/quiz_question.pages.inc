@@ -25,7 +25,6 @@ function quiz_question_revision_actions($form, $form_state, $nid, $vid) {
     drupal_goto('node/' . $nid);
   }
 
-  $form = array();
   $form['q_nid'] = array('#type' => 'value', '#value' => intval($nid));
   $form['q_vid'] = array('#type' => 'value', '#value' => intval($vid));
 

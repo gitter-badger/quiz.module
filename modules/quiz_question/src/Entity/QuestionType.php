@@ -13,7 +13,7 @@ class QuestionType extends Entity {
   public $label;
 
   /** @var string */
-  public $provider;
+  public $plugin;
 
   /** @var string */
   public $description;
