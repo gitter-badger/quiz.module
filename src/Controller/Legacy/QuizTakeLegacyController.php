@@ -30,7 +30,7 @@ class QuizTakeLegacyController {
    * Returns the result ID for any current result set for the given quiz.
    *
    * @param int $uid
-   * @param int $vid Quiz version ID
+   * @param int $qid Quiz version ID
    * @param int $now
    *   Timestamp used to check whether the quiz is still open. Default: current
    *   time.
