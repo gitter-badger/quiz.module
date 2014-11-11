@@ -72,12 +72,13 @@ function quiz_question_entity_info() {
   );
 
   // Add bundle info but bypass entity_load() as we cannot use it here.
-  foreach (db_select('quiz_question_type', 'qt')->fields('qt')->execute()->fetchAllAssoc('type') as $type => $_info) {
-    $info['quiz_question'][$type] = array(
-        'label' => $_info->label,
+  $rows = db_select('quiz_question_type', 'qt')->fields('qt')->execute()->fetchAllAssoc('type');
+  foreach ($rows as $name => $row) {
+    $info['quiz_question']['bundles'][$name] = array(
+        'label' => $row->label,
         'admin' => array(
             'path'             => 'admin/structure/quiz/manage/%quiz_question_type',
-            'real path'        => 'admin/structure/quiz/manage/' . $type,
+            'real path'        => 'admin/structure/quiz/manage/' . $name,
             'bundle argument'  => 4,
             'access arguments' => array('administer quiz'),
         ),
@@ -303,7 +304,7 @@ function quiz_question_insert(stdClass $question) {
 /**
  * Implements hook_form().
  */
-function quiz_question_form(&$node, &$form_state) {
+function ___quiz_question_form(&$node, &$form_state) {
   return _quiz_question_get_instance($node)->getNodeForm($form_state);
 }
 
