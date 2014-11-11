@@ -4,7 +4,7 @@ namespace Drupal\quiz\Entity;
 
 use EntityDefaultUIController;
 
-class QuizUiController extends EntityDefaultUIController {
+class QuizUIController extends EntityDefaultUIController {
 
   public function hook_menu() {
     $items = parent::hook_menu();
@@ -145,7 +145,7 @@ class QuizUiController extends EntityDefaultUIController {
             'access callback'  => 'entity_access',
             'access arguments' => array('create', 'quiz_entity'),
             'page callback'    => 'quiz_entity_adding_page',
-            'page arguments'   => array('add', $name),
+            'page arguments'   => array($name),
             'file path'        => drupal_get_path('module', 'quiz'),
             'file'             => 'quiz.pages.inc',
         );
