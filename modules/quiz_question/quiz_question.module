@@ -153,30 +153,27 @@ function quiz_question_get_plugin(&$question, $use_cached = FALSE) {
   // We use static caching to improve performance
   $plugins = &drupal_static(__FUNCTION__, array());
 
-  $vid = is_object($question) ? (isset($question->vid) ? $question->vid : 0) : $question['vid'];
-  if ($use_cached && isset($plugins[$vid])) {
-    return $plugins[$vid];
+  $question_vid = isset($question->vid) ? $question->vid : 0;
+  if ($use_cached && isset($plugins[$question_vid])) {
+    return $plugins[$question_vid];
   }
 
   $using_dummy_node = FALSE;
-  if (is_object($question)) {
-    if (!isset($question->type)) { # If $question don't have a type it is a dummy node
-      // To substanitally improve performance(especially on the result page) we avoid node_load()…
-      // @todo why is this? consider getting rid of this as nodes are better
-      // cached/retrieved in d7. adding the UID here to get rid of a notice.
-      $sql = 'SELECT n.type, r.nid, r.vid, r.title, p.max_score, n.uid
-              FROM {node_revision} r
-              JOIN {node} n ON r.nid = n.nid
-              JOIN {quiz_question_properties} p ON r.vid = p.vid
-              WHERE r.vid = :vid';
-      $question = db_query($sql, array(':vid' => $question->vid))->fetch();
-      $using_dummy_node = TRUE;
-    }
-    $name = $question->type;
+  if (is_object($question) && !isset($question->type)) { # If $question don't have a type it is a dummy node
+    // To substanitally improve performance(especially on the result page) we avoid node_load()…
+    // @todo why is this? consider getting rid of this as nodes are better
+    // cached/retrieved in d7. adding the UID here to get rid of a notice.
+    $question = db_query('
+          SELECT n.type, r.nid, r.vid, r.title, p.max_score, n.uid
+          FROM {node_revision} r
+            JOIN {node} n ON r.nid = n.nid
+            JOIN {quiz_question_properties} p ON r.vid = p.vid
+          WHERE r.vid = :vid', array(
+        ':vid' => $question->vid))->fetch();
+    $using_dummy_node = TRUE;
   }
-  elseif (is_array($question)) {
-    $name = $question['type'];
-  }
+
+  $name = $question->type;
 
   // No cached instance of QuizQuestion has been returned. We construct a new instance
   $info = quiz_question_get_info();
@@ -199,7 +196,7 @@ function quiz_question_get_plugin(&$question, $use_cached = FALSE) {
   }
 
   // Cache the node
-  $plugins[$vid] = $plugin;
+  $plugins[$question_vid] = $plugin;
 
   return $plugin;
 }
