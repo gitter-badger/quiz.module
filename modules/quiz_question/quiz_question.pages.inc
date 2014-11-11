@@ -24,12 +24,20 @@ function quiz_question_type_form_submit_delete($form, &$form_state) {
 }
 
 /**
- * Page callback for /quiz-question/add
+ * Callback for /quiz-question/add page.
  */
 function quiz_question_adding_landing_page() {
   return theme_render_template(drupal_get_path('module', 'quiz_question') . '/theme/quiz-question-adding-landing.tpl.php', array(
       'question_types' => quiz_question_get_types()
   ));
+}
+
+/**
+ * Callback for /quiz-question/add/% page.
+ */
+function quiz_question_adding_page($question_type_name) {
+  $question = entity_create('quiz_question', array('type' => $question_type_name));
+  return entity_ui_get_form('quiz_question', $question, 'add');
 }
 
 /**

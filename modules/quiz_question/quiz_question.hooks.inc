@@ -301,11 +301,26 @@ function quiz_question_insert(stdClass $question) {
   }
 }
 
-/**
- * Implements hook_form().
- */
-function ___quiz_question_form(&$node, &$form_state) {
-  return _quiz_question_get_instance($node)->getNodeForm($form_state);
+if ('quiz-question' === arg(0)) {
+
+  /**
+   * Define quiz-entity editing form.
+   */
+  function quiz_question_form($form, &$form_state, $question, $op = 'edit') {
+    kpr($question);
+    exit;
+  }
+
+}
+else {
+
+  /**
+   * Implements hook_form().
+   */
+  function quiz_question_form(&$node, &$form_state) {
+    return _quiz_question_get_instance($node)->getNodeForm($form_state);
+  }
+
 }
 
 // QUIZ HOOK IMPLEMENTATIONS
