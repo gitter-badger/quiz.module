@@ -23,7 +23,7 @@ use Drupal\quiz\Form\QuizEntityForm;
 use Drupal\quiz\Form\QuizQuestionsForm;
 use Drupal\quiz\Form\QuizReportForm;
 use Drupal\quiz\Form\QuizTypeForm;
-use Drupal\quiz_question\QuizQuestion;
+use Drupal\quiz_question\QuestionPlugin;
 
 /**
  * Form for /admin/quiz/settings/config.
@@ -307,7 +307,7 @@ function quiz_answer_form_submit($form, &$form_state) {
 }
 
 function quiz_question_element_validate(&$element, &$form_state) {
-  return QuizQuestion::elementValidate($element, $form_state);
+  return QuestionPlugin::elementValidate($element, $form_state);
 }
 
 function quiz_report_form_element_validate(&$element, &$form_state) {

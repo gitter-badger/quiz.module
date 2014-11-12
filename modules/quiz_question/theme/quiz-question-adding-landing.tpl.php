@@ -3,7 +3,7 @@
     <?php /* @var $question_type \Drupal\quiz_question\Entity\QuestionType */ ?>
     <li>
       <span class="label">
-        <?php echo l($question_type->label, "quiz-question/add/{$name}"); ?>
+        <?php echo l($question_type->label, "quiz-question/add/" . str_replace('_', '-', $name)); ?>
       </span>
 
       <?php if ($question_type->description): ?>

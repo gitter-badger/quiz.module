@@ -2,7 +2,7 @@
 
 namespace Drupal\quiz_question;
 
-use Drupal\quiz_question\QuizQuestion;
+use Drupal\quiz_question\QuestionPlugin;
 use stdClass;
 
 /**
@@ -58,7 +58,7 @@ abstract class QuizQuestionResponse {
 
   /**
    *
-   * @return QuizQuestion
+   * @return QuestionPlugin
    */
   function getQuizQuestion() {
     return $this->quizQuestion;
@@ -277,11 +277,11 @@ abstract class QuizQuestionResponse {
     }
 
     $headers = array_intersect_key($labels, $rows[0]);
-    $type = $this->getQuizQuestion()->node->type;
+    $type = $this->getQuizQuestion()->question->type;
     $form['response']['#markup'] = theme('quiz_question_feedback__' . $type, array('labels' => $headers, 'data' => $rows));
 
     if ($this->canReview('question_feedback')) {
-      if ($properties = entity_load('quiz_question_properties', FALSE, array('nid' => $this->quizQuestion->node->nid, 'vid' => $this->quizQuestion->node->vid))) {
+      if ($properties = entity_load('quiz_question_properties', FALSE, array('nid' => $this->quizQuestion->question->nid, 'vid' => $this->quizQuestion->question->vid))) {
         $quiz_question = reset($properties);
         $form['question_feedback']['#markup'] = check_markup($quiz_question->feedback, $quiz_question->feedback_format);
       }

@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\quiz_question\Form\QuestionForm;
+
 /**
  * Implements hook_help().
  */
@@ -77,8 +79,8 @@ function quiz_question_entity_info() {
     $info['quiz_question']['bundles'][$name] = array(
         'label' => $row->label,
         'admin' => array(
-            'path'             => 'admin/structure/quiz/manage/%quiz_question_type',
-            'real path'        => 'admin/structure/quiz/manage/' . $name,
+            'path'             => 'admin/structure/quiz-questions/manage/%quiz_question_type',
+            'real path'        => 'admin/structure/quiz-questions/manage/' . $name,
             'bundle argument'  => 4,
             'access arguments' => array('administer quiz'),
         ),
@@ -258,24 +260,24 @@ function quiz_question_view($node, $view_mode) {
 /**
  * Implements hook_update().
  */
-function quiz_question_update($node) {
-  quiz_question_get_plugin($node)->save();
+function quiz_question_update($question) {
+  quiz_question_get_plugin($question)->save();
 }
 
 /**
  * Implements hook_delete().
  */
-function quiz_question_delete(&$node) {
-  _quiz_delete_question($node, FALSE);
+function quiz_question_delete(&$question) {
+  _quiz_delete_question($question, FALSE);
 }
 
 /**
  * Implements hook_load().
  */
 function quiz_question_load($nodes) {
-  foreach ($nodes as &$node) {
-    foreach (quiz_question_get_plugin($node, TRUE)->getNodeProperties() as $property => $value) {
-      $node->$property = $value;
+  foreach ($nodes as &$question) {
+    foreach (quiz_question_get_plugin($question, TRUE)->getNodeProperties() as $property => $value) {
+      $question->$property = $value;
     }
   }
 }
@@ -283,12 +285,12 @@ function quiz_question_load($nodes) {
 /**
  * Implements hook_validate().
  */
-function quiz_question_validate($node, &$form) {
+function quiz_question_validate($question, &$form) {
   // Check to make sure that there is a question.
-  if (empty($node->body)) {
+  if (empty($question->body)) {
     form_set_error('body', t('Question text is empty.'));
   }
-  quiz_question_get_plugin($node)->validateNode($form);
+  quiz_question_get_plugin($question)->validateNode($form);
 }
 
 /**
@@ -296,19 +298,21 @@ function quiz_question_validate($node, &$form) {
  */
 function quiz_question_insert(stdClass $question) {
   quiz_question_get_plugin($question)->save(TRUE);
-  if (isset($question->quiz_qid) && $question->quiz_qid > 0) {
-    quiz_question_refresh_latest_quizzes($question->quiz_qid);
-  }
 }
 
 if ('quiz-question' === arg(0)) {
 
   /**
    * Define quiz-entity editing form.
+   *
+   * @param array $form
+   * @param array $form_state
+   * @param \Drupal\quiz_question\Entity\Question $question
+   * @param string $op
+   * @return array
    */
   function quiz_question_form($form, &$form_state, $question, $op = 'edit') {
-    $obj = new \Drupal\quiz_question\Form\QuestionForm();
-    return $obj->get($form, $form_state, $question, $op);
+    return $question->getPlugin()->getEntityForm($form_state);
   }
 
 }
@@ -318,9 +322,34 @@ else {
    * Implements hook_form().
    */
   function quiz_question_form(&$node, &$form_state) {
-    return quiz_question_get_plugin($node)->getNodeForm($form_state);
+    return quiz_question_get_plugin($node)->getEntityForm($form_state);
   }
 
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function quiz_question_form_alter(&$form, $form_state, $form_id) {
+  if (!isset($form['#quiz_check_revision_access'])) {
+    return;
+  }
+
+  // Remove revision fieldset if user don't have access to revise quiz manually.
+  if (!user_access('manual quiz revisioning') || variable_get('quiz_auto_revisioning', 1)) {
+    $form['revision_information']['revision']['#type'] = 'value';
+    $form['revision_information']['revision']['#value'] = $form['revision_information']['revision']['#default_value'];
+    $form['revision_information']['log']['#type'] = 'value';
+    $form['revision_information']['log']['#value'] = $form['revision_information']['log']['#default_value'];
+    $form['revision_information']['#access'] = FALSE;
+  }
+  unset($form['actions']['preview'], $form['actions']['preview_changes']);
+  $form['actions']['submit']['#access'] = TRUE;
+
+  // Quiz questions might want to add a cancel button.
+  if (isset($form['#cancel_button'])) {
+    $form['actions']['cancel'] = array('#weight' => 6, '#markup' => l(t('Cancel'), $form_state['redirect']));
+  }
 }
 
 // QUIZ HOOK IMPLEMENTATIONS
@@ -362,11 +391,11 @@ function quiz_question_quiz_question_score($quiz, $question_nid, $question_vid =
 
   $score = new stdClass();
   $score->possible = $question->getMaximumScore();
-  $score->question_nid = $question->node->nid;
-  $score->question_vid = $question->node->vid;
+  $score->question_nid = $question->question->nid;
+  $score->question_vid = $question->question->vid;
 
   if (isset($result_id)) {
-    $response = quiz_answer_controller()->getInstance($result_id, $question->node);
+    $response = quiz_answer_controller()->getInstance($result_id, $question->question);
     $score->attained = $score->possible > 0 ? $response->getScore() : 0;
     $score->possible = $response->getMaxScore();
     $score->is_evaluated = $response->isEvaluated();

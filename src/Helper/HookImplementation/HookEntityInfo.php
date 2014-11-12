@@ -89,6 +89,7 @@ class HookEntityInfo {
   private function getQuizQuestionRelationshipInfo() {
     return array(
         'label'                     => t('Quiz question relationship'),
+        'entity class'              => 'Entity',
         'controller class'          => 'EntityAPIController',
         'base table'                => 'quiz_relationship',
         'entity keys'               => array('id' => 'qr_id'),

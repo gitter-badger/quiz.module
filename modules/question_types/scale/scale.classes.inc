@@ -1,6 +1,6 @@
 <?php
 
-use Drupal\quiz_question\QuizQuestion;
+use Drupal\quiz_question\QuestionPlugin;
 use Drupal\quiz_question\QuizQuestionResponse;
 
 /**
@@ -24,7 +24,7 @@ use Drupal\quiz_question\QuizQuestionResponse;
 /**
  * Extension of QuizQuestion.
  */
-class ScaleQuestion extends QuizQuestion {
+class ScaleQuestion extends QuestionPlugin {
 
   // $util will be set to true if an instance of this class is used only as a utility
   protected $util = FALSE;
@@ -47,17 +47,17 @@ class ScaleQuestion extends QuizQuestion {
    * @see QuizQuestion#saveNodeProperties()
    */
   public function saveNodeProperties($is_new = FALSE) {
-    $is_new_node = $is_new || $this->node->revision == 1;
+    $is_new_node = $is_new || $this->question->revision == 1;
     $answer_collection_id = $this->saveAnswerCollection($is_new_node);
     // Save the answer collection as a preset if the save preset option is checked
-    if (!empty($this->node->save)) {
+    if (!empty($this->question->save)) {
       $this->setPreset($answer_collection_id);
     }
     if ($is_new_node) {
       $id = db_insert('quiz_scale_node_properties')
         ->fields(array(
-            'nid'                  => $this->node->nid,
-            'vid'                  => $this->node->vid,
+            'nid'                  => $this->question->nid,
+            'vid'                  => $this->question->vid,
             'answer_collection_id' => $answer_collection_id,
         ))
         ->execute();
@@ -67,8 +67,8 @@ class ScaleQuestion extends QuizQuestion {
         ->fields(array(
             'answer_collection_id' => $answer_collection_id,
         ))
-        ->condition('nid', $this->node->nid)
-        ->condition('vid', $this->node->vid)
+        ->condition('nid', $this->question->nid)
+        ->condition('vid', $this->question->vid)
         ->execute();
     }
   }
@@ -106,10 +106,10 @@ class ScaleQuestion extends QuizQuestion {
   public function saveAnswerCollection($is_new_node, array $alt_input = NULL, $preset = NULL) {
     global $user;
     if (!isset($alt_input)) {
-      $alt_input = get_object_vars($this->node);
+      $alt_input = get_object_vars($this->question);
     }
-    if (!isset($preset) && isset($this->node->save)) {
-      $preset = $this->node->save;
+    if (!isset($preset) && isset($this->question->save)) {
+      $preset = $this->question->save;
     }
 
     $alternatives = array();
@@ -125,7 +125,7 @@ class ScaleQuestion extends QuizQuestion {
         $this->setPreset($answer_collection_id);
       }
       if (!$is_new_node || $this->util) {
-        $col_to_delete = $this->util ? $this->col_id : $this->node->{0}->answer_collection_id;
+        $col_to_delete = $this->util ? $this->col_id : $this->question->{0}->answer_collection_id;
         if ($col_to_delete != $answer_collection_id) {
           // We try to delete the old answer collection
           $this->deleteCollectionIfNotUsed($col_to_delete, 1);
@@ -282,25 +282,25 @@ class ScaleQuestion extends QuizQuestion {
     parent::delete($only_this_version);
     if ($only_this_version) {
       db_delete('quiz_scale_user_answers')
-        ->condition('question_nid', $this->node->nid)
-        ->condition('question_vid', $this->node->vid)
+        ->condition('question_nid', $this->question->nid)
+        ->condition('question_vid', $this->question->vid)
         ->execute();
 
       db_delete('quiz_scale_node_properties')
-        ->condition('nid', $this->node->nid)
-        ->condition('vid', $this->node->vid)
+        ->condition('nid', $this->question->nid)
+        ->condition('vid', $this->question->vid)
         ->execute();
     }
     else {
       db_delete('quiz_scale_user_answers')
-        ->condition('question_nid', $this->node->nid)
+        ->condition('question_nid', $this->question->nid)
         ->execute();
 
       db_delete('quiz_scale_node_properties')
-        ->condition('nid', $this->node->nid)
+        ->condition('nid', $this->question->nid)
         ->execute();
     }
-    $this->deleteCollectionIfNotUsed($this->node->{0}->answer_collection_id, 0);
+    $this->deleteCollectionIfNotUsed($this->question->{0}->answer_collection_id, 0);
   }
 
   /**
@@ -318,7 +318,7 @@ class ScaleQuestion extends QuizQuestion {
             FROM {quiz_scale_node_properties} p
             JOIN {quiz_scale_answer} a ON (p.answer_collection_id = a.answer_collection_id)
             WHERE nid = :nid AND vid = :vid
-            ORDER BY a.id', array(':nid' => $this->node->nid, ':vid' => $this->node->vid));
+            ORDER BY a.id', array(':nid' => $this->question->nid, ':vid' => $this->question->vid));
     foreach ($res as $res_o) {
       $props[] = $res_o;
     }
@@ -335,8 +335,8 @@ class ScaleQuestion extends QuizQuestion {
     $content = parent::getNodeView();
     $alternatives = array();
     for ($i = 0; $i < variable_get('scale_max_num_of_alts', 10); $i++) {
-      if (isset($this->node->{$i}->answer) && drupal_strlen($this->node->{$i}->answer) > 0) {
-        $alternatives[] = check_plain($this->node->{$i}->answer);
+      if (isset($this->question->{$i}->answer) && drupal_strlen($this->question->{$i}->answer) > 0) {
+        $alternatives[] = check_plain($this->question->{$i}->answer);
       }
     }
     $content['answer'] = array(
@@ -356,8 +356,8 @@ class ScaleQuestion extends QuizQuestion {
     //$form['#theme'] = 'scale_answering_form';
     $options = array();
     for ($i = 0; $i < variable_get('scale_max_num_of_alts', 10); $i++) {
-      if (isset($this->node->{$i}) && drupal_strlen($this->node->{$i}->answer) > 0) {
-        $options[$this->node->{$i}->id] = check_plain($this->node->{$i}->answer);
+      if (isset($this->question->{$i}) && drupal_strlen($this->question->{$i}->answer) > 0) {
+        $options[$this->question->{$i}->id] = check_plain($this->question->{$i}->answer);
       }
     }
 
@@ -367,7 +367,7 @@ class ScaleQuestion extends QuizQuestion {
         '#options' => $options,
     );
     if (isset($result_id)) {
-      $response = new ScaleResponse($result_id, $this->node);
+      $response = new ScaleResponse($result_id, $this->question);
       $form['#default_value'] = $response->getResponse();
     }
     return $form;
@@ -377,7 +377,7 @@ class ScaleQuestion extends QuizQuestion {
    * Question response validator.
    */
   public function getAnsweringFormValidate(array &$form, array &$form_state = NULL) {
-    if ($form_state['values']['question'][$this->node->nid] == '') {
+    if ($form_state['values']['question'][$this->question->nid] == '') {
       form_set_error('', t('You must provide an answer.'));
     }
   }
@@ -431,7 +431,7 @@ class ScaleQuestion extends QuizQuestion {
           '#title'         => t('Alternative !i', array('!i' => ($i + 1))),
           '#size'          => 60,
           '#maxlength'     => 256,
-          '#default_value' => isset($this->node->{$i}->answer) ? $this->node->{$i}->answer : '',
+          '#default_value' => isset($this->question->{$i}->answer) ? $this->question->{$i}->answer : '',
           '#required'      => $i < 2,
       );
     }

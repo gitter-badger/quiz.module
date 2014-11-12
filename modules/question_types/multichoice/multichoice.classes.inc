@@ -1,6 +1,6 @@
 <?php
 
-use Drupal\quiz_question\QuizQuestion;
+use Drupal\quiz_question\QuestionPlugin;
 use Drupal\quiz_question\QuizQuestionResponse;
 
 /**
@@ -21,15 +21,15 @@ use Drupal\quiz_question\QuizQuestionResponse;
 /**
  * Extension of QuizQuestion.
  */
-class MultichoiceQuestion extends QuizQuestion {
+class MultichoiceQuestion extends QuestionPlugin {
 
   /**
    * Forgive some possible logical flaws in the user input.
    */
   private function forgive() {
-    if ($this->node->choice_multi == 1) {
-      for ($i = 0; isset($this->node->alternatives[$i]); $i++) {
-        $short = &$this->node->alternatives[$i];
+    if ($this->question->choice_multi == 1) {
+      for ($i = 0; isset($this->question->alternatives[$i]); $i++) {
+        $short = &$this->question->alternatives[$i];
 
         // If the scoring data doesn't make sense, use the data from the
         // "correct" checkbox to set the score data
@@ -54,8 +54,8 @@ class MultichoiceQuestion extends QuizQuestion {
     else {
       // For questions with one, and only one, correct answer, there will be no
       // points awarded for alternatives not chosen.
-      for ($i = 0; isset($this->node->alternatives[$i]); $i++) {
-        $short = &$this->node->alternatives[$i];
+      for ($i = 0; isset($this->question->alternatives[$i]); $i++) {
+        $short = &$this->question->alternatives[$i];
         $short['score_if_not_chosen'] = 0;
         if (isset($short['correct']) && $short['correct'] == 1 && !_quiz_is_int($short['score_if_chosen'], 1)) {
           $short['score_if_chosen'] = 1;
@@ -70,19 +70,19 @@ class MultichoiceQuestion extends QuizQuestion {
   private function warn() {
     // Count the number of correct answers
     $num_corrects = 0;
-    for ($i = 0; isset($this->node->alternatives[$i]); $i++) {
-      $alt = &$this->node->alternatives[$i];
+    for ($i = 0; isset($this->question->alternatives[$i]); $i++) {
+      $alt = &$this->question->alternatives[$i];
       if ($alt['score_if_chosen'] > $alt['score_if_not_chosen']) {
         $num_corrects++;
       }
     }
 
-    if ($num_corrects == 1 && $this->node->choice_multi == 1 || $num_corrects > 1 && $this->node->choice_multi == 0) {
+    if ($num_corrects == 1 && $this->question->choice_multi == 1 || $num_corrects > 1 && $this->question->choice_multi == 0) {
       $link_options = array();
       if (isset($_GET['destination'])) {
         $link_options['query'] = array('destination' => $_GET['destination']);
       }
-      $go_back = l(t('go back'), 'node/' . $this->node->nid . '/edit', $link_options);
+      $go_back = l(t('go back'), 'node/' . $this->question->nid . '/edit', $link_options);
       if ($num_corrects == 1) {
         $msg = t('Your question allows multiple answers. Only one of the alternatives have been marked as correct. If this wasn\'t intended please !go_back and correct it.', array('!go_back' => $go_back));
         drupal_set_message($msg, 'warning');
@@ -105,7 +105,7 @@ class MultichoiceQuestion extends QuizQuestion {
    * @return HTML markup
    */
   private function checkMarkup($alternativeIndex, $field, $check_user_access = FALSE) {
-    $alternative = $this->node->alternatives[$alternativeIndex];
+    $alternative = $this->question->alternatives[$alternativeIndex];
     return check_markup($alternative[$field]['value'], $alternative[$field]['format']);
   }
 
@@ -119,7 +119,7 @@ class MultichoiceQuestion extends QuizQuestion {
    * @see sites/all/modules/quiz-HEAD/question_types/quiz_question/QuizQuestion#save()
    */
   public function saveNodeProperties($is_new = FALSE) {
-    $is_new = $is_new || $this->node->revision == 1;
+    $is_new = $is_new || $this->question->revision == 1;
 
     // Before we save we forgive some possible user errors
     $this->forgive();
@@ -130,17 +130,17 @@ class MultichoiceQuestion extends QuizQuestion {
     if ($is_new) {
       $id = db_insert('quiz_multichoice_properties')
         ->fields(array(
-            'nid'            => $this->node->nid,
-            'vid'            => $this->node->vid,
-            'choice_multi'   => $this->node->choice_multi,
-            'choice_random'  => $this->node->choice_random,
-            'choice_boolean' => $this->node->choice_boolean,
+            'nid'            => $this->question->nid,
+            'vid'            => $this->question->vid,
+            'choice_multi'   => $this->question->choice_multi,
+            'choice_random'  => $this->question->choice_random,
+            'choice_boolean' => $this->question->choice_boolean,
         ))
         ->execute();
 
       // TODO: utilize the benefit of multiple insert of DBTNG
-      for ($i = 0; isset($this->node->alternatives[$i]); $i++) {
-        if (drupal_strlen($this->node->alternatives[$i]['answer']['value']) > 0) {
+      for ($i = 0; isset($this->question->alternatives[$i]); $i++) {
+        if (drupal_strlen($this->question->alternatives[$i]['answer']['value']) > 0) {
           $this->insertAlternative($i);
         }
       }
@@ -148,18 +148,18 @@ class MultichoiceQuestion extends QuizQuestion {
     else {
       db_update('quiz_multichoice_properties')
         ->fields(array(
-            'choice_multi'   => $this->node->choice_multi,
-            'choice_random'  => $this->node->choice_random,
-            'choice_boolean' => $this->node->choice_boolean,
+            'choice_multi'   => $this->question->choice_multi,
+            'choice_random'  => $this->question->choice_random,
+            'choice_boolean' => $this->question->choice_boolean,
         ))
-        ->condition('nid', $this->node->nid)
-        ->condition('vid', $this->node->vid)
+        ->condition('nid', $this->question->nid)
+        ->condition('vid', $this->question->vid)
         ->execute();
 
       // We fetch ids for the existing answers belonging to this question
       // We need to figure out if an existing alternative has been changed or deleted.
       $res = db_query('SELECT id FROM {quiz_multichoice_answers}
-              WHERE question_nid = :nid AND question_vid = :vid', array(':nid' => $this->node->nid, ':vid' => $this->node->vid));
+              WHERE question_nid = :nid AND question_vid = :vid', array(':nid' => $this->question->nid, ':vid' => $this->question->vid));
 
       // We start by assuming that all existing alternatives needs to be deleted
       $ids_to_delete = array();
@@ -167,9 +167,9 @@ class MultichoiceQuestion extends QuizQuestion {
         $ids_to_delete[] = $res_o->id;
       }
 
-      for ($i = 0; isset($this->node->alternatives[$i]); $i++) {
-        $short = $this->node->alternatives[$i];
-        if (drupal_strlen($this->node->alternatives[$i]['answer']['value']) > 0) {
+      for ($i = 0; isset($this->question->alternatives[$i]); $i++) {
+        $short = $this->question->alternatives[$i];
+        if (drupal_strlen($this->question->alternatives[$i]['answer']['value']) > 0) {
           // If new alternative
           if (!is_numeric($short['id'])) {
             $this->insertAlternative($i);
@@ -230,7 +230,7 @@ class MultichoiceQuestion extends QuizQuestion {
    *  The alternative index
    */
   private function insertAlternative($i) {
-    $alternatives = $this->_normalizeAlternative($this->node->alternatives[$i]);
+    $alternatives = $this->_normalizeAlternative($this->question->alternatives[$i]);
     db_insert('quiz_multichoice_answers')
       ->fields(array(
           'answer'                        => $alternatives['answer'],
@@ -241,8 +241,8 @@ class MultichoiceQuestion extends QuizQuestion {
           'feedback_if_not_chosen_format' => $alternatives['feedback_if_not_chosen_format'],
           'score_if_chosen'               => $alternatives['score_if_chosen'],
           'score_if_not_chosen'           => $alternatives['score_if_not_chosen'],
-          'question_nid'                  => $this->node->nid,
-          'question_vid'                  => $this->node->vid,
+          'question_nid'                  => $this->question->nid,
+          'question_vid'                  => $this->question->vid,
           'weight'                        => isset($alternatives['weight']) ? $alternatives['weight'] : $i,
       ))
       ->execute();
@@ -255,7 +255,7 @@ class MultichoiceQuestion extends QuizQuestion {
    *  The alternative index
    */
   private function updateAlternative($i) {
-    $alternatives = $this->_normalizeAlternative($this->node->alternatives[$i]);
+    $alternatives = $this->_normalizeAlternative($this->question->alternatives[$i]);
     db_update('quiz_multichoice_answers')
       ->fields(array(
           'answer'                        => $alternatives['answer'],
@@ -269,8 +269,8 @@ class MultichoiceQuestion extends QuizQuestion {
           'weight'                        => isset($alternatives['weight']) ? $alternatives['weight'] : $i,
       ))
       ->condition('id', $alternatives['id'])
-      ->condition('question_nid', $this->node->nid)
-      ->condition('question_vid', $this->node->vid)
+      ->condition('question_nid', $this->question->nid)
+      ->condition('question_vid', $this->question->vid)
       ->execute();
   }
 
@@ -280,10 +280,10 @@ class MultichoiceQuestion extends QuizQuestion {
    * QuizQuestion#validate()
    */
   public function validateNode(array &$form) {
-    if ($this->node->choice_multi == 0) {
+    if ($this->question->choice_multi == 0) {
       $found_one_correct = FALSE;
-      for ($i = 0; (isset($this->node->alternatives[$i]) && is_array($this->node->alternatives[$i])); $i++) {
-        $short = $this->node->alternatives[$i];
+      for ($i = 0; (isset($this->question->alternatives[$i]) && is_array($this->question->alternatives[$i])); $i++) {
+        $short = $this->question->alternatives[$i];
         if (drupal_strlen($this->checkMarkup($i, 'answer')) < 1) {
           continue;
         }
@@ -301,8 +301,8 @@ class MultichoiceQuestion extends QuizQuestion {
       }
     }
     else {
-      for ($i = 0; isset($this->node->alternatives[$i]); $i++) {
-        $short = $this->node->alternatives[$i];
+      for ($i = 0; isset($this->question->alternatives[$i]); $i++) {
+        $short = $this->question->alternatives[$i];
         if (strlen($this->checkMarkup($i, 'answer')) < 1) {
           continue;
         }
@@ -322,22 +322,22 @@ class MultichoiceQuestion extends QuizQuestion {
    * @see QuizQuestion#delete()
    */
   public function delete($only_this_version = FALSE) {
-    $delete_properties = db_delete('quiz_multichoice_properties')->condition('nid', $this->node->nid);
-    $delete_answers = db_delete('quiz_multichoice_answers')->condition('question_nid', $this->node->nid);
-    $delete_results = db_delete('quiz_multichoice_user_answers')->condition('question_nid', $this->node->nid);
+    $delete_properties = db_delete('quiz_multichoice_properties')->condition('nid', $this->question->nid);
+    $delete_answers = db_delete('quiz_multichoice_answers')->condition('question_nid', $this->question->nid);
+    $delete_results = db_delete('quiz_multichoice_user_answers')->condition('question_nid', $this->question->nid);
 
     if ($only_this_version) {
-      $delete_properties->condition('vid', $this->node->vid);
-      $delete_answers->condition('question_vid', $this->node->vid);
-      $delete_results->condition('question_vid', $this->node->vid);
+      $delete_properties->condition('vid', $this->question->vid);
+      $delete_answers->condition('question_vid', $this->question->vid);
+      $delete_results->condition('question_vid', $this->question->vid);
     }
 
     // Delete from table quiz_multichoice_user_answer_multi
     if ($only_this_version) {
-      $user_answer_id = db_query('SELECT id FROM {quiz_multichoice_user_answers} WHERE question_nid = :nid AND question_vid = :vid', array(':nid' => $this->node->nid, ':vid' => $this->node->vid))->fetchCol();
+      $user_answer_id = db_query('SELECT id FROM {quiz_multichoice_user_answers} WHERE question_nid = :nid AND question_vid = :vid', array(':nid' => $this->question->nid, ':vid' => $this->question->vid))->fetchCol();
     }
     else {
-      $user_answer_id = db_query('SELECT id FROM {quiz_multichoice_user_answers} WHERE question_nid = :nid', array(':nid' => $this->node->nid))->fetchCol();
+      $user_answer_id = db_query('SELECT id FROM {quiz_multichoice_user_answers} WHERE question_nid = :nid', array(':nid' => $this->question->nid))->fetchCol();
     }
 
     if (!empty($user_answer_id)) {
@@ -363,7 +363,7 @@ class MultichoiceQuestion extends QuizQuestion {
     $props = parent::getNodeProperties();
 
     $res_a = db_query('SELECT choice_multi, choice_random, choice_boolean FROM {quiz_multichoice_properties}
-            WHERE nid = :nid AND vid = :vid', array(':nid' => $this->node->nid, ':vid' => $this->node->vid))->fetchAssoc();
+            WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->nid, ':vid' => $this->question->vid))->fetchAssoc();
 
     if (is_array($res_a)) {
       $props = array_merge($props, $res_a);
@@ -375,8 +375,8 @@ class MultichoiceQuestion extends QuizQuestion {
             FROM {quiz_multichoice_answers}
             WHERE question_nid = :question_nid AND question_vid = :question_vid
             ORDER BY weight', array(
-        ':question_nid' => $this->node->nid,
-        ':question_vid' => $this->node->vid));
+        ':question_nid' => $this->question->nid,
+        ':question_vid' => $this->question->vid));
     $props['alternatives'] = array(); // init array so it can be iterated even if empty
     while ($res_arr = $res->fetchAssoc()) {
       $props['alternatives'][] = array(
@@ -409,11 +409,11 @@ class MultichoiceQuestion extends QuizQuestion {
    */
   public function getNodeView() {
     $content = parent::getNodeView();
-    if ($this->node->choice_random) {
-      $this->shuffle($this->node->alternatives);
+    if ($this->question->choice_random) {
+      $this->shuffle($this->question->alternatives);
     }
     $content['answers'] = array(
-        '#markup' => theme('multichoice_answer_node_view', array('alternatives' => $this->node->alternatives, 'show_correct' => $this->viewCanRevealCorrect())),
+        '#markup' => theme('multichoice_answer_node_view', array('alternatives' => $this->question->alternatives, 'show_correct' => $this->viewCanRevealCorrect())),
         '#weight' => 2,
     );
 
@@ -436,23 +436,23 @@ class MultichoiceQuestion extends QuizQuestion {
     $element['#theme'] = 'multichoice_alternative';
     if (isset($result_id)) {
       // This question has already been answered. We load the answer.
-      $response = new MultichoiceResponse($result_id, $this->node);
+      $response = new MultichoiceResponse($result_id, $this->question);
     }
-    for ($i = 0; isset($this->node->alternatives[$i]); $i++) {
-      $short = $this->node->alternatives[$i];
+    for ($i = 0; isset($this->question->alternatives[$i]); $i++) {
+      $short = $this->question->alternatives[$i];
       $answer_markup = check_markup($short['answer']['value'], $short['answer']['format']);
       if (drupal_strlen($answer_markup) > 0) {
         $element['user_answer']['#options'][$short['id']] = $answer_markup;
       }
     }
-    if ($this->node->choice_random) {
+    if ($this->question->choice_random) {
       // We save the choice order so that the order will be the same in the answer report
       $element['choice_order'] = array(
           '#type'  => 'hidden',
           '#value' => implode(',', $this->shuffle($element['user_answer']['#options'])),
       );
     }
-    if ($this->node->choice_multi) {
+    if ($this->question->choice_multi) {
       $element['user_answer']['#type'] = 'checkboxes';
       $element['user_answer']['#title'] = t('Choose all that apply');
       if (isset($response)) {
@@ -499,7 +499,7 @@ class MultichoiceQuestion extends QuizQuestion {
    */
   public function getCreationForm(array &$form_state = NULL) {
     $form = array();
-    $type = node_type_get_type($this->node);
+    $type = node_type_get_type($this->question);
     // We add #action to the form because of the use of ajax
     $options = array();
     $get = $_GET;
@@ -509,8 +509,8 @@ class MultichoiceQuestion extends QuizQuestion {
     }
 
     $action = url('node/add/' . $type->type, $options);
-    if (isset($this->node->nid)) {
-      $action = url('node/' . $this->node->nid . '/edit', $options);
+    if (isset($this->question->nid)) {
+      $action = url('node/' . $this->question->nid . '/edit', $options);
     }
     $form['#action'] = $action;
 
@@ -565,14 +565,14 @@ class MultichoiceQuestion extends QuizQuestion {
       $form_state['choice_count'] ++;
     }
     else {
-      $form_state['choice_count'] = max(variable_get('multichoice_def_num_of_alts', 2), isset($this->node->alternatives) ? count($this->node->alternatives) : 0);
+      $form_state['choice_count'] = max(variable_get('multichoice_def_num_of_alts', 2), isset($this->question->alternatives) ? count($this->question->alternatives) : 0);
     }
 
     $form['alternatives']['#prefix'] = '<div class="clear-block" id="multichoice-alternatives-wrapper">';
     $form['alternatives']['#suffix'] = '</div>';
     $form['alternatives']['#theme'] = array('multichoice_alternative_creation_table');
     for ($i = 0; $i < $form_state['choice_count']; $i++) {
-      $short = isset($this->node->alternatives[$i]) ? $this->node->alternatives[$i] : NULL;
+      $short = isset($this->question->alternatives[$i]) ? $this->question->alternatives[$i] : NULL;
       $form['alternatives'][$i] = array(
           '#type'        => 'container',
           '#collapsible' => TRUE,
@@ -638,7 +638,7 @@ class MultichoiceQuestion extends QuizQuestion {
           '#format'        => isset($short['feedback_if_not_chosen']['format']) ? $short['feedback_if_not_chosen']['format'] : NULL,
           '#rows'          => 3,
       );
-      $default_value = isset($this->node->alternatives[$i]['score_if_chosen']) ? $this->node->alternatives[$i]['score_if_chosen'] : 0;
+      $default_value = isset($this->question->alternatives[$i]['score_if_chosen']) ? $this->question->alternatives[$i]['score_if_chosen'] : 0;
       $form['alternatives'][$i]['advanced']['score_if_chosen'] = array(
           '#type'          => 'textfield',
           '#title'         => t('Score if chosen'),
@@ -677,7 +677,7 @@ class MultichoiceQuestion extends QuizQuestion {
           '#type'          => 'textfield',
           '#size'          => 2,
           '#attributes'    => array('class' => array('multichoice-alternative-weight')),
-          '#default_value' => isset($this->node->alternatives[$i]['weight']) ? $this->node->alternatives[$i]['weight'] : $i,
+          '#default_value' => isset($this->question->alternatives[$i]['weight']) ? $this->question->alternatives[$i]['weight'] : $i,
       );
     }
 
@@ -707,10 +707,10 @@ class MultichoiceQuestion extends QuizQuestion {
    */
   private function getDefaultAltSettings() {
     // If the node is being updated the default settings are those stored in the node
-    if (isset($this->node->nid)) {
-      $settings['choice_multi'] = $this->node->choice_multi;
-      $settings['choice_random'] = $this->node->choice_random;
-      $settings['choice_boolean'] = $this->node->choice_boolean;
+    if (isset($this->question->nid)) {
+      $settings['choice_multi'] = $this->question->choice_multi;
+      $settings['choice_random'] = $this->question->choice_random;
+      $settings['choice_boolean'] = $this->question->choice_boolean;
     }
     // We try to fetch the users settings
     elseif ($settings = $this->getUserSettings()) {
@@ -752,9 +752,9 @@ class MultichoiceQuestion extends QuizQuestion {
     db_merge('quiz_multichoice_user_settings')
       ->key(array('uid' => $user->uid))
       ->fields(array(
-          'choice_random'  => $this->node->choice_random,
-          'choice_multi'   => $this->node->choice_multi,
-          'choice_boolean' => $this->node->choice_boolean,
+          'choice_random'  => $this->question->choice_random,
+          'choice_multi'   => $this->question->choice_multi,
+          'choice_boolean' => $this->question->choice_boolean,
       ))
       ->execute();
   }
@@ -765,14 +765,14 @@ class MultichoiceQuestion extends QuizQuestion {
    * @see QuizQuestion#getMaximumScore()
    */
   public function getMaximumScore() {
-    if ($this->node->choice_boolean) {
+    if ($this->question->choice_boolean) {
       return 1;
     }
 
     $max = 0;
-    for ($i = 0; isset($this->node->alternatives[$i]); $i++) {
-      $short = $this->node->alternatives[$i];
-      if ($this->node->choice_multi) {
+    for ($i = 0; isset($this->question->alternatives[$i]); $i++) {
+      $short = $this->question->alternatives[$i];
+      if ($this->question->choice_multi) {
         $max += max($short['score_if_chosen'], $short['score_if_not_chosen']);
       }
       else {
@@ -786,7 +786,7 @@ class MultichoiceQuestion extends QuizQuestion {
    * Question response validator.
    */
   public function getAnsweringFormValidate(array &$form, array &$form_state = NULL) {
-    if (!$this->node->choice_multi && is_null($form_state['values']['question'][$this->node->nid]['user_answer'])) {
+    if (!$this->question->choice_multi && is_null($form_state['values']['question'][$this->question->nid]['user_answer'])) {
       form_set_error('', t('You must provide an answer.'));
     }
   }

@@ -1,6 +1,6 @@
 <?php
 
-use Drupal\quiz_question\QuizQuestion;
+use Drupal\quiz_question\QuestionPlugin;
 use Drupal\quiz_question\QuizQuestionResponse;
 
 /**
@@ -11,7 +11,7 @@ use Drupal\quiz_question\QuizQuestionResponse;
 /**
  * Extension of QuizQuestion.
  */
-class QuizPagesQuestion extends QuizQuestion {
+class QuizPagesQuestion extends QuestionPlugin {
 
   /**
    * Implementation of validateNode
