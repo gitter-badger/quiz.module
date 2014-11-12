@@ -71,16 +71,22 @@ abstract class QuestionPlugin {
   public function getEntityForm(array &$form_state = NULL) {
     global $user;
 
-    $form = array();
+    $form = array(
+        // mark this form to be processed by quiz_form_alter. quiz_form_alter will among other things
+        // hide the revion fieldset if the user don't have permission to controll the revisioning manually.
+        '#quiz_check_revision_access' => TRUE,
+        // Store quiz id in the form
+        'quiz_qid'                    => array('#type' => 'hidden', '#default_value' => isset($_GET['quiz_qid']) ? $_GET['quiz_qid'] : NULL),
+        'quiz_vid'                    => array('#type' => 'hidden', '#default_value' => isset($_GET['quiz_vid']) ? $_GET['quiz_vid'] : NULL),
+        // Identify this node as a quiz question type so that it can be recognized
+        // by other modules effectively.
+        'is_quiz_question'            => array('#type' => 'value', '#value' => TRUE),
+    );
 
-    // mark this form to be processed by quiz_form_alter. quiz_form_alter will among other things
-    // hide the revion fieldset if the user don't have permission to controll the revisioning manually.
-    $form['#quiz_check_revision_access'] = TRUE;
+    $form['title'] = array('#type' => 'value', '#value' => $this->question->title);
 
     // Allow user to set title?
     if (user_access('edit question titles')) {
-      $this->includeAutoTitleScript();
-
       $form['title'] = array(
           '#type'          => 'textfield',
           '#title'         => t('Title'),
@@ -88,31 +94,22 @@ abstract class QuestionPlugin {
           '#default_value' => $this->question->title,
           '#required'      => FALSE,
           '#description'   => t('Add a title that will help distinguish this question from other questions. This will not be seen during the @quiz.', array('@quiz' => QUIZ_NAME)),
+          '#attached'      => array(
+              'js' => array(
+                  drupal_get_path('module', 'quiz') . '/misc/js/quiz.auto-title.js',
+                  array(
+                      'type' => 'setting',
+                      'data' => array(
+                          'quiz_max_length' => variable_get('quiz_autotitle_length', 50)
+                      ),
+                  ),
+              )
+          ),
       );
     }
-    else {
-      $form['title'] = array('#type' => 'value', '#value' => $this->question->title);
-    }
 
-    // Store quiz id in the form
-    $form['quiz_qid'] = array('#type' => 'hidden');
-    $form['quiz_vid'] = array('#type' => 'hidden');
-
-    if (isset($_GET['quiz_qid']) && isset($_GET['quiz_vid'])) {
-      $form['quiz_qid']['#value'] = intval($_GET['quiz_qid']);
-      $form['quiz_vid']['#value'] = intval($_GET['quiz_vid']);
-    }
-
-    // Identify this node as a quiz question type so that it can be recognized by other modules effectively.
-    $form['is_quiz_question'] = array(
-        '#type'  => 'value',
-        '#value' => TRUE
-    );
-
-    if (!empty($this->question->nid)) {
-      if ($properties = entity_load('quiz_question_properties', FALSE, array('nid' => $this->question->nid, 'vid' => $this->question->vid))) {
-        $quiz_question = reset($properties);
-      }
+    if (!empty($this->question->nid) && ($properties = entity_load('quiz_question_properties', FALSE, array('nid' => $this->question->nid, 'vid' => $this->question->vid)))) {
+      $quiz_question = reset($properties);
     }
 
     $form['feedback'] = array(
@@ -123,25 +120,14 @@ abstract class QuestionPlugin {
         '#description'   => t('This feedback will show when configured and the user answers a question, regardless of correctness.'),
     );
 
-    // Add question type specific content
-    $form = array_merge($form, $this->getCreationForm($form_state));
-
     if ($this->hasBeenAnswered()) {
       $log = t('The current revision has been answered. We create a new revision so that the reports from the existing answers stays correct.');
       $this->question->revision = 1;
       $this->question->log = $log;
     }
 
-    return $form;
-  }
-
-  /**
-   * Adds inline js to automatically set the question's node title.
-   */
-  private function includeAutoTitleScript() {
-    $max_length = variable_get('quiz_autotitle_length', 50);
-    drupal_add_js(array('quiz_max_length' => $max_length), array('type' => 'setting'));
-    drupal_add_js(drupal_get_path('module', 'quiz') . '/misc/js/quiz.auto-title.js');
+    // Add question type specific content
+    return array_merge($form, $this->getCreationForm($form_state));
   }
 
   /**
@@ -149,14 +135,15 @@ abstract class QuestionPlugin {
    *
    * (This data is generally added to the node's extra field.)
    *
-   * @return
+   * @return array
    *  Content array
    */
   public function getNodeView() {
-    $type = node_type_get_type($this->question);
     $content['question_type'] = array(
-        '#markup' => '<div class="question_type_name">' . $type->name . '</div>',
         '#weight' => -2,
+        '#prefix' => '<div class="question_type_name">',
+        '#markup' => node_type_get_type($this->question)->name,
+        '#suffix' => '</div>',
     );
     return $content;
   }
