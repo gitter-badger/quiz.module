@@ -273,11 +273,7 @@ abstract class QuestionPlugin {
    *  Must return a FAPI array.
    */
   public function getAnsweringForm(array $form_state = NULL, $result_id) {
-    return array(
-        '#element_validate' => array(
-            'quiz_question_element_validate'
-        )
-    );
+    return array('#element_validate' => array('quiz_question_element_validate'));
   }
 
   /**
