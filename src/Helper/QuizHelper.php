@@ -111,7 +111,7 @@ class QuizHelper {
     $question->quiz_qid = $quiz->qid;
     $question->quiz_vid = $quiz->vid;
     quiz_question_get_plugin($question)->saveRelationships();
-    $this->updateMaxScoreProperties(array($quiz->vid));
+    $this->updateMaxScoreProperty(array($quiz->vid));
   }
 
   /**
@@ -191,7 +191,7 @@ class QuizHelper {
         ->execute();
     }
 
-    $this->updateMaxScoreProperties(array($quiz->vid));
+    $this->updateMaxScoreProperty(array($quiz->vid));
     return TRUE;
   }
 
@@ -201,7 +201,7 @@ class QuizHelper {
    * @param $quiz_vids
    *  Array with the vid's of the quizzes to update
    */
-  public function updateMaxScoreProperties($quiz_vids) {
+  public function updateMaxScoreProperty($quiz_vids) {
     if (empty($quiz_vids)) {
       return;
     }
