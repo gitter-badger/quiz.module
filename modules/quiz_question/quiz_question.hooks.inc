@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\quiz_question\Form\QuestionForm;
+
 /**
  * Implements hook_help().
  */
@@ -304,7 +306,7 @@ if ('quiz-question' === arg(0)) {
    * Define quiz-entity editing form.
    */
   function quiz_question_form($form, &$form_state, $question, $op = 'edit') {
-    $obj = new \Drupal\quiz_question\Form\QuestionForm();
+    $obj = new QuestionForm();
     return $obj->get($form, $form_state, $question, $op);
   }
 
