@@ -153,6 +153,15 @@ abstract class QuestionPlugin {
       $this->question->log = $log;
     }
 
+    // Attach custom fields
+    field_attach_form('quiz_question', $this->question, $form, $form_state);
+
+    $form['actions']['#weight'] = 50;
+    $form['actions']['submit'] = array('#type' => 'submit', '#value' => t('Save question'));
+    if (!empty($this->question->qid)) {
+      $form['actions']['delete'] = array('#type' => 'submit', '#value' => t('Delete'));
+    }
+
     // Add question type specific content
     return array_merge($form, $this->getCreationForm($form_state));
   }
