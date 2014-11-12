@@ -22,7 +22,10 @@ class QuizQuestionAdminController {
 
       $text = $info['name'];
       $url = 'node/add/' . str_replace('_', '-', $type);
-      $items[] = l($text, $url, array('query' => drupal_get_destination()));
+      $items[] = l($text, $url, array('query' => array(
+            'quiz_qid' => $this->quiz->qid,
+            'quiz_vid' => $this->quiz->vid,
+          ) + drupal_get_destination()));
     }
 
     if (empty($items)) {
