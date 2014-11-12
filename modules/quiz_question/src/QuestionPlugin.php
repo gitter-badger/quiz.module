@@ -4,52 +4,29 @@ namespace Drupal\quiz_question;
 
 use Drupal\quiz\Controller\QuizQuestionFeedbackController;
 use Drupal\quiz\Entity\QuizEntity;
-use stdClass;
 
 /**
- * Classes used in the Quiz Question module.
+ * QUESTION IMPLEMENTATION FUNCTIONS
  *
- * The core of the Quiz Question module is a set of abstract classes that
- * can be used to quickly and efficiently create new question types.
+ * This part acts as a contract(/interface) between the question-types and the
+ * rest of the system.
  *
- * Why OO?
- * Drupal has a long history of avoiding many of the traditional OO structures
- * and metaphors. However, with PHP 5, there are many good reasons to use OO
- * principles more broadly.
+ * Question plugins are made by extending these generic methods and abstract
+ * methods. Check multichoice question plugin for example.
  *
- * The case for Quiz question types is that question types all share common
- * structure and logic. Using the standard hook-only Drupal metaphor, we are
- * forced to copy and paste large amounts of repetitive code from question
- * type to question type. By using OO principles and construction, we can
- * easily encapsulate much of that logic, while still making it easy to
- * extend the existing content.
+ * A base implementation of a question plugin, adding a layer of abstraction
+ * between the node API, quiz API and the question plugins.
  *
- * Where do I start?
- * To create a new question type, check out the multichoice question type for instance.
+ * It is required that question plugins extend this abstract class.
  *
- * @file
- */
-
-/**
- * A base implementation of a quiz_question, adding a layer of abstraction between the
- * node API, quiz API and the question types.
+ * This class has default behaviour that all question types must have. It also
+ * handles the node API, but gives the question types oppurtunity to save,
+ * delete and provide data specific to the question types.
  *
- * It is required that Question types extend this abstract class.
- *
- * This class has default behaviour that all question types must have. It also handles the node API, but
- * gives the question types oppurtunity to save, delete and provide data specific to the question types.
- *
- * This abstract class also declares several abstract functions forcing question-types to implement required
- * methods.
+ * This abstract class also declares several abstract functions forcing
+ * question-types to implement required methods.
  */
 abstract class QuestionPlugin {
-  /*
-   * QUESTION IMPLEMENTATION FUNCTIONS
-   *
-   * This part acts as a contract(/interface) between the question-types and the rest of the system.
-   *
-   * Question types are made by extending these generic methods and abstract methods.
-   */
 
   /**
    * The current question entity.
