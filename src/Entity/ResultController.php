@@ -92,7 +92,7 @@ class ResultController extends EntityAPIController {
 
     $return = parent::save($result, $transaction);
 
-    if (isset($result->original) && $result->original->is_evaluated && !$result->is_evaluated) {
+    if (isset($result->original) && !$result->original->is_evaluated && $result->is_evaluated) {
       // Quiz is finished! Delete old results if necessary.
       if ($quiz = quiz_load($result->quiz_qid)) {
         quiz()->getQuizHelper()->getResultHelper()->maintainResult($user, $quiz, $result->result_id);

@@ -47,7 +47,7 @@ class Result extends Entity {
 
   /**
    * Get quiz entity.
-   * 
+   *
    * @return \Drupal\quiz\Entity\QuizEntity
    */
   public function getQuiz() {
@@ -115,7 +115,6 @@ class Result extends Entity {
     if ($this->time_end > 0 && $this->uid == $account->uid) {
       return TRUE;
     }
-
     return $this->canAccessOwnScore($account) ? TRUE : FALSE;
   }
 
