@@ -42,7 +42,7 @@ use stdClass;
  * This abstract class also declares several abstract functions forcing question-types to implement required
  * methods.
  */
-abstract class QuizQuestion {
+abstract class QuestionPlugin {
   /*
    * QUESTION IMPLEMENTATION FUNCTIONS
    *
@@ -52,7 +52,7 @@ abstract class QuizQuestion {
    */
 
   /**
-   * The current node for this question.
+   * The current question entity.
    */
   public $node = NULL;
 
@@ -64,17 +64,17 @@ abstract class QuizQuestion {
   /**
    * QuizQuestion constructor stores the node object.
    *
-   * @param $node
+   * @param $question
    *   The node object
    */
-  public function __construct(&$node) {
-    $this->node = $node;
+  public function __construct(&$question) {
+    $this->node = $question;
   }
 
   /**
    * Allow question types to override the body field title
    *
-   * @return
+   * @return string
    *  The title for the body field
    */
   public function getBodyFieldTitle() {

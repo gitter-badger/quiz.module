@@ -1,6 +1,6 @@
 <?php
 
-use Drupal\quiz_question\QuizQuestion;
+use Drupal\quiz_question\QuestionPlugin;
 use Drupal\quiz_question\QuizQuestionResponse;
 
 /**
@@ -21,7 +21,7 @@ use Drupal\quiz_question\QuizQuestionResponse;
  * This could have extended long answer, except that that would have entailed
  * adding long answer as a dependency.
  */
-class ShortAnswerQuestion extends QuizQuestion {
+class ShortAnswerQuestion extends QuestionPlugin {
 
   // Constants for answer matching options
   const ANSWER_MATCH = 0;

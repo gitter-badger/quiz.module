@@ -1,6 +1,6 @@
 <?php
 
-use Drupal\quiz_question\QuizQuestion;
+use Drupal\quiz_question\QuestionPlugin;
 use Drupal\quiz_question\QuizQuestionResponse;
 
 /**
@@ -12,7 +12,7 @@ use Drupal\quiz_question\QuizQuestionResponse;
 /**
  * Extension of QuizQuestion.
  */
-class TrueFalseQuestion extends QuizQuestion {
+class TrueFalseQuestion extends QuestionPlugin {
 
   /**
    * Implementation of saveNodeProperties

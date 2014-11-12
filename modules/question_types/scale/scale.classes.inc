@@ -1,6 +1,6 @@
 <?php
 
-use Drupal\quiz_question\QuizQuestion;
+use Drupal\quiz_question\QuestionPlugin;
 use Drupal\quiz_question\QuizQuestionResponse;
 
 /**
@@ -24,7 +24,7 @@ use Drupal\quiz_question\QuizQuestionResponse;
 /**
  * Extension of QuizQuestion.
  */
-class ScaleQuestion extends QuizQuestion {
+class ScaleQuestion extends QuestionPlugin {
 
   // $util will be set to true if an instance of this class is used only as a utility
   protected $util = FALSE;

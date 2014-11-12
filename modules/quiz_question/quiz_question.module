@@ -1,6 +1,6 @@
 <?php
 
-use Drupal\quiz_question\QuizQuestion;
+use Drupal\quiz_question\QuestionPlugin;
 use Drupal\quiz_question\QuizQuestionResponse;
 
 /**
@@ -179,7 +179,7 @@ function quiz_question_get_plugin(&$question, $cache = FALSE) {
   }
 
   // We must create a new instance of QuizQuestion
-  if (($plugin = new $constructor($question)) && !($plugin instanceof QuizQuestion)) {
+  if (($plugin = new $constructor($question)) && !($plugin instanceof QuestionPlugin)) {
     drupal_set_message(t("The question-type %name isn't a QuizQuestion. It needs to extend the QuizQuestion class.", array(
         '%name' => $question->type
       )), 'error', FALSE);

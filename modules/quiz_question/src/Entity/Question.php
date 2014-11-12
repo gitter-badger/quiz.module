@@ -15,7 +15,7 @@ class Question extends Entity {
   /** @var string */
   public $type;
 
-  /** @var \Drupal\quiz_question\QuizQuestion */
+  /** @var \Drupal\quiz_question\QuestionPlugin */
   private $plugin;
 
   /** @var bool */
@@ -49,7 +49,7 @@ class Question extends Entity {
   public $feedback_format;
 
   /**
-   * @return \Drupal\quiz_question\QuizQuestion
+   * @return \Drupal\quiz_question\QuestionPlugin
    */
   public function getPlugin() {
     if (NULL === $this->plugin) {
@@ -59,7 +59,7 @@ class Question extends Entity {
   }
 
   /**
-   * @return \Drupal\quiz_question\QuizQuestion
+   * @return \Drupal\quiz_question\QuestionPlugin
    */
   private function doGetPlugin() {
     if ($question_type = quiz_question_type_load($this->type)) {

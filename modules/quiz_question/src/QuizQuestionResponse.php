@@ -2,7 +2,7 @@
 
 namespace Drupal\quiz_question;
 
-use Drupal\quiz_question\QuizQuestion;
+use Drupal\quiz_question\QuestionPlugin;
 use stdClass;
 
 /**
@@ -58,7 +58,7 @@ abstract class QuizQuestionResponse {
 
   /**
    *
-   * @return QuizQuestion
+   * @return QuestionPlugin
    */
   function getQuizQuestion() {
     return $this->quizQuestion;
