@@ -15,7 +15,7 @@ class QuestionUIController extends \EntityDefaultUIController {
 
     // Change path from /admin/content/quiz/add -> /quizz/add
     unset($items['admin/content/quiz-questions/add']);
-    $items['quiz_question/add'] = array(
+    $items['quiz-question/add'] = array(
         'title'            => 'Add question',
         'access callback'  => 'entity_access',
         'access arguments' => array('create', 'quiz_question'),
@@ -25,7 +25,7 @@ class QuestionUIController extends \EntityDefaultUIController {
     );
 
     foreach (array_keys(quiz_question_get_types()) as $name) {
-      $items['quiz-question/add/' . $name] = array(
+      $items['quiz-question/add/' . str_replace('_', '-', $name)] = array(
           'title callback'   => 'entity_ui_get_action_title',
           'title arguments'  => array('add', 'quiz_question'),
           'access callback'  => 'entity_access',
