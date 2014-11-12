@@ -96,7 +96,7 @@ abstract class QuestionPlugin {
           '#description'   => t('Add a title that will help distinguish this question from other questions. This will not be seen during the @quiz.', array('@quiz' => QUIZ_NAME)),
           '#attached'      => array(
               'js' => array(
-                  drupal_get_path('module', 'quiz') . '/misc/js/quiz.auto-title.js',
+                  drupal_get_path('module', 'quiz_question') . '/misc/js/quiz-question.auto-title.js',
                   array(
                       'type' => 'setting',
                       'data' => array(
