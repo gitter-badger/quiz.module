@@ -7,7 +7,7 @@ use Drupal\quiz_question\Entity\Question;
 class QuestionForm {
 
   public function get($form, &$form_state, Question $question, $op) {
-    $form = $question->getPlugin()->getNodeForm();
+    $form = $question->getPlugin()->getEntityForm();
 
     // @TODO: This is just a testing code, this code should be moved to QuizQuestion
     $form['revision_information'] = array(

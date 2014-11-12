@@ -90,8 +90,9 @@ abstract class QuizQuestion {
    * @param array $form_state
    * @return unknown_type
    */
-  public function getNodeForm(array &$form_state = NULL) {
+  public function getEntityForm(array &$form_state = NULL) {
     global $user;
+
     $form = array();
 
     // mark this form to be processed by quiz_form_alter. quiz_form_alter will among other things
@@ -152,6 +153,7 @@ abstract class QuizQuestion {
       $this->node->revision = 1;
       $this->node->log = $log;
     }
+
     return $form;
   }
 

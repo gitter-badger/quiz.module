@@ -318,7 +318,7 @@ else {
    * Implements hook_form().
    */
   function quiz_question_form(&$node, &$form_state) {
-    return quiz_question_get_plugin($node)->getNodeForm($form_state);
+    return quiz_question_get_plugin($node)->getEntityForm($form_state);
   }
 
 }
