@@ -206,51 +206,50 @@ class QuizHelper {
       return;
     }
 
+    // Max score = random questions's score + always questions's score
+    $score_random = 'max_score_for_random * number_of_random_questions';
+    $score_always = 'SELECT COALESCE(SUM(max_score), 0) '
+      . ' FROM {quiz_relationship} relationship'
+      . ' WHERE relationship.question_status = :status AND quiz_vid = {quiz_entity_revision}.vid';
     db_update('quiz_entity_revision')
-      ->expression('max_score', 'max_score_for_random * number_of_random_questions + (
-            SELECT COALESCE(SUM(max_score), 0)
-            FROM {quiz_relationship} qnr
-            WHERE qnr.question_status = :status AND quiz_vid = {quiz_entity_revision}.vid)', array(
-          ':status' => QUESTION_ALWAYS))
+      ->expression('max_score', "($score_random) + ($score_always)", array(':status' => QUESTION_ALWAYS))
       ->condition('vid', $quiz_vids)
       ->execute();
 
-    db_update('quiz_entity_revision')
-      ->expression('max_score', '(SELECT COALESCE(SUM(qt.max_score * qt.number), 0)
+    // If quiz as question mode = QUESTION_ALWAYS
+    // Max score = sum of max score of each question in quiz.
+    $_score = 'SELECT COALESCE(SUM(qt.max_score * qt.number), 0)
             FROM {quiz_terms} qt
-            WHERE qt.nid = {quiz_entity_revision}.qid AND qt.vid = {quiz_entity_revision}.vid)')
-      ->condition('randomization', 3)
+            WHERE qt.nid = {quiz_entity_revision}.qid AND qt.vid = {quiz_entity_revision}.vid';
+    db_update('quiz_entity_revision')
+      ->expression('max_score', "($_score)")
+      ->condition('randomization', QUESTION_CATEGORIZED_RANDOM)
       ->condition('vid', $quiz_vids)
       ->execute();
 
+    // Update changed timestamp of quiz revisions
     db_update('quiz_entity_revision')
       ->fields(array('changed' => REQUEST_TIME))
       ->condition('vid', $quiz_vids)
       ->execute();
 
+    // Update changed timestamp of quiz
     db_update('quiz_entity')
       ->fields(array('changed' => REQUEST_TIME))
       ->condition('vid', $quiz_vids)
       ->execute();
 
-    $results_to_update = db_query('SELECT vid '
-      . ' FROM {quiz_entity_revision} '
+    // Find quiz revisions those have max score <> 0 (@TODO: Why we need this condition?)
+    $results_to_update = db_query('SELECT vid'
+      . ' FROM {quiz_entity_revision}'
       . ' WHERE vid IN (:vid) AND max_score <> :max_score', array(
         ':vid'       => $quiz_vids,
-        ':max_score' => 0
-      ))->fetchCol();
+        ':max_score' => 0))->fetchCol();
     if (!empty($results_to_update)) {
+      $points_awarded = 'SELECT COALESCE(SUM(answer.points_awarded), 0) FROM {quiz_results_answers} answer WHERE answer.result_id = {quiz_results}.result_id';
+      $points_max = 'SELECT max_score FROM {quiz_entity_revision} qnp WHERE qnp.vid = {quiz_results}.quiz_vid';
       db_update('quiz_results')
-        ->expression('score', 'ROUND(
-          100 * (
-            SELECT COALESCE (SUM(a.points_awarded), 0)
-            FROM {quiz_results_answers} a
-            WHERE a.result_id = {quiz_results}.result_id
-          ) / (
-            SELECT max_score
-            FROM {quiz_entity_revision} qnp
-            WHERE qnp.vid = {quiz_results}.quiz_vid
-          ))')
+        ->expression('score', "ROUND(100 * ($points_awarded) / ($points_max))")
         ->condition('quiz_vid', $results_to_update)
         ->execute();
     }
