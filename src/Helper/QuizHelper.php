@@ -239,18 +239,19 @@ class QuizHelper {
       ->condition('vid', $quiz_vids)
       ->execute();
 
-    // Find quiz revisions those have max score <> 0 (@TODO: Why we need this condition?)
-    $results_to_update = db_query('SELECT vid'
+    // Find quiz revisions those have max score <> 0
+    // @QUESTION: Why we need this condition?
+    $_quiz_vids = db_query('SELECT vid'
       . ' FROM {quiz_entity_revision}'
       . ' WHERE vid IN (:vid) AND max_score <> :max_score', array(
         ':vid'       => $quiz_vids,
         ':max_score' => 0))->fetchCol();
-    if (!empty($results_to_update)) {
+    if (!empty($_quiz_vids)) {
       $points_awarded = 'SELECT COALESCE(SUM(answer.points_awarded), 0) FROM {quiz_results_answers} answer WHERE answer.result_id = {quiz_results}.result_id';
       $points_max = 'SELECT max_score FROM {quiz_entity_revision} qnp WHERE qnp.vid = {quiz_results}.quiz_vid';
       db_update('quiz_results')
         ->expression('score', "ROUND(100 * ($points_awarded) / ($points_max))")
-        ->condition('quiz_vid', $results_to_update)
+        ->condition('quiz_vid', $_quiz_vids)
         ->execute();
     }
   }
