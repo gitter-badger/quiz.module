@@ -42,6 +42,7 @@ if (!defined('QUIZ_NAME')) {
 define('QUESTION_RANDOM', 0);
 define('QUESTION_ALWAYS', 1);
 define('QUESTION_NEVER', 2);
+define('QUESTION_CATEGORIZED_RANDOM', 3);
 
 /**
  * Define options for keeping results.
