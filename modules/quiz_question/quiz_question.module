@@ -188,7 +188,7 @@ function quiz_question_get_plugin(&$question, $cache = FALSE) {
   // If we're using a dummy node we have to run getNodeProperties, and populate the node with those properties
   if (!empty($is_dummy) && ($properties = $plugin->getNodeProperties())) {
     foreach ($properties as $key => $value) {
-      $plugin->node->{$key} = $value;
+      $plugin->question->{$key} = $value;
     }
   }
 

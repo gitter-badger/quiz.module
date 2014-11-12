@@ -78,14 +78,14 @@ class QuizAnsweringForm {
     }
 
     // Build buttons
-    $allow_skipping = isset($question->type) ? $question->type !== 'quiz_directions' : $question->node->type;
+    $allow_skipping = isset($question->type) ? $question->type !== 'quiz_directions' : $question->question->type;
     $this->buildSubmitButtons($form, $allow_skipping);
 
     return $form;
   }
 
   private function buildQuestionItem($question_instance, &$form, $form_state) {
-    $question = $question_instance->node;
+    $question = $question_instance->question;
 
     // Element for a single question
     $element = $question_instance->getAnsweringForm($form_state, $this->result->result_id);

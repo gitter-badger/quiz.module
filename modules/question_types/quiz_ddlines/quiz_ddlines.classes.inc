@@ -34,11 +34,11 @@ class DDLinesQuestion extends QuestionPlugin {
   public function getCreationForm(array &$form_state = NULL) {
 
     $elements = '';
-    if(isset($this->node->translation_source)) {
-      $elements = $this->node->translation_source->ddlines_elements;
+    if(isset($this->question->translation_source)) {
+      $elements = $this->question->translation_source->ddlines_elements;
     }
-    elseif(isset($this->node->ddlines_elements)) {
-      $elements = $this->node->ddlines_elements;
+    elseif(isset($this->question->ddlines_elements)) {
+      $elements = $this->question->ddlines_elements;
     }
 
     $form['ddlines_elements'] = array(
@@ -59,14 +59,14 @@ class DDLinesQuestion extends QuestionPlugin {
       '#type' => 'checkbox',
       '#title' => t('Enable feedback'),
       '#description' => t('When taking the test, and this option is enabled, a wrong placement of an alternative, will make it jump back. Also, this makes it possible to add comments to both correct and wrong answers.'),
-      '#default_value' => isset($this->node->translation_source) ? $this->node->translation_source->feedback_enabled : $default_settings['feedback']['enabled'],
+      '#default_value' => isset($this->question->translation_source) ? $this->question->translation_source->feedback_enabled : $default_settings['feedback']['enabled'],
       '#parents' => array('feedback_enabled'),
     );
     $form['settings']['hotspot_radius'] = array(
       '#type' => 'textfield',
       '#title' => t('Hotspot radius'),
       '#description' => t('The radius of the hotspot in pixels'),
-      '#default_value' => isset($this->node->translation_source) ? $this->node->translation_source->hotspot_radius : $default_settings['hotspot']['radius'],
+      '#default_value' => isset($this->question->translation_source) ? $this->question->translation_source->hotspot_radius : $default_settings['hotspot']['radius'],
       '#parents' => array('hotspot_radius'),
     );
 
@@ -74,7 +74,7 @@ class DDLinesQuestion extends QuestionPlugin {
       '#type' => 'radios',
       '#title' => t('Execution mode'),
       '#description' => t('The mode for taking the test.'),
-      '#default_value' => isset($this->node->translation_source) ? $this->node->translation_source->execution_mode : $default_settings['execution_mode'],
+      '#default_value' => isset($this->question->translation_source) ? $this->question->translation_source->execution_mode : $default_settings['execution_mode'],
       '#options' => array (
         0 => t('With lines'),
         1 => t('Drag label'),
@@ -85,7 +85,7 @@ class DDLinesQuestion extends QuestionPlugin {
     drupal_add_library('system','ui.resizable');
 
     $default_settings['mode'] = 'edit';
-    $default_settings['editmode'] = isset($this->node->nid) ? 'update' : 'add';
+    $default_settings['editmode'] = isset($this->question->nid) ? 'update' : 'add';
     $form['#attached']['js'][] = array(
   		'data' => array(
     		'quiz_ddlines' => $default_settings
@@ -116,10 +116,10 @@ class DDLinesQuestion extends QuestionPlugin {
     $settings = array();
 
     // If the node exists, use saved value
-    if (isset($this->node->nid)) {
-      $settings['feedback']['enabled'] = $this->node->feedback_enabled;
-      $settings['hotspot']['radius'] = $this->node->hotspot_radius;
-      $settings['execution_mode'] = $this->node->execution_mode;
+    if (isset($this->question->nid)) {
+      $settings['feedback']['enabled'] = $this->question->feedback_enabled;
+      $settings['hotspot']['radius'] = $this->question->hotspot_radius;
+      $settings['execution_mode'] = $this->question->execution_mode;
     }
     else {
       $settings['feedback']['enabled'] = 0;
@@ -155,7 +155,7 @@ class DDLinesQuestion extends QuestionPlugin {
     // Form element containing the correct answers
     $form['ddlines_elements'] = array(
       '#type' => 'hidden',
-      '#default_value' => isset($this->node->ddlines_elements) ? $this->node->ddlines_elements : '',
+      '#default_value' => isset($this->question->ddlines_elements) ? $this->question->ddlines_elements : '',
     );
 
     // Form element containing the user answers
@@ -165,7 +165,7 @@ class DDLinesQuestion extends QuestionPlugin {
       '#default_value' => '',
     );
 
-    $image_uri = $this->node->field_image['und'][0]['uri'];
+    $image_uri = $this->question->field_image['und'][0]['uri'];
     $image_url = image_style_url('large',$image_uri);
 
     $form['image'] = array (
@@ -192,7 +192,7 @@ class DDLinesQuestion extends QuestionPlugin {
    */
   public function getMaximumScore() {
     // 1 point per correct hotspot location
-    $ddlines_elements = json_decode($this->node->ddlines_elements);
+    $ddlines_elements = json_decode($this->question->ddlines_elements);
 
     $max_score = isset($ddlines_elements->elements) ? sizeof($ddlines_elements->elements) : 0;
 
@@ -203,28 +203,28 @@ class DDLinesQuestion extends QuestionPlugin {
    * Save question type specific node properties
    */
   public function saveNodeProperties($is_new = FALSE) {
-    if ($is_new || $this->node->revision == 1) {
+    if ($is_new || $this->question->revision == 1) {
       $id = db_insert('quiz_ddlines_node')
         ->fields(array(
-          'nid' => $this->node->nid,
-          'vid' => $this->node->vid,
-          'feedback_enabled' => $this->node->feedback_enabled,
-          'hotspot_radius' => $this->node->hotspot_radius,
-          'ddlines_elements' => $this->node->ddlines_elements,
-          'execution_mode' => $this->node->execution_mode,
+          'nid' => $this->question->nid,
+          'vid' => $this->question->vid,
+          'feedback_enabled' => $this->question->feedback_enabled,
+          'hotspot_radius' => $this->question->hotspot_radius,
+          'ddlines_elements' => $this->question->ddlines_elements,
+          'execution_mode' => $this->question->execution_mode,
         ))
         ->execute();
     }
     else {
       db_update('quiz_ddlines_node')
         ->fields(array(
-          'ddlines_elements' => $this->node->ddlines_elements,
-          'hotspot_radius' => $this->node->hotspot_radius,
-          'feedback_enabled' => $this->node->feedback_enabled,
-          'execution_mode' => $this->node->execution_mode,
+          'ddlines_elements' => $this->question->ddlines_elements,
+          'hotspot_radius' => $this->question->hotspot_radius,
+          'feedback_enabled' => $this->question->feedback_enabled,
+          'execution_mode' => $this->question->execution_mode,
         ))
-        ->condition('nid', $this->node->nid)
-        ->condition('vid', $this->node->vid)
+        ->condition('nid', $this->question->nid)
+        ->condition('vid', $this->question->vid)
         ->execute();
     }
   }
@@ -240,7 +240,7 @@ class DDLinesQuestion extends QuestionPlugin {
     }
     $props = parent::getNodeProperties();
 
-    $res_a = db_query('SELECT feedback_enabled, hotspot_radius, ddlines_elements, execution_mode FROM {quiz_ddlines_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->node->nid, ':vid' => $this->node->vid))->fetchAssoc();
+    $res_a = db_query('SELECT feedback_enabled, hotspot_radius, ddlines_elements, execution_mode FROM {quiz_ddlines_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->nid, ':vid' => $this->question->vid))->fetchAssoc();
 
     if (is_array($res_a)) {
       $props = array_merge($props, $res_a);
@@ -268,21 +268,21 @@ class DDLinesQuestion extends QuestionPlugin {
    * @see QuizQuestion#delete()
    */
   public function delete($only_this_version = FALSE) {
-    $delete_node = db_delete('quiz_ddlines_node')->condition('nid', $this->node->nid);
-    $delete_results = db_delete('quiz_ddlines_user_answers')->condition('question_nid', $this->node->nid);
+    $delete_node = db_delete('quiz_ddlines_node')->condition('nid', $this->question->nid);
+    $delete_results = db_delete('quiz_ddlines_user_answers')->condition('question_nid', $this->question->nid);
 
     if ($only_this_version) {
-      $delete_node->condition('vid', $this->node->vid);
-      $delete_results->condition('question_vid', $this->node->vid);
+      $delete_node->condition('vid', $this->question->vid);
+      $delete_results->condition('question_vid', $this->question->vid);
     }
 
     // Delete from table quiz_ddlines_user_answer_multi
     $user_answer_ids = array();
     if ($only_this_version) {
-      $query = db_query('SELECT id FROM {quiz_ddlines_user_answers} WHERE question_nid = :nid AND question_vid = :vid', array(':nid' => $this->node->nid, ':vid' => $this->node->vid));
+      $query = db_query('SELECT id FROM {quiz_ddlines_user_answers} WHERE question_nid = :nid AND question_vid = :vid', array(':nid' => $this->question->nid, ':vid' => $this->question->vid));
     }
     else {
-      $query = db_query('SELECT id FROM {quiz_ddlines_user_answers} WHERE question_nid = :nid', array(':nid' => $this->node->nid));
+      $query = db_query('SELECT id FROM {quiz_ddlines_user_answers} WHERE question_nid = :nid', array(':nid' => $this->question->nid));
     }
     while ($user_answer = $query->fetch()) {
       $user_answer_ids[] = $user_answer->id;

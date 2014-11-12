@@ -29,9 +29,10 @@ use Drupal\quiz\Entity\QuizEntity;
 abstract class QuestionPlugin {
 
   /**
+   * @var \Drupal\quiz_question\Entity\Question
    * The current question entity.
    */
-  public $node = NULL;
+  public $question = NULL;
 
   /**
    * Extra node properties
@@ -45,7 +46,7 @@ abstract class QuestionPlugin {
    *   The node object
    */
   public function __construct(&$question) {
-    $this->node = $question;
+    $this->question = $question;
   }
 
   /**
@@ -84,13 +85,13 @@ abstract class QuestionPlugin {
           '#type'          => 'textfield',
           '#title'         => t('Title'),
           '#maxlength'     => 255,
-          '#default_value' => $this->node->title,
+          '#default_value' => $this->question->title,
           '#required'      => FALSE,
           '#description'   => t('Add a title that will help distinguish this question from other questions. This will not be seen during the @quiz.', array('@quiz' => QUIZ_NAME)),
       );
     }
     else {
-      $form['title'] = array('#type' => 'value', '#value' => $this->node->title);
+      $form['title'] = array('#type' => 'value', '#value' => $this->question->title);
     }
 
     // Store quiz id in the form
@@ -108,8 +109,8 @@ abstract class QuestionPlugin {
         '#value' => TRUE
     );
 
-    if (!empty($this->node->nid)) {
-      if ($properties = entity_load('quiz_question_properties', FALSE, array('nid' => $this->node->nid, 'vid' => $this->node->vid))) {
+    if (!empty($this->question->nid)) {
+      if ($properties = entity_load('quiz_question_properties', FALSE, array('nid' => $this->question->nid, 'vid' => $this->question->vid))) {
         $quiz_question = reset($properties);
       }
     }
@@ -127,8 +128,8 @@ abstract class QuestionPlugin {
 
     if ($this->hasBeenAnswered()) {
       $log = t('The current revision has been answered. We create a new revision so that the reports from the existing answers stays correct.');
-      $this->node->revision = 1;
-      $this->node->log = $log;
+      $this->question->revision = 1;
+      $this->question->log = $log;
     }
 
     return $form;
@@ -152,7 +153,7 @@ abstract class QuestionPlugin {
    *  Content array
    */
   public function getNodeView() {
-    $type = node_type_get_type($this->node);
+    $type = node_type_get_type($this->question);
     $content['question_type'] = array(
         '#markup' => '<div class="question_type_name">' . $type->name . '</div>',
         '#weight' => -2,
@@ -176,8 +177,8 @@ abstract class QuestionPlugin {
       'SELECT max_score
             FROM {quiz_question_properties}
             WHERE nid = :nid AND vid = :vid', array(
-        ':nid' => $this->node->nid,
-        ':vid' => $this->node->vid))->fetchField();
+        ':nid' => $this->question->nid,
+        ':vid' => $this->question->vid))->fetchField();
     $props['is_quiz_question'] = TRUE;
     $this->nodeProperties = $props;
 
@@ -209,25 +210,25 @@ abstract class QuestionPlugin {
 
     db_merge('quiz_question_properties')
       ->key(array(
-          'nid' => $this->node->nid,
-          'vid' => $this->node->vid,
+          'nid' => $this->question->nid,
+          'vid' => $this->question->vid,
       ))
       ->fields(array(
-          'nid'             => $this->node->nid,
-          'vid'             => $this->node->vid,
+          'nid'             => $this->question->nid,
+          'vid'             => $this->question->vid,
           'max_score'       => $this->getMaximumScore(),
-          'feedback'        => !empty($this->node->feedback['value']) ? $this->node->feedback['value'] : '',
-          'feedback_format' => !empty($this->node->feedback['format']) ? $this->node->feedback['format'] : filter_default_format(),
+          'feedback'        => !empty($this->question->feedback['value']) ? $this->question->feedback['value'] : '',
+          'feedback_format' => !empty($this->question->feedback['format']) ? $this->question->feedback['format'] : filter_default_format(),
       ))
       ->execute();
 
     // Save what quizzes this question belongs to.
     $quizzes_kept = $this->saveRelationships();
-    if ($quizzes_kept && $this->node->revision) {
+    if ($quizzes_kept && $this->question->revision) {
       if (user_access('manual quiz revisioning') && !variable_get('quiz_auto_revisioning', 1)) {
         unset($_GET['destination']);
         unset($_REQUEST['edit']['destination']);
-        drupal_goto('quiz_question/' . $this->node->nid . '/' . $this->node->vid . '/revision_actions');
+        drupal_goto('quiz_question/' . $this->question->nid . '/' . $this->question->vid . '/revision_actions');
       }
       // For users without the 'manual quiz revisioning' permission we submit the revision_actions form
       // silently with its default values set.
@@ -235,7 +236,7 @@ abstract class QuestionPlugin {
         $form_state = array();
         $form_state['values']['op'] = t('Submit');
         require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'quiz_question') . '/quiz_question.pages.inc';
-        drupal_form_submit('quiz_question_revision_actions', $form_state, $this->node->nid, $this->node->vid);
+        drupal_form_submit('quiz_question_revision_actions', $form_state, $this->question->nid, $this->question->vid);
       }
     }
   }
@@ -253,11 +254,11 @@ abstract class QuestionPlugin {
    */
   public function delete($only_this_version = FALSE) {
     // Delete answeres & properties
-    $remove_answer = db_delete('quiz_results_answers')->condition('question_nid', $this->node->nid);
-    $remove_properties = db_delete('quiz_question_properties')->condition('nid', $this->node->nid);
+    $remove_answer = db_delete('quiz_results_answers')->condition('question_nid', $this->question->nid);
+    $remove_properties = db_delete('quiz_question_properties')->condition('nid', $this->question->nid);
     if ($only_this_version) {
-      $remove_answer->condition('question_vid', $this->node->vid);
-      $remove_properties->condition('vid', $this->node->vid);
+      $remove_answer->condition('question_vid', $this->question->vid);
+      $remove_properties->condition('vid', $this->question->vid);
     }
     $remove_answer->execute();
     $remove_properties->execute();
@@ -341,9 +342,9 @@ abstract class QuestionPlugin {
    * Save this Question to the specified Quiz.
    */
   function saveRelationships() {
-    if (!empty($this->node->quiz_qid) && !empty($this->node->quiz_vid)) {
+    if (!empty($this->question->quiz_qid) && !empty($this->question->quiz_vid)) {
       /* @var $quiz QuizEntity */
-      $quiz = quiz_load($this->node->quiz_qid, $this->node->quiz_vid);
+      $quiz = quiz_load($this->question->quiz_qid, $this->question->quiz_vid);
       $quiz_id = $quiz->qid;
       $ids[0] = $quiz_id;
       $ids[1] = $quiz->vid;
@@ -358,12 +359,12 @@ abstract class QuestionPlugin {
         drupal_set_message(t('New revision has been created for the @quiz %n', array('%n' => $quiz->title, '@quiz' => QUIZ_NAME)));
       }
 
-      $nid = $this->node->nid;
+      $nid = $this->question->nid;
 
       $insert_values[$nid]['quiz_qid'] = $quiz_id;
       $insert_values[$nid]['quiz_vid'] = $quiz->vid;
-      $insert_values[$nid]['question_nid'] = $this->node->nid;
-      $insert_values[$nid]['question_vid'] = $this->node->vid;
+      $insert_values[$nid]['question_nid'] = $this->question->nid;
+      $insert_values[$nid]['question_vid'] = $this->question->vid;
       $insert_values[$nid]['max_score'] = $this->getMaximumScore();
       $insert_values[$nid]['auto_update_max_score'] = $this->autoUpdateMaxScore() ? 1 : 0;
       $insert_values[$nid]['weight'] = 1 + db_query('SELECT MAX(weight) FROM {quiz_relationship} WHERE quiz_vid = :vid', array(':vid' => $ids[1]))->fetchField();
@@ -383,15 +384,15 @@ abstract class QuestionPlugin {
       // for question
       $quizzes_to_update = array();
       $result = db_query(
-        'SELECT quiz_vid as vid from {quiz_relationship} where question_nid = :nid and question_vid = :vid and auto_update_max_score=1', array(':nid' => $this->node->nid, ':vid' => $this->node->vid));
+        'SELECT quiz_vid as vid from {quiz_relationship} where question_nid = :nid and question_vid = :vid and auto_update_max_score=1', array(':nid' => $this->question->nid, ':vid' => $this->question->vid));
       foreach ($result as $record) {
         $quizzes_to_update[] = $record->vid;
       }
 
       db_update('quiz_relationship')
         ->fields(array('max_score' => $this->getMaximumScore()))
-        ->condition('question_nid', $this->node->nid)
-        ->condition('question_vid', $this->node->vid)
+        ->condition('question_nid', $this->question->nid)
+        ->condition('question_vid', $this->question->vid)
         ->condition('auto_update_max_score', 1)
         ->execute();
 
@@ -411,14 +412,14 @@ abstract class QuestionPlugin {
    *   true if question has been answered or is about to be answered…
    */
   public function hasBeenAnswered() {
-    if (!isset($this->node->vid)) {
+    if (!isset($this->question->vid)) {
       return FALSE;
     }
 
     $answered = db_query_range('SELECT 1 '
       . ' FROM {quiz_results} qnres '
       . ' JOIN {quiz_relationship} qrel ON (qnres.quiz_vid = qrel.quiz_vid) '
-      . ' WHERE qrel.question_vid = :question_vid', 0, 1, array(':question_vid' => $this->node->vid))->fetch();
+      . ' WHERE qrel.question_vid = :question_vid', 0, 1, array(':question_vid' => $this->question->vid))->fetch();
 
     return $answered ? TRUE : FALSE;
   }
@@ -435,7 +436,7 @@ abstract class QuestionPlugin {
     global $user;
 
     $reveal_correct[] = user_access('view any quiz question correct response');
-    $reveal_correct[] = ($user->uid == $this->node->uid);
+    $reveal_correct[] = ($user->uid == $this->question->uid);
     if (array_filter($reveal_correct)) {
       return TRUE;
     }
@@ -445,7 +446,7 @@ abstract class QuestionPlugin {
    * Utility function that returns the format of the node body
    */
   protected function getFormat() {
-    $node = isset($this->node) ? $this->node : $this->question;
+    $node = isset($this->question) ? $this->question : $this->question;
     $body = field_get_items('node', $node, 'body');
     return isset($body[0]['format']) ? $body[0]['format'] : NULL;
   }

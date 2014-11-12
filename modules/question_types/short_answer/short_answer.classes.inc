@@ -35,13 +35,13 @@ class ShortAnswerQuestion extends QuestionPlugin {
    * @see QuizQuestion#saveNodeProperties($is_new)
    */
   public function saveNodeProperties($is_new = FALSE) {
-    if ($is_new || $this->node->revision == 1) {
+    if ($is_new || $this->question->revision == 1) {
       $id = db_insert('quiz_short_answer_node_properties')
         ->fields(array(
-            'nid'                       => $this->node->nid,
-            'vid'                       => $this->node->vid,
-            'correct_answer'            => $this->node->correct_answer,
-            'correct_answer_evaluation' => $this->node->correct_answer_evaluation,
+            'nid'                       => $this->question->nid,
+            'vid'                       => $this->question->vid,
+            'correct_answer'            => $this->question->correct_answer,
+            'correct_answer_evaluation' => $this->question->correct_answer_evaluation,
         ))
         ->execute();
     }
@@ -49,11 +49,11 @@ class ShortAnswerQuestion extends QuestionPlugin {
 
       db_update('quiz_short_answer_node_properties')
         ->fields(array(
-            'correct_answer'            => $this->node->correct_answer,
-            'correct_answer_evaluation' => $this->node->correct_answer_evaluation,
+            'correct_answer'            => $this->question->correct_answer,
+            'correct_answer_evaluation' => $this->question->correct_answer_evaluation,
         ))
-        ->condition('nid', $this->node->nid)
-        ->condition('vid', $this->node->vid)
+        ->condition('nid', $this->question->nid)
+        ->condition('vid', $this->question->vid)
         ->execute();
     }
   }
@@ -64,7 +64,7 @@ class ShortAnswerQuestion extends QuestionPlugin {
    * @see QuizQuestion#validateNode($form)
    */
   public function validateNode(array &$form) {
-    if ($this->node->correct_answer_evaluation != self::ANSWER_MANUAL && empty($this->node->correct_answer)) {
+    if ($this->question->correct_answer_evaluation != self::ANSWER_MANUAL && empty($this->question->correct_answer)) {
       form_set_error('correct_answer', t('An answer must be specified for any evaluation type other than manual scoring.'));
     }
   }
@@ -77,14 +77,14 @@ class ShortAnswerQuestion extends QuestionPlugin {
   public function delete($only_this_version = FALSE) {
     parent::delete($only_this_version);
     $delete_ans = db_delete('quiz_short_answer_user_answers');
-    $delete_ans->condition('question_nid', $this->node->nid);
+    $delete_ans->condition('question_nid', $this->question->nid);
 
     $delete_node = db_delete('quiz_short_answer_node_properties');
-    $delete_node->condition('nid', $this->node->nid);
+    $delete_node->condition('nid', $this->question->nid);
 
     if ($only_this_version) {
-      $delete_ans->condition('question_vid', $this->node->vid);
-      $delete_node->condition('vid', $this->node->vid);
+      $delete_ans->condition('question_vid', $this->question->vid);
+      $delete_node->condition('vid', $this->question->vid);
     }
 
     $delete_ans->execute();
@@ -102,7 +102,7 @@ class ShortAnswerQuestion extends QuestionPlugin {
     }
     $props = parent::getNodeProperties();
     $res_a = db_query('SELECT correct_answer, correct_answer_evaluation FROM {quiz_short_answer_node_properties}
-      WHERE nid = :nid AND vid = :vid', array(':nid' => $this->node->nid, ':vid' => $this->node->vid))->fetchAssoc();
+      WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->nid, ':vid' => $this->question->vid))->fetchAssoc();
     $this->nodeProperties = (is_array($res_a)) ? array_merge($props, $res_a) : $props;
     return $this->nodeProperties;
   }
@@ -116,7 +116,7 @@ class ShortAnswerQuestion extends QuestionPlugin {
     $content = parent::getNodeView();
     if ($this->viewCanRevealCorrect()) {
       $content['answers'] = array(
-          '#markup' => '<div class="quiz-solution">' . check_plain($this->node->correct_answer) . '</div>',
+          '#markup' => '<div class="quiz-solution">' . check_plain($this->question->correct_answer) . '</div>',
           '#weight' => 2,
       );
     }
@@ -150,7 +150,7 @@ class ShortAnswerQuestion extends QuestionPlugin {
     );
 
     if (isset($result_id)) {
-      $response = new ShortAnswerResponse($result_id, $this->node);
+      $response = new ShortAnswerResponse($result_id, $this->question);
       $form['#default_value'] = $response->getResponse();
     }
 
@@ -161,7 +161,7 @@ class ShortAnswerQuestion extends QuestionPlugin {
    * Question response validator.
    */
   public function getAnsweringFormValidate(array &$form, array &$form_state = NULL) {
-    if ($form_state['values']['question'][$this->node->nid] == '') {
+    if ($form_state['values']['question'][$this->question->nid] == '') {
       form_set_error('', t('You must provide an answer.'));
     }
   }
@@ -196,7 +196,7 @@ class ShortAnswerQuestion extends QuestionPlugin {
         '#title'         => t('Pick an evaluation method'),
         '#description'   => t('Choose how the answer shall be evaluated.'),
         '#options'       => $options,
-        '#default_value' => isset($this->node->correct_answer_evaluation) ? $this->node->correct_answer_evaluation : self::ANSWER_INSENSITIVE_MATCH,
+        '#default_value' => isset($this->question->correct_answer_evaluation) ? $this->question->correct_answer_evaluation : self::ANSWER_INSENSITIVE_MATCH,
         '#required'      => FALSE,
     );
     if ($access_regex) {
@@ -220,7 +220,7 @@ class ShortAnswerQuestion extends QuestionPlugin {
         '#type'          => 'textfield',
         '#title'         => t('Correct answer'),
         '#description'   => t('Specify the answer. If this question is manually scored, no answer needs to be supplied.'),
-        '#default_value' => isset($this->node->correct_answer) ? $this->node->correct_answer : '',
+        '#default_value' => isset($this->question->correct_answer) ? $this->question->correct_answer : '',
         '#size'          => 60,
         '#maxlength'     => 256,
         '#required'      => FALSE,
@@ -245,22 +245,22 @@ class ShortAnswerQuestion extends QuestionPlugin {
 
     // Ignore white spaces for correct answer and user's answer.
     $user_answer = trim($user_answer);
-    $this->node->correct_answer = trim($this->node->correct_answer);
+    $this->question->correct_answer = trim($this->question->correct_answer);
 
-    switch ($this->node->correct_answer_evaluation) {
+    switch ($this->question->correct_answer_evaluation) {
       case self::ANSWER_MATCH:
-        if ($user_answer == $this->node->correct_answer) {
-          $score = $this->node->max_score;
+        if ($user_answer == $this->question->correct_answer) {
+          $score = $this->question->max_score;
         }
         break;
       case self::ANSWER_INSENSITIVE_MATCH:
-        if (drupal_strtolower($user_answer) == drupal_strtolower($this->node->correct_answer)) {
-          $score = $this->node->max_score;
+        if (drupal_strtolower($user_answer) == drupal_strtolower($this->question->correct_answer)) {
+          $score = $this->question->max_score;
         }
         break;
       case self::ANSWER_REGEX:
-        if (preg_match($this->node->correct_answer, $user_answer) > 0) {
-          $score = $this->node->max_score;
+        if (preg_match($this->question->correct_answer, $user_answer) > 0) {
+          $score = $this->question->max_score;
         }
         break;
     }

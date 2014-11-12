@@ -260,24 +260,24 @@ function quiz_question_view($node, $view_mode) {
 /**
  * Implements hook_update().
  */
-function quiz_question_update($node) {
-  quiz_question_get_plugin($node)->save();
+function quiz_question_update($question) {
+  quiz_question_get_plugin($question)->save();
 }
 
 /**
  * Implements hook_delete().
  */
-function quiz_question_delete(&$node) {
-  _quiz_delete_question($node, FALSE);
+function quiz_question_delete(&$question) {
+  _quiz_delete_question($question, FALSE);
 }
 
 /**
  * Implements hook_load().
  */
 function quiz_question_load($nodes) {
-  foreach ($nodes as &$node) {
-    foreach (quiz_question_get_plugin($node, TRUE)->getNodeProperties() as $property => $value) {
-      $node->$property = $value;
+  foreach ($nodes as &$question) {
+    foreach (quiz_question_get_plugin($question, TRUE)->getNodeProperties() as $property => $value) {
+      $question->$property = $value;
     }
   }
 }
@@ -285,12 +285,12 @@ function quiz_question_load($nodes) {
 /**
  * Implements hook_validate().
  */
-function quiz_question_validate($node, &$form) {
+function quiz_question_validate($question, &$form) {
   // Check to make sure that there is a question.
-  if (empty($node->body)) {
+  if (empty($question->body)) {
     form_set_error('body', t('Question text is empty.'));
   }
-  quiz_question_get_plugin($node)->validateNode($form);
+  quiz_question_get_plugin($question)->validateNode($form);
 }
 
 /**
@@ -361,11 +361,11 @@ function quiz_question_quiz_question_score($quiz, $question_nid, $question_vid =
 
   $score = new stdClass();
   $score->possible = $question->getMaximumScore();
-  $score->question_nid = $question->node->nid;
-  $score->question_vid = $question->node->vid;
+  $score->question_nid = $question->question->nid;
+  $score->question_vid = $question->question->vid;
 
   if (isset($result_id)) {
-    $response = quiz_answer_controller()->getInstance($result_id, $question->node);
+    $response = quiz_answer_controller()->getInstance($result_id, $question->question);
     $score->attained = $score->possible > 0 ? $response->getScore() : 0;
     $score->possible = $response->getMaxScore();
     $score->is_evaluated = $response->isEvaluated();

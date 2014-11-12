@@ -27,8 +27,8 @@ class MatchingQuestion extends QuestionPlugin {
    */
   public function __construct(stdClass $node) {
     parent::__construct($node);
-    if (empty($this->node->match)) {
-      $this->node->match = array();
+    if (empty($this->question->match)) {
+      $this->question->match = array();
     }
   }
 
@@ -42,32 +42,32 @@ class MatchingQuestion extends QuestionPlugin {
     if ($is_new) {
       db_insert('quiz_matching_properties')
         ->fields(array(
-            'nid'            => $this->node->nid,
-            'vid'            => $this->node->vid,
-            'choice_penalty' => $this->node->choice_penalty,
+            'nid'            => $this->question->nid,
+            'vid'            => $this->question->vid,
+            'choice_penalty' => $this->question->choice_penalty,
         ))
         ->execute();
     }
     else {
       db_update('quiz_matching_properties')
         ->fields(array(
-            'choice_penalty' => $this->node->choice_penalty,
+            'choice_penalty' => $this->question->choice_penalty,
         ))
-        ->condition('nid', $this->node->nid)
-        ->condition('vid', $this->node->vid)
+        ->condition('nid', $this->question->nid)
+        ->condition('vid', $this->question->vid)
         ->execute();
     }
 
     // Loop through each question-answer combination
-    foreach ($this->node->match as $match) {
+    foreach ($this->question->match as $match) {
       $match['feedback'] = (isset($match['feedback'])) ? $match['feedback'] : '';
       // match_id is not so it is a new question.
-      if ($is_new || empty($match['match_id']) || $this->node->revision || isset($this->node->node_export_drupal_version)) {
+      if ($is_new || empty($match['match_id']) || $this->question->revision || isset($this->question->node_export_drupal_version)) {
         if (!empty($match['question']) && !empty($match['answer'])) {
           $id = db_insert('quiz_matching_node')
             ->fields(array(
-                'nid'      => $this->node->nid,
-                'vid'      => $this->node->vid,
+                'nid'      => $this->question->nid,
+                'vid'      => $this->question->vid,
                 'question' => $match['question'],
                 'answer'   => $match['answer'],
                 'feedback' => $match['feedback'],
@@ -116,24 +116,24 @@ class MatchingQuestion extends QuestionPlugin {
   public function delete($only_this_version = FALSE) {
     parent::delete($only_this_version);
 
-    $delete_properties = db_delete('quiz_matching_properties')->condition('nid', $this->node->nid);
+    $delete_properties = db_delete('quiz_matching_properties')->condition('nid', $this->question->nid);
 
     if ($only_this_version) {
-      $delete_properties->condition('vid', $this->node->vid);
+      $delete_properties->condition('vid', $this->question->vid);
 
-      $match_id = db_query('SELECT match_id FROM {quiz_matching_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->node->nid, ':vid' => $this->node->vid))->fetchCol();
+      $match_id = db_query('SELECT match_id FROM {quiz_matching_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->nid, ':vid' => $this->question->vid))->fetchCol();
       db_delete('quiz_matching_user_answers')
         ->condition('match_id', is_array($match_id) ? $match_id : array(0), 'IN')
         ->execute();
 
       db_delete('quiz_matching_node')
-        ->condition('nid', $this->node->nid)
-        ->condition('vid', $this->node->vid)
+        ->condition('nid', $this->question->nid)
+        ->condition('vid', $this->question->vid)
         ->execute();
     }
     // Delete all versions of this question.
     else {
-      $match_id = db_query('SELECT match_id FROM {quiz_matching_node} WHERE nid = :nid', array(':nid' => $this->node->nid))->fetchCol();
+      $match_id = db_query('SELECT match_id FROM {quiz_matching_node} WHERE nid = :nid', array(':nid' => $this->question->nid))->fetchCol();
       if (!empty($match_id)) {
         db_delete('quiz_matching_user_answers')
           ->condition('match_id', $match_id, 'IN')
@@ -141,7 +141,7 @@ class MatchingQuestion extends QuestionPlugin {
       }
 
       db_delete('quiz_matching_node')
-        ->condition('nid', $this->node->nid)
+        ->condition('nid', $this->question->nid)
         ->execute();
     }
 
@@ -160,14 +160,14 @@ class MatchingQuestion extends QuestionPlugin {
     $props = parent::getNodeProperties();
 
     $res_a = db_query('SELECT choice_penalty FROM {quiz_matching_properties}
-            WHERE nid = :nid AND vid = :vid', array(':nid' => $this->node->nid, ':vid' => $this->node->vid))->fetchAssoc();
+            WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->nid, ':vid' => $this->question->vid))->fetchAssoc();
 
     if (is_array($res_a)) {
       $props = array_merge($props, $res_a);
     }
 
     //$sql = "SELECT match_id, question, answer, feedback FROM {quiz_matching_node} WHERE nid = %d AND vid = %d";
-    $query = db_query('SELECT match_id, question, answer, feedback FROM {quiz_matching_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->node->nid, ':vid' => $this->node->vid));
+    $query = db_query('SELECT match_id, question, answer, feedback FROM {quiz_matching_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->nid, ':vid' => $this->question->vid));
     while ($result = $query->fetch()) {
       $props['match'][] = array(
           'match_id' => $result->match_id,
@@ -230,7 +230,7 @@ class MatchingQuestion extends QuestionPlugin {
 
     if (isset($result_id)) {
       // The question has already been answered. We load the answers
-      $response = new MatchingResponse($result_id, $this->node);
+      $response = new MatchingResponse($result_id, $this->question);
       $responses = $response->getResponse();
     }
     list($matches, $select_option) = $this->getSubquestions();
@@ -259,7 +259,7 @@ class MatchingQuestion extends QuestionPlugin {
    * Question response validator.
    */
   public function getAnsweringFormValidate(array &$form, array &$form_state = NULL) {
-    $question_answer = $form_state['values']['question'][$this->node->nid];
+    $question_answer = $form_state['values']['question'][$this->question->nid];
     foreach ($question_answer as $value) {
       if ($value != 'def') {
         return TRUE;
@@ -296,7 +296,7 @@ class MatchingQuestion extends QuestionPlugin {
   public function getSubquestions() {
     $matches = $select_option = array();
     //$sql = "SELECT match_id, question, answer, feedback FROM {quiz_matching_node} WHERE nid = %d AND vid = %d";
-    $query = db_query('SELECT match_id, question, answer, feedback FROM {quiz_matching_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->node->nid, ':vid' => $this->node->vid));
+    $query = db_query('SELECT match_id, question, answer, feedback FROM {quiz_matching_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->nid, ':vid' => $this->question->vid));
     while ($result = $query->fetch()) {
       $matches[] = array(
           'match_id' => $result->match_id,
@@ -356,25 +356,25 @@ class MatchingQuestion extends QuestionPlugin {
       );
       $form['match'][$i]['match_id'] = array(
           '#type'          => 'value',
-          '#default_value' => isset($this->node->match[$i - 1]['match_id']) ? $this->node->match[$i - 1]['match_id'] : ''
+          '#default_value' => isset($this->question->match[$i - 1]['match_id']) ? $this->question->match[$i - 1]['match_id'] : ''
       );
       $form['match'][$i]['question'] = array(
           '#type'          => 'textarea',
           '#rows'          => 2,
-          '#default_value' => isset($this->node->match[$i - 1]['question']) ? $this->node->match[$i - 1]['question'] : '',
+          '#default_value' => isset($this->question->match[$i - 1]['question']) ? $this->question->match[$i - 1]['question'] : '',
           '#required'      => $i < 3,
       );
       $form['match'][$i]['answer'] = array(
           '#type'          => 'textarea',
           '#rows'          => 2,
-          '#default_value' => isset($this->node->match[$i - 1]['answer']) ? $this->node->match[$i - 1]['answer'] : '',
+          '#default_value' => isset($this->question->match[$i - 1]['answer']) ? $this->question->match[$i - 1]['answer'] : '',
           '#required'      => $i < 3,
       );
 
       $form['match'][$i]['feedback'] = array(
           '#type'          => 'textarea',
           '#rows'          => 2,
-          '#default_value' => isset($this->node->match[$i - 1]['feedback']) ? $this->node->match[$i - 1]['feedback'] : ''
+          '#default_value' => isset($this->question->match[$i - 1]['feedback']) ? $this->question->match[$i - 1]['feedback'] : ''
       );
     }
     return $form;
@@ -388,8 +388,8 @@ class MatchingQuestion extends QuestionPlugin {
    */
   private function getDefaultAltSettings() {
     // If the node is being updated the default settings are those stored in the node
-    if (isset($this->node->nid)) {
-      $settings['choice_penalty'] = $this->node->choice_penalty;
+    if (isset($this->question->nid)) {
+      $settings['choice_penalty'] = $this->question->choice_penalty;
     }
     // The user is creating his first matching node
     else {
@@ -405,7 +405,7 @@ class MatchingQuestion extends QuestionPlugin {
    */
   public function getMaximumScore() {
     $to_return = 0;
-    foreach ($this->node->match as $match) {
+    foreach ($this->question->match as $match) {
       if (empty($match['question']) || empty($match['answer'])) {
         continue;
       }
@@ -423,7 +423,7 @@ class MatchingQuestion extends QuestionPlugin {
    */
   public function getCorrectAnswer() {
     $correct_answers = array();
-    $query = db_query('SELECT match_id, question, answer, feedback FROM {quiz_matching_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->node->nid, ':vid' => $this->node->vid));
+    $query = db_query('SELECT match_id, question, answer, feedback FROM {quiz_matching_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->nid, ':vid' => $this->question->vid));
     while ($result = $query->fetch()) {
       $correct_answers[$result->match_id] = array(
           'match_id' => $result->match_id,
