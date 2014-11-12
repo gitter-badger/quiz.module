@@ -304,10 +304,15 @@ if ('quiz-question' === arg(0)) {
 
   /**
    * Define quiz-entity editing form.
+   *
+   * @param array $form
+   * @param array $form_state
+   * @param \Drupal\quiz_question\Entity\Question $question
+   * @param string $op
+   * @return array
    */
   function quiz_question_form($form, &$form_state, $question, $op = 'edit') {
-    $obj = new QuestionForm();
-    return $obj->get($form, $form_state, $question, $op);
+    return $question->getPlugin()->getEntityForm();
   }
 
 }

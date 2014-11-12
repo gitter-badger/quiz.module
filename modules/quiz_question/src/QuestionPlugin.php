@@ -120,6 +120,33 @@ abstract class QuestionPlugin {
         '#description'   => t('This feedback will show when configured and the user answers a question, regardless of correctness.'),
     );
 
+    $form['revision_information'] = array(
+        '#type'        => 'fieldset',
+        '#title'       => t('Revision information'),
+        '#collapsible' => TRUE,
+        '#collapsed'   => TRUE,
+        '#group'       => 'vtabs',
+        '#attributes'  => array('class' => array('node-form-revision-information')),
+        '#attached'    => array('js' => array(drupal_get_path('module', 'node') . '/node.js')),
+        '#weight'      => 20,
+        '#access'      => TRUE,
+    );
+
+    $form['revision_information']['revision'] = array(
+        '#type'          => 'checkbox',
+        '#title'         => t('Create new revision'),
+        '#default_value' => FALSE,
+        '#state'         => array('checked' => array('textarea[name="log"]' => array('empty' => FALSE))),
+    );
+
+    $form['revision_information']['log'] = array(
+        '#type'          => 'textarea',
+        '#title'         => t('Revision log message'),
+        '#row'           => 4,
+        '#default_value' => '',
+        '#description'   => t('Provide an explanation of the changes you are making. This will help other authors understand your motivations.'),
+    );
+
     if ($this->hasBeenAnswered()) {
       $log = t('The current revision has been answered. We create a new revision so that the reports from the existing answers stays correct.');
       $this->question->revision = 1;
