@@ -296,9 +296,6 @@ function quiz_question_validate($node, &$form) {
  */
 function quiz_question_insert(stdClass $question) {
   quiz_question_get_plugin($question)->save(TRUE);
-  if (isset($question->quiz_qid) && $question->quiz_qid > 0) {
-    quiz_question_refresh_latest_quizzes($question->quiz_qid);
-  }
 }
 
 if ('quiz-question' === arg(0)) {
