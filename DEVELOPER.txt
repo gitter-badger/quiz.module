@@ -5,7 +5,6 @@ Hooks for interacting with a quiz:
  - hook_quiz_begin($quiz, $result_id): This hook is called when a user first begins a quiz.
  - hook_quiz_finished($quiz, $score, $result_id): This hook is called immediately after a user finishes taking a quiz.
  - hook_quiz_scored($quiz, $score, $result_id): This is called when a quiz score is updated. See http://drupal.org/node/460456
- 
 
 DEVELOPING NEW QUESTION TYPES:
 
@@ -17,10 +16,9 @@ Here are the steps:
 1. Create a new module
 2. Use your module's .install file to create the necessary tables
 3. Make sure you module implements hook_quiz_question_info()
-4. Define classes that extends QuizQuestion and QuizQuestionResponse.
+4. Define classes that extends Drupal\quiz_question\QuestionPlugin and Drupal\quiz_question\QuizQuestionResponse.
    For a complete example, see multichoice.classes.inc.
 
-  
 ==================================================
 How to clean up the database during development
 ==================================================
