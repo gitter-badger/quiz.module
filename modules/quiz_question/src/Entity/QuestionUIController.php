@@ -2,7 +2,9 @@
 
 namespace Drupal\quiz_question\Entity;
 
-class QuestionUIController extends \EntityDefaultUIController {
+use EntityDefaultUIController;
+
+class QuestionUIController extends EntityDefaultUIController {
 
   /**
    * Overrides hook_menu() defaults.

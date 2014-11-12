@@ -79,8 +79,8 @@ function quiz_question_entity_info() {
     $info['quiz_question']['bundles'][$name] = array(
         'label' => $row->label,
         'admin' => array(
-            'path'             => 'admin/structure/quiz/manage/%quiz_question_type',
-            'real path'        => 'admin/structure/quiz/manage/' . $name,
+            'path'             => 'admin/structure/quiz-questions/manage/%quiz_question_type',
+            'real path'        => 'admin/structure/quiz-questions/manage/' . $name,
             'bundle argument'  => 4,
             'access arguments' => array('administer quiz'),
         ),
@@ -312,7 +312,7 @@ if ('quiz-question' === arg(0)) {
    * @return array
    */
   function quiz_question_form($form, &$form_state, $question, $op = 'edit') {
-    return $question->getPlugin()->getEntityForm();
+    return $question->getPlugin()->getEntityForm($form_state);
   }
 
 }
