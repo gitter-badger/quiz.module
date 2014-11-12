@@ -327,6 +327,31 @@ else {
 
 }
 
+/**
+ * Implements hook_form_alter().
+ */
+function quiz_question_form_alter(&$form, $form_state, $form_id) {
+  if (!isset($form['#quiz_check_revision_access'])) {
+    return;
+  }
+
+  // Remove revision fieldset if user don't have access to revise quiz manually.
+  if (!user_access('manual quiz revisioning') || variable_get('quiz_auto_revisioning', 1)) {
+    $form['revision_information']['revision']['#type'] = 'value';
+    $form['revision_information']['revision']['#value'] = $form['revision_information']['revision']['#default_value'];
+    $form['revision_information']['log']['#type'] = 'value';
+    $form['revision_information']['log']['#value'] = $form['revision_information']['log']['#default_value'];
+    $form['revision_information']['#access'] = FALSE;
+  }
+  unset($form['actions']['preview'], $form['actions']['preview_changes']);
+  $form['actions']['submit']['#access'] = TRUE;
+
+  // Quiz questions might want to add a cancel button.
+  if (isset($form['#cancel_button'])) {
+    $form['actions']['cancel'] = array('#weight' => 6, '#markup' => l(t('Cancel'), $form_state['redirect']));
+  }
+}
+
 // QUIZ HOOK IMPLEMENTATIONS
 
 /**
