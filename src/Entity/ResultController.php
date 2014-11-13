@@ -110,21 +110,28 @@ class ResultController extends EntityAPIController {
     return $return;
   }
 
-  public function delete($ids, DatabaseTransaction $transaction = NULL) {
-    $return = parent::delete($ids, $transaction);
+  public function delete($result_ids, DatabaseTransaction $transaction = NULL) {
+    $return = parent::delete($result_ids, $transaction);
+    $this->callPluginDeleteMethod($result_ids);
+    return $return;
+  }
 
+  /**
+   * Call plugin owner to delete the answer.
+   *
+   * @param int[] $result_ids
+   */
+  private function callPluginDeleteMethod($result_ids) {
     $select = db_select('quiz_results_answers', 'answer');
     $select->fields('answer', array('result_id', 'question_nid', 'question_vid'));
-    $select->condition('answer.result_id', $ids);
-    $result = $select->execute();
-    while ($record = $result->fetchAll()) {
-      quiz_question_delete_result($record->result_id, $record->question_nid, $record->question_vid);
+    $select->condition('answer.result_id', $result_ids);
+    $answers = $select->execute()->fetchAll();
+    foreach ($answers as $answer) {
+      if ($answer_instance = quiz_answer_controller()->getInstance($answer->result_id, NULL, NULL, $answer->question_nid, $answer->question_vid)) {
+        $answer_instance->delete();
+      }
     }
-
-    db_delete('quiz_results_answers')->condition('result_id', $ids)->execute();
-    db_delete('quiz_results')->condition('result_id', $ids)->execute();
-
-    return $return;
+    db_delete('quiz_results_answers')->condition('result_id', $result_ids)->execute();
   }
 
 }
