@@ -84,17 +84,17 @@ function quiz_question_revision_actions($form, $form_state, $question_nid, $ques
     drupal_goto('node/' . $question_nid);
   }
 
-  $form['q_nid'] = array('#type' => 'value', '#value' => intval($question_nid));
-  $form['q_vid'] = array('#type' => 'value', '#value' => intval($question_vid));
+  $form['q_nid'] = array('#type' => 'value', '#value' => (int) $question_nid);
+  $form['q_vid'] = array('#type' => 'value', '#value' => (int) $question_vid);
 
   // Fetch data for all the quizzes that was kept
   $quiz_qids = array();
   $quiz_vids = array();
   foreach ($_SESSION['quiz_question_kept'] as $nid_vid) {
-    $temp = explode('-', $nid_vid);
-    if (_quiz_is_int($temp[0], 0) && _quiz_is_int($temp[1], 0)) {
-      $quiz_qids[] = $temp[0];
-      $quiz_vids[] = $temp[1];
+    list($nid, $vid) = explode('-', $nid_vid);
+    if (_quiz_is_int($nid, 0) && _quiz_is_int($vid, 0)) {
+      $quiz_qids[] = $nid;
+      $quiz_vids[] = $vid;
     }
   }
   $quizzes = array();
@@ -102,15 +102,16 @@ function quiz_question_revision_actions($form, $form_state, $question_nid, $ques
       FROM {node_revision} nr
       JOIN {node} n ON n.nid = nr.nid
       WHERE nr.vid IN (:vids)';
-  $res = db_query($sql, array(':vids' => $quiz_vids));
-  foreach ($res as $res_o) {
-    $res_o->answered = quiz_has_been_answered($res_o);
-    $quizzes[] = $res_o;
+  $quiz_rows = db_query($sql, array(':vids' => $quiz_vids));
+  foreach ($quiz_rows as $quiz_row) {
+    $quiz_row->answered = quiz_has_been_answered($quiz_row);
+    $quizzes[] = $quiz_row;
   }
 
   $text = t('You have created a new revision of a question that belongs to %num quizzes. Choose what you want to do with the different quizzes.', array('%num' => count($quizzes)));
   $form['intro'] = array('#markup' => $text);
   $form['quizzes'] = array();
+
   // Create a form element for each quiz
   foreach ($quizzes as $quiz) {
     $published = $quiz->status == 1 ? t('published') : t('unpublished');
