@@ -68,25 +68,24 @@ function quiz_question_config($form, $context) {
 /**
  * Create the form for the revision actions page
  *
- * Form for deciding what to do with the quizzes a question is member of when the question is
- * revised
+ * Form for deciding what to do with the quizzes a question is member of when the
+ * question is revised
  *
- * @param $form_state
- * @param $nid
+ * @param int $question_nid
  *  Question node id
- * @param $vid
+ * @param int $question_vid
  *  Question node version id
  * @return
  *  FAPI form array
  */
-function quiz_question_revision_actions($form, $form_state, $nid, $vid) {
+function quiz_question_revision_actions($form, $form_state, $question_nid, $question_vid) {
   // If no questions were kept we shouldn't get here…
   if (!isset($_SESSION['quiz_question_kept'])) {
-    drupal_goto('node/' . $nid);
+    drupal_goto('node/' . $question_nid);
   }
 
-  $form['q_nid'] = array('#type' => 'value', '#value' => intval($nid));
-  $form['q_vid'] = array('#type' => 'value', '#value' => intval($vid));
+  $form['q_nid'] = array('#type' => 'value', '#value' => intval($question_nid));
+  $form['q_vid'] = array('#type' => 'value', '#value' => intval($question_vid));
 
   // Fetch data for all the quizzes that was kept
   $quiz_qids = array();
@@ -99,11 +98,11 @@ function quiz_question_revision_actions($form, $form_state, $nid, $vid) {
     }
   }
   $quizzes = array();
-  $sql = 'SELECT nr.nid, nr.vid, nr.title, n.status FROM {node_revision} nr
-          JOIN {node} n ON n.nid = nr.nid
-          WHERE nr.vid IN (:vids)';
+  $sql = 'SELECT nr.nid, nr.vid, nr.title, n.status
+      FROM {node_revision} nr
+      JOIN {node} n ON n.nid = nr.nid
+      WHERE nr.vid IN (:vids)';
   $res = db_query($sql, array(':vids' => $quiz_vids));
-  //while ($res_o = db_fetch_object($res)) {
   foreach ($res as $res_o) {
     $res_o->answered = quiz_has_been_answered($res_o);
     $quizzes[] = $res_o;
@@ -130,11 +129,7 @@ function quiz_question_revision_actions($form, $form_state, $nid, $vid) {
     $form['quizzes'][$quiz->vid]['#quiz_title'] = $quiz->title;
   }
 
-  $form['submit'] = array(
-      '#type'  => 'submit',
-      '#value' => t('Submit'),
-  );
-  $form['#submit'] = array('quiz_question_revision_actions_submit');
+  $form['submit'] = array('#type' => 'submit', '#value' => t('Submit'));
 
   // Help texts
   $form['update_expl'] = array(
