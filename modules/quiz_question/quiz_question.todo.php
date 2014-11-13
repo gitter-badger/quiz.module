@@ -12,6 +12,28 @@ function quiz_question_get_types() {
 }
 
 /**
+ * Implements hook_load().
+ */
+function quiz_question_load($id = NULL, $vid = NULL, $reset = FALSE) {
+  if (is_array($id)) { // @TODO: Remove legacy code
+    foreach ($id as &$question) {
+      foreach (quiz_question_get_plugin($question, TRUE)->getNodeProperties() as $property => $value) {
+        $question->$property = $value;
+      }
+    }
+  }
+
+  if (NULL === $vid) {
+    return entity_load_single('quiz_question', $id);
+  }
+
+  $results = entity_load('quiz_question', array(), array('vid' => $vid), $reset);
+  if (!empty($results)) {
+    return reset($results);
+  }
+}
+
+/**
  * Load question type.
  *
  * @param string $name
@@ -185,17 +207,6 @@ function quiz_question_update($question) {
  */
 function quiz_question_delete(&$question) {
   _quiz_delete_question($question, FALSE);
-}
-
-/**
- * Implements hook_load().
- */
-function quiz_question_load($nodes) {
-  foreach ($nodes as &$question) {
-    foreach (quiz_question_get_plugin($question, TRUE)->getNodeProperties() as $property => $value) {
-      $question->$property = $value;
-    }
-  }
 }
 
 /**

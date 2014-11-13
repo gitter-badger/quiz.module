@@ -61,6 +61,18 @@ class QuestionUIController extends EntityDefaultUIController {
         'type'             => MENU_NORMAL_ITEM,
     );
 
+    if (module_exists('devel')) {
+      $items['quiz-question/%quiz_question/devel'] = array(
+          'title'            => 'Devel',
+          'access arguments' => array('access devel information'),
+          'page callback'    => 'devel_load_object',
+          'page arguments'   => array('quiz_question', 1),
+          'type'             => MENU_LOCAL_TASK,
+          'file'             => 'devel.pages.inc',
+          'file path'        => drupal_get_path('module', 'devel')
+      );
+    }
+
     return $items;
   }
 
