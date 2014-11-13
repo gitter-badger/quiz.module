@@ -1,5 +1,9 @@
 <?php
 
+# ---------------------------------------------------------------
+# To be completed
+# ---------------------------------------------------------------
+
 /**
  * Get all question types.
  */
@@ -66,8 +70,8 @@ function quiz_question_node_info() {
  * Implements hook_node_presave().
  */
 function quiz_question_node_presave($node) {
-  foreach (array_keys(quiz_question_get_info()) as $q_type) {
-    if (($node->type === $q_type) && (!drupal_strlen($node->title) || !user_access('edit question titles'))) {
+  foreach (array_keys(quiz_question_get_info()) as $question_type) {
+    if (($node->type === $question_type) && (!drupal_strlen($node->title) || !user_access('edit question titles'))) {
       $body = field_view_field('node', $node, 'body');
       $max_length = variable_get('quiz_autotitle_length', 50);
       $node->title = truncate_utf8(strip_tags(drupal_render($body)), $max_length, TRUE, TRUE);
@@ -98,9 +102,8 @@ function quiz_question_node_prepare($node) {
  * Implements hook_node_revision_delete().
  */
 function quiz_question_node_revision_delete($node) {
-  $q_types = quiz_question_get_info();
-  foreach ($q_types as $q_type => $info) {
-    if ($node->type == $q_type) {
+  foreach (array_keys(quiz_question_get_info()) as $question_type) {
+    if ($node->type === $question_type) {
       _quiz_delete_question($node, TRUE); // true for only this version
     }
   }

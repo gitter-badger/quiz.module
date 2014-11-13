@@ -121,7 +121,7 @@ function quiz_question_access_to_score($vid, $result_id) {
  *  Question entity
  * @param bool $cache
  *  Can we use a cached version of the node?
- * @return \QuizQuestion
+ * @return \Drupal\quiz_question\QuestionPlugin
  *  The appropriate QuizQuestion extension instance
  */
 function quiz_question_get_plugin(&$question, $cache = FALSE) {

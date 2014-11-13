@@ -1,6 +1,6 @@
 <?php
 
-use Drupal\quiz_question\Form\QuestionForm;
+use Drupal\quiz_question\Entity\Question;
 
 /**
  * Implements hook_help().
@@ -108,7 +108,7 @@ if ('quiz-question' === arg(0)) {
    *
    * @param array $form
    * @param array $form_state
-   * @param \Drupal\quiz_question\Entity\Question $question
+   * @param Question $question
    * @param string $op
    * @return array
    */
