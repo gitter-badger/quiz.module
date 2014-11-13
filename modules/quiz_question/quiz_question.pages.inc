@@ -41,6 +41,31 @@ function quiz_question_adding_page($question_type_name) {
 }
 
 /**
+ * Get the configuration form for all enabled question types.
+ */
+function quiz_question_config($form, $context) {
+  $form['#validate'] = array();
+
+  // Go through all question types and merge their config forms
+  foreach (quiz_question_get_info() as $type => $values) {
+    $function = $type . '_quiz_question_config';
+    if ($admin_form = $function()) {
+      $form[$type] = $admin_form;
+      $form[$type]['#type'] = 'fieldset';
+      $form[$type]['#title'] = $values['name'];
+      $form[$type]['#collapsible'] = TRUE;
+      $form[$type]['#collapsed'] = TRUE;
+      if (isset($admin_form['#validate']) && is_array($admin_form['#validate'])) {
+        $form['#validate'] = array_merge($form['#validate'], $admin_form['#validate']);
+        unset($form[$type]['#validate']);
+      }
+    }
+  }
+
+  return system_settings_form($form);
+}
+
+/**
  * Create the form for the revision actions page
  *
  * Form for deciding what to do with the quizzes a question is member of when the question is
