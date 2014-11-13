@@ -2,9 +2,23 @@
 
 namespace Drupal\quiz_question\Entity;
 
+use DatabaseTransaction;
 use EntityAPIController;
 
 class QuestionController extends EntityAPIController {
+
+  /**
+   *
+   * @param Question $question
+   * @param DatabaseTransaction $transaction
+   */
+  public function save($question, DatabaseTransaction $transaction = NULL) {
+    if (isset($question->feedback) && is_array($question->feedback)) {
+      $question->feedback_format = $question->feedback['format'];
+      $question->feedback = $question->feedback['value'];
+    }
+    return parent::save($question, $transaction);
+  }
 
   /**
    * Implements EntityAPIControllerInterface.
@@ -12,6 +26,8 @@ class QuestionController extends EntityAPIController {
    * @param Question $question
    */
   public function invoke($hook, $question) {
+    $this->legacyFixQuestionId($question);
+
     switch ($hook) {
       case 'insert':
         $question->getPlugin()->save($is_new = TRUE);
@@ -34,7 +50,15 @@ class QuestionController extends EntityAPIController {
   }
 
   /**
-   * @param \Drupal\quiz_question\Entity\Question $question
+   * @TODO Remove legacy code
+   * @param Question $question
+   */
+  private function legacyFixQuestionId(Question $question) {
+    $question->nid = $question->qid;
+  }
+
+  /**
+   * @param Question $question
    * @param string $view_mode
    * @param string $langcode
    * @param string $content

@@ -172,6 +172,13 @@ if ('quiz-question' === arg(0)) {
     return $question->getPlugin()->getEntityForm($form_state);
   }
 
+  function quiz_question_form_submit($form, &$form_state) {
+    /* @var $question \Drupal\quiz_question\Entity\Question */
+    $question = entity_ui_controller('quiz_question')->entityFormSubmitBuildEntity($form, $form_state);
+    $question->save();
+    $form_state['redirect'] = 'quiz-question/' . $question->qid;
+  }
+
 }
 
 /**
