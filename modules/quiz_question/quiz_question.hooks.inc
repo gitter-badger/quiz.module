@@ -114,6 +114,49 @@ function quiz_question_entity_info() {
   return $info;
 }
 
+/**
+ * Implements hook_field_extra_fields()
+ */
+function quiz_question_field_extra_fields() {
+  $extra = array();
+
+  foreach (quiz_question_get_types() as $name => $question_type) {
+    $extra['quiz_question'][$name] = array(
+        'display' => array(
+            'title'           => array(
+                'label'       => t('Title'),
+                'description' => t("Question's title."),
+                'weight'      => -10,
+            ),
+            'question_plugin' => array(
+                'label'       => t("Plugin fields"),
+                'description' => t("Custom fields defined by question plugin."),
+                'weight'      => -5,
+            ),
+        ),
+        'form'    => array(
+            'title'           => array(
+                'label'       => t('Title'),
+                'description' => t("Question's title."),
+                'weight'      => -10,
+            ),
+            'question_plugin' => array(
+                'label'       => t("Plugin fields"),
+                'description' => t("Custom fields defined by question plugin."),
+                'weight'      => -5,
+            ),
+            'feedback'        => array(
+                'label'       => t('Question feedback'),
+                'description' => '',
+                'weight'      => -1,
+            ),
+        ),
+    );
+  }
+
+  return $extra;
+}
+
 if ('quiz-question' === arg(0)) {
 
   /**

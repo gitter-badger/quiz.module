@@ -164,8 +164,12 @@ abstract class QuestionPlugin {
       $form['actions']['delete'] = array('#type' => 'submit', '#value' => t('Delete'));
     }
 
-    // Add question type specific content
-    return array_merge($form, $this->getCreationForm($form_state));
+    $form['question_plugin'] = array(
+        '#weight' => 0,
+        $this->getCreationForm($form_state)
+    );
+
+    return $form;
   }
 
   /**
