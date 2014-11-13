@@ -29,4 +29,17 @@ class QuestionController extends EntityAPIController {
     return parent::invoke($hook, $question);
   }
 
+  /**
+   * @param \Drupal\quiz_question\Entity\Question $question
+   * @param string $view_mode
+   * @param string $langcode
+   * @param string $content
+   */
+  public function buildContent($question, $view_mode = 'full', $langcode = NULL, $content = array()) {
+    if ('teaser' !== $view_mode) {
+      $content += $question->getPlugin()->getEntityView();
+    }
+    return parent::buildContent($question, $view_mode, $langcode, $content);
+  }
+
 }
