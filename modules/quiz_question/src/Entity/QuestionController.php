@@ -14,10 +14,19 @@ class QuestionController extends EntityAPIController {
   public function invoke($hook, $question) {
     switch ($hook) {
       case 'insert':
-        return $question->getPlugin()->save($is_new = TRUE);
+        $question->getPlugin()->save($is_new = TRUE);
+        break;
+
       case 'delete':
-        return $question->getPlugin()->delete($only_this_version = FALSE);
+        $question->getPlugin()->delete($only_this_version = FALSE);
+        break;
+
+      case 'revision_delete':
+        $question->getPlugin()->delete($only_this_version = TRUE);
+        break;
     }
+
+    return parent::invoke($hook, $question);
   }
 
 }
