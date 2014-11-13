@@ -101,7 +101,7 @@ class TrueFalseQuestion extends QuestionPlugin {
    *
    * @see QuizQuestion#getNodeView()
    */
-  public function getNodeView() {
+  public function getEntityView() {
     $content = parent::getNodeView();
     if ($this->viewCanRevealCorrect()) {
       $answer = !empty($this->question->correct_answer) ? t('True') : t('False');

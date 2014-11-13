@@ -331,7 +331,7 @@ class ScaleQuestion extends QuestionPlugin {
    *
    * @see QuizQuestion#view()
    */
-  public function getNodeView() {
+  public function getEntityView() {
     $content = parent::getNodeView();
     $alternatives = array();
     for ($i = 0; $i < variable_get('scale_max_num_of_alts', 10); $i++) {

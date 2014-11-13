@@ -165,7 +165,7 @@ function quiz_question_view($node, $view_mode) {
   }
   else {
     // normal node view
-    $content = quiz_question_get_plugin($node, TRUE)->getNodeView();
+    $content = quiz_question_get_plugin($node, TRUE)->getEntityView();
   }
 
   // put it into the node->content

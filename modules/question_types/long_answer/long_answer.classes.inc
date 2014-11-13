@@ -105,7 +105,7 @@ class LongAnswerQuestion extends QuestionPlugin {
    *
    * @see QuizQuestion#getNodeView()
    */
-  public function getNodeView() {
+  public function getEntityView() {
     $content = parent::getNodeView();
 
     if ($this->viewCanRevealCorrect()) {

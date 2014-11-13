@@ -176,7 +176,7 @@ abstract class QuestionPlugin {
    * @return array
    *  Content array
    */
-  public function getNodeView() {
+  public function getEntityView() {
     $content['question_type'] = array(
         '#weight' => -2,
         '#prefix' => '<div class="question_type_name">',
