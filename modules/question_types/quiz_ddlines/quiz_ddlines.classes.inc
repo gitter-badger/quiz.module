@@ -202,7 +202,7 @@ class DDLinesQuestion extends QuestionPlugin {
   /**
    * Save question type specific node properties
    */
-  public function saveNodeProperties($is_new = FALSE) {
+  public function saveEntityProperties($is_new = FALSE) {
     if ($is_new || $this->question->revision == 1) {
       $id = db_insert('quiz_ddlines_node')
         ->fields(array(

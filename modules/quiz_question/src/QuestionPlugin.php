@@ -230,8 +230,8 @@ abstract class QuestionPlugin {
    *  TRUE when the node is initially created.
    */
   public function save($is_new = FALSE) {
-    // We call the abstract function saveNodeProperties to save type specific data
-    $this->saveNodeProperties($is_new);
+    // We call the abstract function saveEntityProperties to save type specific data
+    $this->saveEntityProperties($is_new);
 
     db_merge('quiz_question_properties')
       ->key(array(
@@ -357,7 +357,7 @@ abstract class QuestionPlugin {
   /**
    * Save question type specific node properties
    */
-  abstract public function saveNodeProperties($is_new = FALSE);
+  abstract public function saveEntityProperties($is_new = FALSE);
 
   /**
    * Save this Question to the specified Quiz.

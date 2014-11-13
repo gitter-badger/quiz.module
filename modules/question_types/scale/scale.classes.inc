@@ -42,11 +42,11 @@ class ScaleQuestion extends QuestionPlugin {
   }
 
   /**
-   * Implementation of saveNodeProperties
+   * Implementation of saveEntityProperties
    *
-   * @see QuizQuestion#saveNodeProperties()
+   * @see QuizQuestion#saveEntityProperties()
    */
-  public function saveNodeProperties($is_new = FALSE) {
+  public function saveEntityProperties($is_new = FALSE) {
     $is_new_node = $is_new || $this->question->revision == 1;
     $answer_collection_id = $this->saveAnswerCollection($is_new_node);
     // Save the answer collection as a preset if the save preset option is checked

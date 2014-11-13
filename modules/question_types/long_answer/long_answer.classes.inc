@@ -16,10 +16,10 @@ use Drupal\quiz_question\QuizQuestionResponse;
 class LongAnswerQuestion extends QuestionPlugin {
 
   /**
-   * Implementation of saveNodeProperties
-   * @see QuizQuestion#saveNodeProperties($is_new)
+   * Implementation of saveEntityProperties
+   * @see QuizQuestion#saveEntityProperties($is_new)
    */
-  public function saveNodeProperties($is_new = FALSE) {
+  public function saveEntityProperties($is_new = FALSE) {
     if (!isset($this->question->feedback)) {
       $this->question->feedback = '';
     }

@@ -15,11 +15,11 @@ use Drupal\quiz_question\QuizQuestionResponse;
 class TrueFalseQuestion extends QuestionPlugin {
 
   /**
-   * Implementation of saveNodeProperties
+   * Implementation of saveEntityProperties
    *
-   * @see QuizQuestion#saveNodeProperties($is_new)
+   * @see QuizQuestion#saveEntityProperties($is_new)
    */
-  public function saveNodeProperties($is_new = FALSE) {
+  public function saveEntityProperties($is_new = FALSE) {
     if ($is_new || $this->question->revision == 1) {
       $id = db_insert('quiz_truefalse_node')
         ->fields(array(

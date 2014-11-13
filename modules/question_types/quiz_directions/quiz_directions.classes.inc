@@ -33,11 +33,11 @@ class QuizDirectionsQuestion extends QuestionPlugin {
   }
 
   /**
-   * Implementation of saveNodeProperties
+   * Implementation of saveEntityProperties
    *
-   * @see QuizQuestion#saveNodeProperties($is_new)
+   * @see QuizQuestion#saveEntityProperties($is_new)
    */
-  public function saveNodeProperties($is_new = FALSE) {
+  public function saveEntityProperties($is_new = FALSE) {
 
   }
 
