@@ -17,6 +17,10 @@ class QuestionController extends EntityAPIController {
         $question->getPlugin()->save($is_new = TRUE);
         break;
 
+      case 'update':
+        $question->getPlugin()->save($is_new = FALSE);
+        break;
+
       case 'delete':
         $question->getPlugin()->delete($only_this_version = FALSE);
         break;
