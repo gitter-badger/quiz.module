@@ -84,8 +84,8 @@ class LongAnswerQuestion extends QuestionPlugin {
    * @see QuizQuestion#getNodeProperties()
    */
   public function getNodeProperties() {
-    if (isset($this->nodeProperties)) {
-      return $this->nodeProperties;
+    if (isset($this->entityProperties)) {
+      return $this->entityProperties;
     }
     $props = parent::getNodeProperties();
 
@@ -96,7 +96,7 @@ class LongAnswerQuestion extends QuestionPlugin {
       $props = array_merge($props, $res_a);
     }
 
-    $this->nodeProperties = $props;
+    $this->entityProperties = $props;
     return $props;
   }
 

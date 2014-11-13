@@ -309,8 +309,8 @@ class ScaleQuestion extends QuestionPlugin {
    * @see QuizQuestion#getNodeProperties()
    */
   public function getNodeProperties() {
-    if (isset($this->nodeProperties)) {
-      return $this->nodeProperties;
+    if (isset($this->entityProperties)) {
+      return $this->entityProperties;
     }
     $props = parent::getNodeProperties();
 
@@ -322,7 +322,7 @@ class ScaleQuestion extends QuestionPlugin {
     foreach ($res as $res_o) {
       $props[] = $res_o;
     }
-    $this->nodeProperties = $props;
+    $this->entityProperties = $props;
     return $props;
   }
 

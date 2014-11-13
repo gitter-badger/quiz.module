@@ -37,7 +37,7 @@ abstract class QuestionPlugin {
   /**
    * Extra node properties
    */
-  public $nodeProperties = NULL;
+  public $entityProperties = NULL;
 
   /**
    * QuizQuestion constructor stores the node object.
@@ -198,8 +198,8 @@ abstract class QuestionPlugin {
    * @return array
    */
   public function getNodeProperties() {
-    if (isset($this->nodeProperties)) {
-      return $this->nodeProperties;
+    if (isset($this->entityProperties)) {
+      return $this->entityProperties;
     }
 
     $props['max_score'] = db_query(
@@ -209,7 +209,7 @@ abstract class QuestionPlugin {
         ':nid' => $this->question->nid,
         ':vid' => $this->question->vid))->fetchField();
     $props['is_quiz_question'] = TRUE;
-    $this->nodeProperties = $props;
+    $this->entityProperties = $props;
 
     return $props;
   }

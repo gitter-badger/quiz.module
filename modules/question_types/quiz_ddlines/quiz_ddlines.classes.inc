@@ -235,8 +235,8 @@ class DDLinesQuestion extends QuestionPlugin {
    * @see QuizQuestion#getNodeProperties()
    */
   public function getNodeProperties() {
-    if (isset($this->nodeProperties) && !empty($this->nodeProperties)) {
-      return $this->nodeProperties;
+    if (isset($this->entityProperties) && !empty($this->entityProperties)) {
+      return $this->entityProperties;
     }
     $props = parent::getNodeProperties();
 
@@ -245,7 +245,7 @@ class DDLinesQuestion extends QuestionPlugin {
     if (is_array($res_a)) {
       $props = array_merge($props, $res_a);
     }
-    $this->nodeProperties = $props;
+    $this->entityProperties = $props;
     return $props;
   }
 

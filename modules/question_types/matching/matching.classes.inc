@@ -154,8 +154,8 @@ class MatchingQuestion extends QuestionPlugin {
    * @see QuizQuestion#getNodeProperties()
    */
   public function getNodeProperties() {
-    if (isset($this->nodeProperties)) {
-      return $this->nodeProperties;
+    if (isset($this->entityProperties)) {
+      return $this->entityProperties;
     }
     $props = parent::getNodeProperties();
 
@@ -176,7 +176,7 @@ class MatchingQuestion extends QuestionPlugin {
           'feedback' => $result->feedback,
       );
     }
-    $this->nodeProperties = $props;
+    $this->entityProperties = $props;
     return $props;
   }
 
