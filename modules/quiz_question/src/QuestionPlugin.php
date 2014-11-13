@@ -253,7 +253,7 @@ abstract class QuestionPlugin {
       if (user_access('manual quiz revisioning') && !variable_get('quiz_auto_revisioning', 1)) {
         unset($_GET['destination']);
         unset($_REQUEST['edit']['destination']);
-        drupal_goto('quiz_question/' . $this->question->nid . '/' . $this->question->vid . '/revision_actions');
+        drupal_goto('quiz-question/' . $this->question->nid . '/' . $this->question->vid . '/revision-actions');
       }
       // For users without the 'manual quiz revisioning' permission we submit the revision_actions form
       // silently with its default values set.

@@ -39,7 +39,7 @@ class QuestionUIController extends EntityDefaultUIController {
       );
     }
 
-    $items['quiz_question/%/%/revision_actions'] = array(
+    $items['quiz-question/%/%/revision-actions'] = array(
         'title'            => 'Revision actions',
         'page callback'    => 'drupal_get_form',
         'page arguments'   => array('quiz_question_revision_actions', 1, 2),
@@ -50,7 +50,7 @@ class QuestionUIController extends EntityDefaultUIController {
     );
 
     // Menu items for admin view of each question type.
-    $items['admin/quiz/settings/questions_settings'] = array(
+    $items['admin/quiz/settings/questions-settings'] = array(
         'title'            => 'Question configuration',
         'description'      => 'Configure the question types.',
         'file path'        => drupal_get_path('module', 'quiz_question'),
