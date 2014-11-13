@@ -39,6 +39,28 @@ class QuestionUIController extends EntityDefaultUIController {
       );
     }
 
+    $items['quiz_question/%/%/revision_actions'] = array(
+        'title'            => 'Revision actions',
+        'page callback'    => 'drupal_get_form',
+        'page arguments'   => array('quiz_question_revision_actions', 1, 2),
+        'access arguments' => array('manual quiz revisioning'),
+        'file path'        => drupal_get_path('module', 'quiz_question'),
+        'file'             => 'quiz_question.pages.inc',
+        'type'             => MENU_NORMAL_ITEM,
+    );
+
+    // Menu items for admin view of each question type.
+    $items['admin/quiz/settings/questions_settings'] = array(
+        'title'            => 'Question configuration',
+        'description'      => 'Configure the question types.',
+        'file path'        => drupal_get_path('module', 'quiz_question'),
+        'file'             => 'quiz_question.pages.inc',
+        'page callback'    => 'drupal_get_form',
+        'page arguments'   => array('quiz_question_config'),
+        'access arguments' => array('administer quiz configuration'),
+        'type'             => MENU_NORMAL_ITEM,
+    );
+
     return $items;
   }
 

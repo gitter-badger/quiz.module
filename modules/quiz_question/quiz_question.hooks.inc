@@ -103,31 +103,6 @@ function quiz_question_entity_info() {
 }
 
 /**
- * Implements hook_menu().
- */
-function quiz_question_menu() {
-  $items = array();
-  $items['quiz_question/%/%/revision_actions'] = array(
-      'title'            => 'Revision actions',
-      'page callback'    => 'drupal_get_form',
-      'page arguments'   => array('quiz_question_revision_actions', 1, 2),
-      'access arguments' => array('manual quiz revisioning'),
-      'file'             => 'quiz_question.pages.inc',
-      'type'             => MENU_NORMAL_ITEM,
-  );
-  // Menu items for admin view of each question type.
-  $items['admin/quiz/settings/questions_settings'] = array(
-      'title'            => 'Question configuration',
-      'description'      => 'Configure the question types.',
-      'page callback'    => 'drupal_get_form',
-      'page arguments'   => array('quiz_question_config'),
-      'access arguments' => array('administer quiz configuration'),
-      'type'             => MENU_NORMAL_ITEM,
-  );
-  return $items;
-}
-
-/**
  * Implements hook_node_info().
  */
 function quiz_question_node_info() {
