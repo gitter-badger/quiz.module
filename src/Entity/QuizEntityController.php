@@ -94,6 +94,10 @@ class QuizEntityController extends EntityAPIController {
     return $entities;
   }
 
+  /**
+   * @param Drupal\quiz\Entity\QuizEntity $quiz
+   * @param DatabaseTransaction $transaction
+   */
   public function save($quiz, DatabaseTransaction $transaction = NULL) {
     // QuizFeedbackTest::testFeedback() failed without this, mess!
     if (empty($quiz->is_new_revision)) {

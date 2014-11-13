@@ -118,4 +118,18 @@ class Result extends Entity {
     return $this->canAccessOwnScore($account) ? TRUE : FALSE;
   }
 
+  /**
+   * Deletes results for a quiz according to the keep results setting
+   *
+   * @param int $uid
+   *  ID of user account.
+   * @return bool
+   *  TRUE if results where deleted.
+   */
+  public function maintenance($uid) {
+    return entity_get_controller('quiz_result')
+        ->getMaintainer()
+        ->maintenance($uid, $this);
+  }
+
 }

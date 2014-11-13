@@ -12,26 +12,10 @@ use stdClass;
 
 class QuizHelper {
 
-  private $resultHelper;
   private $accessHelper;
   private $feedbackHelper;
   private $takeJumperHelper;
   private $questionHelper;
-
-  /**
-   * @return ResultHelper
-   */
-  public function getResultHelper() {
-    if (null === $this->resultHelper) {
-      $this->resultHelper = new ResultHelper();
-    }
-    return $this->resultHelper;
-  }
-
-  public function setResultHelper($resultHelper) {
-    $this->resultHelper = $resultHelper;
-    return $this;
-  }
 
   /**
    * @return AccessHelper

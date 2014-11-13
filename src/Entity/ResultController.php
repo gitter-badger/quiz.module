@@ -3,16 +3,21 @@
 namespace Drupal\quiz\Entity;
 
 use DatabaseTransaction;
+use Drupal\quiz\Entity\Result\Maintainer;
 use Drupal\quiz\Entity\Result\ScoreIO;
 use Drupal\quiz\Entity\Result\Writer;
 use EntityAPIController;
 
 class ResultController extends EntityAPIController {
 
+  /** @var ScoreIO */
   private $score_io;
 
   /** @var Writer */
   private $writer;
+
+  /** @var Maintainer */
+  private $maintainer;
 
   public function getWriter() {
     if (NULL === $this->writer) {
@@ -34,6 +39,13 @@ class ResultController extends EntityAPIController {
   public function setScoreCalculator($score_calculator) {
     $this->score_io = $score_calculator;
     return $this;
+  }
+
+  public function getMaintainer() {
+    if (NULL === $this->maintainer) {
+      $this->maintainer = new Maintainer();
+    }
+    return $this->maintainer;
   }
 
   public function load($ids = array(), $conditions = array()) {
@@ -92,12 +104,8 @@ class ResultController extends EntityAPIController {
 
     $return = parent::save($result, $transaction);
 
-    if (isset($result->original) && !$result->original->is_evaluated && $result->is_evaluated) {
-      // Quiz is finished! Delete old results if necessary.
-      if ($quiz = quiz_load($result->quiz_qid)) {
-        quiz()->getQuizHelper()->getResultHelper()->maintainResult($user, $quiz, $result->result_id);
-      }
-    }
+    // Delete old results if necessary.
+    $result->maintenance($user->uid);
 
     return $return;
   }
