@@ -327,12 +327,12 @@ class ScaleQuestion extends QuestionPlugin {
   }
 
   /**
-   * Implementation of getNodeView
+   * Implementation of getEntityView
    *
    * @see QuizQuestion#view()
    */
   public function getEntityView() {
-    $content = parent::getNodeView();
+    $content = parent::getEntityView();
     $alternatives = array();
     for ($i = 0; $i < variable_get('scale_max_num_of_alts', 10); $i++) {
       if (isset($this->question->{$i}->answer) && drupal_strlen($this->question->{$i}->answer) > 0) {

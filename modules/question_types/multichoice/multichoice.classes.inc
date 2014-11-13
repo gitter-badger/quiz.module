@@ -403,12 +403,12 @@ class MultichoiceQuestion extends QuestionPlugin {
   }
 
   /**
-   * Implementation of getNodeView
+   * Implementation of getEntityView
    *
-   * @see QuizQuestion#getNodeView()
+   * @see QuizQuestion#getEntityView()
    */
   public function getEntityView() {
-    $content = parent::getNodeView();
+    $content = parent::getEntityView();
     if ($this->question->choice_random) {
       $this->shuffle($this->question->alternatives);
     }

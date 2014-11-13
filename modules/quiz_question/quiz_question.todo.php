@@ -149,14 +149,13 @@ function quiz_question_node_grants($account, $op) {
  * Implements hook_view().
  */
 function quiz_question_view($node, $view_mode) {
-  if ($view_mode == 'search_index' && !variable_get('quiz_index_questions', 1)) {
+  if ($view_mode === 'search_index' && !variable_get('quiz_index_questions', 1)) {
     $node->body = '';
     $node->content = array();
     $node->title = '';
     $node->taxonomy = array();
     return $node;
   }
-  $content = '';
 
   if ($view_mode === 'teaser') {
     $node->content['question_teaser'] = array(
@@ -168,13 +167,9 @@ function quiz_question_view($node, $view_mode) {
   }
   else {
     // normal node view
-    $content = quiz_question_get_plugin($node, TRUE)->getEntityView();
+    $node->content += quiz_question_get_plugin($node, TRUE)->getEntityView();
   }
 
-  // put it into the node->content
-  if (!empty($content)) {
-    $node->content = (isset($node->content)) ? $node->content + $content : $content;
-  }
   return $node;
 }
 

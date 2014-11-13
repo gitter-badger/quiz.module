@@ -97,12 +97,12 @@ class TrueFalseQuestion extends QuestionPlugin {
   }
 
   /**
-   * Implementation of getNodeView
+   * Implementation of getEntityView
    *
-   * @see QuizQuestion#getNodeView()
+   * @see QuizQuestion#getEntityView()
    */
   public function getEntityView() {
-    $content = parent::getNodeView();
+    $content = parent::getEntityView();
     if ($this->viewCanRevealCorrect()) {
       $answer = !empty($this->question->correct_answer) ? t('True') : t('False');
       $content['answers']['#markup'] = '<div class="quiz-solution">' . $answer . '</div>';

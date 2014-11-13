@@ -108,12 +108,12 @@ class ShortAnswerQuestion extends QuestionPlugin {
   }
 
   /**
-   * Implementation of getNodeView
+   * Implementation of getEntityView
    *
-   * @see QuizQuestion#getNodeView()
+   * @see QuizQuestion#getEntityView()
    */
   public function getEntityView() {
-    $content = parent::getNodeView();
+    $content = parent::getEntityView();
     if ($this->viewCanRevealCorrect()) {
       $content['answers'] = array(
           '#markup' => '<div class="quiz-solution">' . check_plain($this->question->correct_answer) . '</div>',

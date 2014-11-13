@@ -101,12 +101,12 @@ class LongAnswerQuestion extends QuestionPlugin {
   }
 
   /**
-   * Implementation of getNodeView
+   * Implementation of getEntityView
    *
-   * @see QuizQuestion#getNodeView()
+   * @see QuizQuestion#getEntityView()
    */
   public function getEntityView() {
-    $content = parent::getNodeView();
+    $content = parent::getEntityView();
 
     if ($this->viewCanRevealCorrect()) {
       if (!empty($this->question->rubric)) {
