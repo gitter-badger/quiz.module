@@ -43,6 +43,13 @@ class QuizEntity extends Entity {
   /** @var string Revision log */
   public $log;
 
+  /**
+   * Enum: QUIZ_KEEP_BEST, QUIZ_KEEP_LATEST, QUIZ_KEEP_ALL.
+   * 
+   * @var int
+   */
+  public $keep_results = QUIZ_KEEP_ALL;
+
   /** @var \Drupal\quiz\Entity\QuizEntity\QuestionLoader */
   private $question_loader;
 

@@ -47,7 +47,7 @@ class Result extends Entity {
 
   /**
    * Get quiz entity.
-   * 
+   *
    * @return \Drupal\quiz\Entity\QuizEntity
    */
   public function getQuiz() {
@@ -115,8 +115,21 @@ class Result extends Entity {
     if ($this->time_end > 0 && $this->uid == $account->uid) {
       return TRUE;
     }
-
     return $this->canAccessOwnScore($account) ? TRUE : FALSE;
+  }
+
+  /**
+   * Deletes results for a quiz according to the keep results setting
+   *
+   * @param int $uid
+   *  ID of user account.
+   * @return bool
+   *  TRUE if results where deleted.
+   */
+  public function maintenance($uid) {
+    return entity_get_controller('quiz_result')
+        ->getMaintainer()
+        ->maintenance($uid, $this);
   }
 
 }

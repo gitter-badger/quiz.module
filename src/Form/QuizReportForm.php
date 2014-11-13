@@ -83,26 +83,20 @@ class QuizReportForm {
       if (!is_numeric($key)) {
         continue;
       }
+
       // Questions store the name of the validation function with the key 'submit'
       if (!isset($q_values['submit'])) {
         continue;
       }
+
       // The submit function must exist
       if (!function_exists($q_values['submit'])) {
         continue;
       }
 
-      // Load the quiz
-      if (!isset($quiz)) {
-        $result = db_query(
-          'SELECT quiz_qid, quiz_vid, uid FROM {quiz_results} WHERE result_id = :result_id', array(
-            ':result_id' => $q_values['result_id']
-          ))->fetchObject();
-        $quiz = quiz_load($result->quiz_qid, $result->quiz_vid);
-        $result_id = $q_values['result_id'];
-      }
-
-      $q_values['quiz'] = $quiz;
+      $result_id = $q_values['result_id'];
+      $result = quiz_result_load($q_values['result_id']);
+      $quiz = $q_values['quiz'] = $result->getQuiz();
 
       // We call the submit function provided by the question
       call_user_func($q_values['submit'], $q_values);
@@ -114,7 +108,7 @@ class QuizReportForm {
       ->fields(array('is_evaluated' => 1))
       ->condition('result_id', $result_id)
       ->execute();
-    $results_got_deleted = quiz()->getQuizHelper()->getResultHelper()->maintainResult($user, $quiz, $result_id);
+    $results_got_deleted = $result->maintenance($user->uid);
 
     // A message saying the quiz is unscored has already been set. We unset it here…
     if ($changed > 0) {

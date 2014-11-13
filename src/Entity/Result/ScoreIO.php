@@ -84,6 +84,8 @@ class ScoreIO {
   }
 
   /**
+   * @TODO: Use entity API instead of direct db writing.
+   *
    * Update a score for a quiz.
    *
    * This updates the quiz entity results table.
@@ -112,7 +114,8 @@ class ScoreIO {
 
     if ($score['is_evaluated']) {
       module_invoke_all('quiz_scored', $quiz, $score, $result->result_id);
-      quiz()->getQuizHelper()->getResultHelper()->maintainResult($user, $quiz, $result->result_id);
+
+      $result->maintenance($user->uid);
 
       db_update('quiz_results')
         ->fields(array('is_evaluated' => 1))

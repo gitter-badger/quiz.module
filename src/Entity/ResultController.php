@@ -3,16 +3,21 @@
 namespace Drupal\quiz\Entity;
 
 use DatabaseTransaction;
+use Drupal\quiz\Entity\Result\Maintainer;
 use Drupal\quiz\Entity\Result\ScoreIO;
 use Drupal\quiz\Entity\Result\Writer;
 use EntityAPIController;
 
 class ResultController extends EntityAPIController {
 
+  /** @var ScoreIO */
   private $score_io;
 
   /** @var Writer */
   private $writer;
+
+  /** @var Maintainer */
+  private $maintainer;
 
   public function getWriter() {
     if (NULL === $this->writer) {
@@ -34,6 +39,13 @@ class ResultController extends EntityAPIController {
   public function setScoreCalculator($score_calculator) {
     $this->score_io = $score_calculator;
     return $this;
+  }
+
+  public function getMaintainer() {
+    if (NULL === $this->maintainer) {
+      $this->maintainer = new Maintainer();
+    }
+    return $this->maintainer;
   }
 
   public function load($ids = array(), $conditions = array()) {
@@ -92,31 +104,34 @@ class ResultController extends EntityAPIController {
 
     $return = parent::save($result, $transaction);
 
-    if (isset($result->original) && $result->original->is_evaluated && !$result->is_evaluated) {
-      // Quiz is finished! Delete old results if necessary.
-      if ($quiz = quiz_load($result->quiz_qid)) {
-        quiz()->getQuizHelper()->getResultHelper()->maintainResult($user, $quiz, $result->result_id);
-      }
-    }
+    // Delete old results if necessary.
+    $result->maintenance($user->uid);
 
     return $return;
   }
 
-  public function delete($ids, DatabaseTransaction $transaction = NULL) {
-    $return = parent::delete($ids, $transaction);
+  public function delete($result_ids, DatabaseTransaction $transaction = NULL) {
+    $return = parent::delete($result_ids, $transaction);
+    $this->callPluginDeleteMethod($result_ids);
+    return $return;
+  }
 
+  /**
+   * Call plugin owner to delete the answer.
+   *
+   * @param int[] $result_ids
+   */
+  private function callPluginDeleteMethod($result_ids) {
     $select = db_select('quiz_results_answers', 'answer');
     $select->fields('answer', array('result_id', 'question_nid', 'question_vid'));
-    $select->condition('answer.result_id', $ids);
-    $result = $select->execute();
-    while ($record = $result->fetchAll()) {
-      quiz_question_delete_result($record->result_id, $record->question_nid, $record->question_vid);
+    $select->condition('answer.result_id', $result_ids);
+    $answers = $select->execute()->fetchAll();
+    foreach ($answers as $answer) {
+      if ($answer_instance = quiz_answer_controller()->getInstance($answer->result_id, NULL, NULL, $answer->question_nid, $answer->question_vid)) {
+        $answer_instance->delete();
+      }
     }
-
-    db_delete('quiz_results_answers')->condition('result_id', $ids)->execute();
-    db_delete('quiz_results')->condition('result_id', $ids)->execute();
-
-    return $return;
+    db_delete('quiz_results_answers')->condition('result_id', $result_ids)->execute();
   }
 
 }
