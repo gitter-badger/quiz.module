@@ -23,6 +23,19 @@ function quiz_question_theme() {
 }
 
 /**
+ * Implements hook_menu_local_tasks_alter().
+ *
+ * Add action link to 'quiz-question/add' on 'admin/content/quiz-questions' page.
+ */
+function quiz_question_menu_local_tasks_alter(&$data, $router_item, $root_path) {
+  if ($root_path === 'admin/content/quiz-questions') {
+    if (($item = menu_get_item('quiz-question/add')) && $item['access']) {
+      $data['actions']['output'][] = array('#theme' => 'menu_local_action', '#link' => $item);
+    }
+  }
+}
+
+/**
  * Implements hook_entity_info()
  */
 function quiz_question_entity_info() {
