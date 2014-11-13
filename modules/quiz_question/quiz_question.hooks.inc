@@ -19,8 +19,7 @@ function quiz_question_theme() {
       'variables' => NULL,
       'pattern'   => 'quiz_question_feedback__',
   );
-
-  return $$items;
+  return $items;
 }
 
 /**
