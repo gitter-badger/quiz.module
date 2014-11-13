@@ -62,10 +62,19 @@ class Question extends Entity {
   }
 
   /**
+   * Get question type object.
+   *
+   * @return \Drupal\quiz_question\Entity\QuestionType
+   */
+  public function getQuestionType() {
+    return quiz_question_type_load($this->type);
+  }
+
+  /**
    * @return \Drupal\quiz_question\QuestionPlugin
    */
   private function doGetPlugin() {
-    if ($question_type = quiz_question_type_load($this->type)) {
+    if ($question_type = $this->getQuestionType()) {
       $plugin_info = quiz_question_get_info($question_type->plugin);
       return new $plugin_info['question provider']($this);
     }

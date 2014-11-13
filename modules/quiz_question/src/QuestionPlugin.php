@@ -3,7 +3,7 @@
 namespace Drupal\quiz_question;
 
 use Drupal\quiz\Controller\QuizQuestionFeedbackController;
-use Drupal\quiz\Entity\QuizEntity;
+use Drupal\quiz_question\Entity\Question;
 
 /**
  * QUESTION IMPLEMENTATION FUNCTIONS
@@ -184,9 +184,17 @@ abstract class QuestionPlugin {
     $content['question_type'] = array(
         '#weight' => -2,
         '#prefix' => '<div class="question_type_name">',
-        '#markup' => node_type_get_type($this->question)->name,
         '#suffix' => '</div>',
     );
+
+    // @TODO Remove legacy code
+    if ($this->question instanceof Question) {
+      $content['#markup'] = $this->question->getQuestionType()->label;
+    }
+    else {
+      $content['#markup'] = node_type_get_type($this->question)->name;
+    }
+
     return $content;
   }
 

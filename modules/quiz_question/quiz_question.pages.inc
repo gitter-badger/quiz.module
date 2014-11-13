@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\quiz_question\Entity\Question;
 use Drupal\quiz_question\Form\QuestionTypeForm;
 use Drupal\quiz_question\Form\RevisionActionsForm;
 
@@ -80,4 +81,16 @@ function quiz_question_revision_actions($form, $form_state, $question_nid, $ques
 function quiz_question_revision_actions_submit($form, &$form_state) {
   $obj = new RevisionActionsForm();
   return $obj->submit($form, $form_state);
+}
+
+/**
+ * Callback for /quiz-question/%
+ *
+ * @param Question $question
+ * @param string $view_mode
+ * @param string $langcode
+ * @return string|array
+ */
+function quiz_question_page(Question $question, $view_mode = 'default', $langcode = NULL) {
+  return entity_view('quiz_entity', array($question), $view_mode, $langcode);
 }

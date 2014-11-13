@@ -1,5 +1,8 @@
 <?php
 
+use Drupal\quiz_question\Entity\Question;
+use Drupal\quiz_question\Entity\QuestionType;
+
 # ---------------------------------------------------------------
 # To be completed
 # ---------------------------------------------------------------
@@ -11,18 +14,7 @@ function quiz_question_get_types() {
   return entity_load_multiple_by_name('quiz_question_type');
 }
 
-/**
- * Implements hook_load().
- */
-function quiz_question_load($id = NULL, $vid = NULL, $reset = FALSE) {
-  if (is_array($id)) { // @TODO: Remove legacy code
-    foreach ($id as &$question) {
-      foreach (quiz_question_get_plugin($question, TRUE)->getNodeProperties() as $property => $value) {
-        $question->$property = $value;
-      }
-    }
-  }
-
+function quiz_question_entity_load($id = NULL, $vid = NULL, $reset = FALSE) {
   if (NULL === $vid) {
     return entity_load_single('quiz_question', $id);
   }
@@ -37,7 +29,7 @@ function quiz_question_load($id = NULL, $vid = NULL, $reset = FALSE) {
  * Load question type.
  *
  * @param string $name
- * @return \Drupal\quiz_question\Entity\QuestionType
+ * @return QuestionType
  */
 function quiz_question_type_load($name) {
   $types = entity_load_multiple_by_name('quiz_question_type', array($name));
@@ -52,10 +44,10 @@ function quiz_question_type_access() {
  * Access callback for question entity.
  *
  * @param string $op
- * @param string $type
+ * @param Question|null $question
  * @param stdClass $account
  */
-function quiz_question_access_callback($op, $type = NULL, $account = NULL) {
+function quiz_question_access_callback($op, $question = NULL, $account = NULL, $entity_type = '') {
   switch ($op) {
     case 'create':
       return user_access('create question content', $account);
@@ -86,6 +78,17 @@ function quiz_question_node_info() {
   }
 
   return $node_info;
+}
+
+/**
+ * Implements hook_load().
+ */
+function quiz_question_load($node) {
+  foreach ($node as &$question) {
+    foreach (quiz_question_get_plugin($question, TRUE)->getNodeProperties() as $property => $value) {
+      $question->$property = $value;
+    }
+  }
 }
 
 /**
@@ -215,7 +218,7 @@ function quiz_question_delete(&$question) {
 function quiz_question_validate($question, &$form) {
   // Check to make sure that there is a question.
   if (empty($question->body)) {
-    form_set_error('body', t('Question text is empty.'));
+    form_set_error('body', TableSort('Question text is empty.'));
   }
   quiz_question_get_plugin($question)->validateNode($form);
 }
@@ -259,6 +262,6 @@ function quiz_question_form_alter(&$form, $form_state, $form_id) {
 
   // Quiz questions might want to add a cancel button.
   if (isset($form['#cancel_button'])) {
-    $form['actions']['cancel'] = array('#weight' => 6, '#markup' => l(t('Cancel'), $form_state['redirect']));
+    $form['actions']['cancel'] = array('#weight' => 6, '#markup' => l(TableSort('Cancel'), $form_state['redirect']));
   }
 }

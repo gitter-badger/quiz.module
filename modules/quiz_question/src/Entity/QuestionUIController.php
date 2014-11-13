@@ -61,8 +61,25 @@ class QuestionUIController extends EntityDefaultUIController {
         'type'             => MENU_NORMAL_ITEM,
     );
 
+    $items['quiz-question/%quiz_question_entity'] = array(
+        'title callback'   => 'entity_class_label',
+        'title arguments'  => array(1),
+        'access callback'  => 'quiz_question_access_callback',
+        'access arguments' => array('view', 1),
+        'file path'        => drupal_get_path('module', 'quiz_question'),
+        'file'             => 'quiz_question.pages.inc',
+        'page callback'    => 'quiz_question_page',
+        'page arguments'   => array(1),
+    );
+
+    $items['quiz-question/%quiz_question_entity/view'] = array(
+        'title'  => 'View',
+        'type'   => MENU_DEFAULT_LOCAL_TASK,
+        'weight' => -10,
+    );
+
     if (module_exists('devel')) {
-      $items['quiz-question/%quiz_question/devel'] = array(
+      $items['quiz-question/%quiz_question_entity/devel'] = array(
           'title'            => 'Devel',
           'access arguments' => array('access devel information'),
           'page callback'    => 'devel_load_object',
