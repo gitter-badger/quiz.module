@@ -69,8 +69,6 @@ abstract class QuestionPlugin {
    * @return unknown_type
    */
   public function getEntityForm(array &$form_state = NULL) {
-    global $user;
-
     $form = array(
         // mark this form to be processed by quiz_form_alter. quiz_form_alter will among other things
         // hide the revion fieldset if the user don't have permission to controll the revisioning manually.
