@@ -12,6 +12,18 @@ function quiz_question_help($path, $args) {
 }
 
 /**
+ * Implements hook_theme().
+ */
+function quiz_question_theme() {
+  $items['quiz_question_feedback'] = array(
+      'variables' => NULL,
+      'pattern'   => 'quiz_question_feedback__',
+  );
+
+  return $$items;
+}
+
+/**
  * Implements hook_entity_info()
  */
 function quiz_question_entity_info() {
@@ -113,18 +125,6 @@ function quiz_question_menu() {
       'type'             => MENU_NORMAL_ITEM,
   );
   return $items;
-}
-
-/**
- * Implements hook_theme().
- */
-function quiz_question_theme() {
-  $hooks['quiz_question_feedback'] = array(
-      'variables' => NULL,
-      'pattern'   => 'quiz_question_feedback__',
-  );
-
-  return $hooks;
 }
 
 /**
