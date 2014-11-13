@@ -83,7 +83,10 @@ abstract class QuestionPlugin {
         'is_quiz_question'            => array('#type' => 'value', '#value' => TRUE),
     );
 
-    $form['title'] = array('#type' => 'value', '#value' => $this->question->title);
+    $form['title'] = array(
+        '#type'  => 'value',
+        '#value' => $this->question->title
+    );
 
     // Allow user to set title?
     if (user_access('edit question titles')) {
@@ -93,6 +96,7 @@ abstract class QuestionPlugin {
           '#maxlength'     => 255,
           '#default_value' => $this->question->title,
           '#required'      => FALSE,
+          '#weight'        => -10,
           '#description'   => t('Add a title that will help distinguish this question from other questions. This will not be seen during the @quiz.', array('@quiz' => QUIZ_NAME)),
           '#attached'      => array(
               'js' => array(
