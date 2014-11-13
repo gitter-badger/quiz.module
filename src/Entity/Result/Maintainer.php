@@ -21,7 +21,7 @@ class Maintainer {
     //  1. Result is not evaluated
     //  2. Anonymous user.
     //  3. Quiz entity is invalid
-    if (!$result->is_evaluated || !$uid->uid || (!$quiz = $result->getQuiz())) {
+    if (!$result->is_evaluated || !$uid || (!$quiz = $result->getQuiz())) {
       return FALSE;
     }
 
@@ -41,10 +41,10 @@ class Maintainer {
     $sql .= ' WHERE quiz_qid = :qid AND uid = :uid AND is_evaluated = 1';
     $sql .= ' ORDER BY score DESC';
     if (!$best_result_id = db_query($sql, array(':qid' => $quiz->qid, ':uid' => $uid))->fetchField()) {
-      return;
+      return FALSE;
     }
 
-    $res = db_query('SELECT result_id
+    $result_ids = db_query('SELECT result_id
           FROM {quiz_results}
           WHERE quiz_qid = :qid
             AND uid = :uid
@@ -54,17 +54,12 @@ class Maintainer {
         ':uid'          => $uid,
         ':is_evaluated' => 1,
         ':best_rid'     => $best_result_id
-    ));
-
-    $result_ids = array();
-    while ($result_id = $res->fetchField()) {
-      $result_ids[] = $result_id;
-    }
+      ))->fetchCol();
     return $this->maintainDoDeleteResults($result_ids);
   }
 
   private function keepLatestResult($uid, $quiz, $result_id) {
-    $res = db_query('SELECT result_id
+    $result_ids = db_query('SELECT result_id
             FROM {quiz_results}
             WHERE quiz_qid = :qid
               AND uid = :uid
@@ -74,12 +69,7 @@ class Maintainer {
         ':uid'          => $uid,
         ':is_evaluated' => 1,
         ':result_id'    => $result_id
-    ));
-
-    $result_ids = array();
-    while ($result_id = $res->fetchField()) {
-      $result_ids[] = $result_id;
-    }
+      ))->fetchCol();
     return $this->maintainDoDeleteResults($result_ids);
   }
 
@@ -88,7 +78,6 @@ class Maintainer {
       entity_delete_multiple('quiz_result', $result_ids);
       return TRUE;
     }
-
     return FALSE;
   }
 
