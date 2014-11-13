@@ -2,19 +2,21 @@
 
 namespace Drupal\quiz_question\Entity;
 
-use DatabaseTransaction;
 use EntityAPIController;
 
 class QuestionController extends EntityAPIController {
 
   /**
+   * Implements EntityAPIControllerInterface.
+   * @param string $hook
    * @param Question $question
-   * @param DatabaseTransaction $transaction
    */
-  public function save($question, DatabaseTransaction $transaction = NULL) {
-    $is_new = parent::save($question, $transaction);
-    $question->getPlugin()->save($is_new);
-    return $is_new;
+  public function invoke($hook, $question) {
+    switch ($hook) {
+      case 'insert':
+        $question->getPlugin()->save($is_new = TRUE);
+        return;
+    }
   }
 
 }
