@@ -84,6 +84,8 @@ class ScoreIO {
   }
 
   /**
+   * @TODO: Use entity API instead of direct db writing.
+   *
    * Update a score for a quiz.
    *
    * This updates the quiz entity results table.

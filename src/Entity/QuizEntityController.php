@@ -3,30 +3,32 @@
 namespace Drupal\quiz\Entity;
 
 use DatabaseTransaction;
+use Drupal\quiz\Entity\QuizEntity\DefaultPropertiesIO;
+use Drupal\quiz\Entity\QuizEntity\Stats;
 use EntityAPIController;
 use stdClass;
 
 class QuizEntityController extends EntityAPIController {
 
-  /** @var \Drupal\quiz\Entity\QuizEntity\DefaultPropertiesIO */
+  /** @var DefaultPropertiesIO */
   private $default_properties_io;
 
-  /** @var \Drupal\quiz\Entity\QuizEntity\Stats */
+  /** @var Stats */
   private $stats;
 
   /**
-   * @return \Drupal\quiz\Entity\QuizEntity\DefaultPropertiesIO
+   * @return DefaultPropertiesIO
    */
   public function getSettingIO() {
     if (NULL === $this->default_properties_io) {
-      $this->default_properties_io = new \Drupal\quiz\Entity\QuizEntity\DefaultPropertiesIO();
+      $this->default_properties_io = new DefaultPropertiesIO();
     }
     return $this->default_properties_io;
   }
 
   public function getStats() {
     if (NULL === $this->stats) {
-      $this->stats = new \Drupal\quiz\Entity\QuizEntity\Stats();
+      $this->stats = new Stats();
     }
     return $this->stats;
   }
