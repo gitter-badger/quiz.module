@@ -30,7 +30,11 @@ class QuestionTypeController extends EntityAPIControllerExportable {
           'entity_type' => 'quiz_question',
           'bundle'      => $bundle,
           'label'       => t('Question'),
-          'widget'      => array('type' => 'text_textarea_with_summary'),
+          'widget'      => array(
+              'type'     => 'text_textarea_with_summary',
+              'weight'   => -20,
+              'settings' => array('rows' => 5, 'summary_rows' => 3),
+          ),
           'settings'    => array('display_summary' => TRUE),
           'display'     => array(
               'default' => array('label' => 'hidden', 'type' => 'text_default'),
