@@ -1,0 +1,27 @@
+<?php
+
+namespace Drupal\quiz\Entity;
+
+class Relationship {
+
+  public $qr_id;
+  public $quiz_qid;
+  public $quiz_vid;
+  public $qr_pid;
+  public $question_nid;
+  public $question_vid;
+  public $question_status;
+  public $weight;
+  public $max_score;
+  public $auto_update_max_score;
+
+  /**
+   * Get question object.
+   *
+   * @return \Drupal\quiz_question\Entity\Question
+   */
+  public function getQuestion() {
+    return node_load($this->question_nid, $this->question_vid);
+  }
+
+}

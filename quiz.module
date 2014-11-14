@@ -136,6 +136,16 @@ function quiz_result_load($result_id) {
 }
 
 /**
+ * Get relationship entity.
+ *
+ * @param int $relationship_id
+ * @return \Drupal\quiz\Entity\Relationship
+ */
+function quiz_relationship_load($relationship_id) {
+  return entity_load_single('quiz_question_relationship', $relationship_id);
+}
+
+/**
  * This function was copied from the triggers module as to prevent having to be
  * dependent on that module for the actions to work.  The trigger function is
  * called trigger_options().
