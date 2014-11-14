@@ -45,7 +45,7 @@ class QuizEntity extends Entity {
 
   /**
    * Enum: QUIZ_KEEP_BEST, QUIZ_KEEP_LATEST, QUIZ_KEEP_ALL.
-   * 
+   *
    * @var int
    */
   public $keep_results = QUIZ_KEEP_ALL;
@@ -64,7 +64,7 @@ class QuizEntity extends Entity {
     $this->changed = time();
     if ($this->is_new = isset($this->is_new) ? $this->is_new : 0) {
       $this->created = time();
-      if (null === $this->uid) {
+      if (NULL === $this->uid) {
         $this->uid = $user->uid;
       }
     }

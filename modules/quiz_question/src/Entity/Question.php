@@ -98,4 +98,25 @@ class Question extends Entity {
     return array('path' => 'quiz-question/' . $this->identifier());
   }
 
+  /**
+   * {#inheritedoc}
+   *
+   * Update created/updated/uid when needed.
+   *
+   * @global \stdClass $user
+   */
+  public function save() {
+    global $user;
+
+    $this->changed = time();
+    if ($this->is_new = isset($this->is_new) ? $this->is_new : 0) {
+      $this->created = time();
+      if (null === $this->uid) {
+        $this->uid = $user->uid;
+      }
+    }
+
+    return parent::save();
+  }
+
 }
