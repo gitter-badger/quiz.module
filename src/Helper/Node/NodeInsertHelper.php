@@ -13,7 +13,8 @@ class NodeInsertHelper extends NodeHelper {
       $this->copyQuestions($quiz);
     }
 
-    // Add references to all the questions belonging to the quiz if this is a cloned quiz (node_clone compatibility)
+    // Add references to all the questions belonging to the quiz if this is a
+    // cloned quiz (node_clone compatibility)
     if ($quiz->is_new && isset($quiz->clone_from_original_qid)) {
       $old_quiz = quiz_load($quiz->clone_from_original_qid, NULL, TRUE);
       $max_score = $old_quiz->max_score;
@@ -31,7 +32,8 @@ class NodeInsertHelper extends NodeHelper {
 
     $this->presaveActions($quiz);
 
-    // If the quiz is saved as not randomized we have to make sure that questions belonging to the quiz are saved as not random
+    // If the quiz is saved as not randomized we have to make sure that
+    // questions belonging to the quiz are saved as not random
     $this->checkNumRandom($quiz);
     $this->checkNumAlways($quiz);
 
