@@ -17,7 +17,7 @@ class QuestionUIController extends EntityDefaultUIController {
 
     // Change /admin/content/quiz-question/manage/ to /quiz-question/
     $items['quiz-question/%entity_object/edit'] = $items['admin/content/quiz-questions/manage/%entity_object'];
-    $items['quiz-question/%entity_object/edit']['title arguments'][1] = 1;
+    $items['quiz-question/%entity_object/edit']['type'] = MENU_LOCAL_TASK;
     $items['quiz-question/%entity_object/edit']['page arguments'][1] = 1;
     $items['quiz-question/%entity_object/edit']['access arguments'][2] = 1;
     $items['quiz-question/%entity_object/%'] = $items['admin/content/quiz-questions/manage/%entity_object/%'];
@@ -33,6 +33,8 @@ class QuestionUIController extends EntityDefaultUIController {
       ) + $items['admin/content/quiz-questions/add'];
 
     // Remove unneeded menu items
+    unset($items['quiz-question/%entity_object/edit']['title callback']);
+    unset($items['quiz-question/%entity_object/edit']['title arguments']);
     unset($items['admin/content/quiz-questions/manage/%entity_object']);
     unset($items['admin/content/quiz-questions/manage/%entity_object/edit']);
     unset($items['admin/content/quiz-questions/manage/%entity_object/clone']);
