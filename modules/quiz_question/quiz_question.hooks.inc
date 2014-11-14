@@ -28,10 +28,18 @@ function quiz_question_theme() {
  * Add action link to 'quiz-question/add' on 'admin/content/quiz-questions' page.
  */
 function quiz_question_menu_local_tasks_alter(&$data, $router_item, $root_path) {
-  if ($root_path === 'admin/content/quiz-questions') {
-    if (($item = menu_get_item('quiz-question/add')) && $item['access']) {
-      $data['actions']['output'][] = array('#theme' => 'menu_local_action', '#link' => $item);
-    }
+  switch ($root_path) {
+    case 'admin/content/quiz-questions':
+      if (($item = menu_get_item('quiz-question/add')) && $item['access']) {
+        $data['actions']['output'][] = array('#theme' => 'menu_local_action', '#link' => $item);
+      }
+      break;
+    case 'quiz-question/%':
+      if (($item = menu_get_item('admin/content/quiz-questions')) && $item['access']) {
+        $item['title'] = t('Manage questions');
+        $data['actions']['output'][] = array('#theme' => 'menu_local_action', '#link' => $item);
+      }
+      break;
   }
 }
 
