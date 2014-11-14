@@ -2,7 +2,10 @@
 
 namespace Drupal\quiz\Entity;
 
-class Relationship {
+use Drupal\quiz_question\Entity\Question;
+use Entity;
+
+class Relationship extends Entity {
 
   public $qr_id;
   public $quiz_qid;
