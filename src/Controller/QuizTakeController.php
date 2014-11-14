@@ -169,7 +169,7 @@ class QuizTakeController extends QuizTakeLegacyController {
   /**
    * Initialize a quiz attempt.
    *
-   * @return QuizResult
+   * @return \Drupal\quiz\Entity\Result
    *   The quiz attempt.
    */
   private function createQuizResultObject() {
