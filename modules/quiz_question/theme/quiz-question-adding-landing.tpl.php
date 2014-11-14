@@ -3,7 +3,11 @@
     <?php /* @var $question_type \Drupal\quiz_question\Entity\QuestionType */ ?>
     <li>
       <span class="label">
-        <?php echo l($question_type->label, "quiz-question/add/" . str_replace('_', '-', $name)); ?>
+        <?php if (!empty($destination)): ?>
+          <?php echo l($question_type->label, 'quiz-question/add/' . str_replace('_', '-', $name), array('query' => array('destination' => $destination))); ?>
+        <?php else: ?>
+          <?php echo l($question_type->label, 'quiz-question/add/' . str_replace('_', '-', $name)); ?>
+        <?php endif; ?>
       </span>
 
       <?php if ($question_type->description): ?>

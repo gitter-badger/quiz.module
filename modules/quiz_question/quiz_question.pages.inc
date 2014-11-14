@@ -28,8 +28,9 @@ function quiz_question_type_form_submit_delete($form, &$form_state) {
 /**
  * Callback for /quiz-question/add page.
  */
-function quiz_question_adding_landing_page() {
+function quiz_question_adding_landing_page($destination = '') {
   return theme_render_template(drupal_get_path('module', 'quiz_question') . '/theme/quiz-question-adding-landing.tpl.php', array(
+      'destination'    => $destination,
       'question_types' => quiz_question_get_types()
   ));
 }

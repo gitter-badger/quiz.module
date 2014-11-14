@@ -132,7 +132,7 @@ function quiz_question_admin_page(QuizEntity $quiz) {
               '#title'       => t('Create new question'),
               '#collapsible' => TRUE,
               '#collapsed'   => TRUE,
-              '#value'       => quiz_question_adding_landing_page(),
+              '#value'       => quiz_question_adding_landing_page('quiz/' . $quiz->identifier()),
           ),
           'form'   => drupal_get_form('quiz_questions_form', $quiz),
       ),
