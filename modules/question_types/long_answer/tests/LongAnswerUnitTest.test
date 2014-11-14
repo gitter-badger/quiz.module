@@ -29,10 +29,10 @@ class LongAnswerTestCase extends QuizQuestionTestCase {
    * correctly.
    */
   public function testGradeAnswerManualFeedback() {
-    $question_node1 = $this->testCreateQuizQuestion();
+    $question_node1 = $this->createQuizQuestion();
     $quiz = $this->linkQuestionToQuiz($question_node1);
 
-    $question_node2 = $this->testCreateQuizQuestion();
+    $question_node2 = $this->createQuizQuestion();
     $this->linkQuestionToQuiz($question_node2, $quiz);
 
     // Test correct.
@@ -75,7 +75,7 @@ class LongAnswerTestCase extends QuizQuestionTestCase {
   /**
    * Test adding and taking a truefalse question.
    */
-  function testCreateQuizQuestion($settings = NULL) {
+  private function createQuizQuestion($settings = NULL) {
     if (!$settings) {
       $settings = array('rubric' => 'LA 1 rubric.');
     }
