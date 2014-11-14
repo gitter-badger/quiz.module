@@ -187,6 +187,10 @@ if ('quiz-question' === arg(0)) {
     $form_state['redirect'] = 'quiz-question/' . $question->qid;
   }
 
+  function quiz_question_form_submit_delete($form, &$form_state) {
+    $form_state['redirect'] = 'quiz-question/' . $form_state['quiz_question']->internalIdentifier() . '/delete';
+  }
+
 }
 
 /**

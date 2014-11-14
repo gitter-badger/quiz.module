@@ -161,7 +161,11 @@ abstract class QuestionPlugin {
     $form['actions']['#weight'] = 50;
     $form['actions']['submit'] = array('#type' => 'submit', '#value' => t('Save question'));
     if (!empty($this->question->qid)) {
-      $form['actions']['delete'] = array('#type' => 'submit', '#value' => t('Delete'));
+      $form['actions']['delete'] = array(
+          '#type'   => 'submit',
+          '#value'  => t('Delete'),
+          '#submit' => array('quiz_question_form_submit_delete')
+      );
     }
 
     $form['question_plugin'] = array(
