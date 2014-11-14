@@ -174,7 +174,7 @@ class QuizTakeController extends QuizTakeLegacyController {
    */
   private function createQuizResultObject() {
     // Create question list.
-    $questions = $this->quiz->getQuestionLoader()->getQuestionList();
+    $questions = $this->quiz->getQuestionIO()->getQuestionList();
     if ($questions === FALSE) {
       $msg = t('Not enough random questions were found. Please add more questions before trying to take this @quiz.', array('@quiz' => QUIZ_NAME));
       throw new RuntimeException($msg);

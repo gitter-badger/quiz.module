@@ -5,7 +5,7 @@ namespace Drupal\quiz\Entity\QuizEntity;
 use Drupal\quiz\Entity\QuizEntity;
 use PDO;
 
-class QuestionLoader {
+class QuestionIO {
 
   private $quiz;
 
@@ -147,7 +147,7 @@ class QuestionLoader {
     $questions = array();
     if ($num_random > 0) {
       if ($term_id > 0) {
-        $questions = $this->quiz->getQuestionLoader()->getRandomTaxonomyQuestionIds($term_id, $num_random);
+        $questions = $this->quiz->getQuestionIO()->getRandomTaxonomyQuestionIds($term_id, $num_random);
       }
       else {
         // Select random question from assigned pool.

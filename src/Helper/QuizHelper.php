@@ -79,7 +79,7 @@ class QuizHelper {
    * Sets the questions that are assigned to a quiz.
    *
    * @param \Drupal\quiz\Entity\QuizEntity $quiz
-   * @param \stdClass[] $questions
+   * @param \Drupal\quiz_question\Entity\Question[] $questions
    *   An array of questions.
    * @param bool $set_new_revision
    *   If TRUE, a new revision will be generated. Note that saving
@@ -94,8 +94,9 @@ class QuizHelper {
    *   Boolean TRUE if update was successful, FALSE otherwise.
    */
   public function setQuestions(&$quiz, $questions, $set_new_revision = FALSE) {
+    // Create a new Quiz VID, even if nothing changed.
     if ($set_new_revision) {
-      $quiz->is_new_revision = 1; # Create a new Quiz VID, even if nothing changed.
+      $quiz->is_new_revision = 1;
       $quiz->save();
     }
 
@@ -109,8 +110,9 @@ class QuizHelper {
       ->condition('quiz_vid', $quiz->vid)
       ->execute();
 
+    // This is not an error condition.
     if (empty($questions)) {
-      return TRUE; // This is not an error condition.
+      return TRUE;
     }
 
     foreach ($questions as $question) {

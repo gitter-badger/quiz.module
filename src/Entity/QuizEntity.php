@@ -2,7 +2,7 @@
 
 namespace Drupal\quiz\Entity;
 
-use Drupal\quiz\Entity\QuizEntity\QuestionLoader;
+use Drupal\quiz\Entity\QuizEntity\QuestionIO;
 use Drupal\quiz_question\Entity\Question;
 use Entity;
 
@@ -51,8 +51,8 @@ class QuizEntity extends Entity {
    */
   public $keep_results = QUIZ_KEEP_ALL;
 
-  /** @var QuestionLoader */
-  private $question_loader;
+  /** @var QuestionIO */
+  private $question_io;
 
   public function __construct(array $values = array()) {
     parent::__construct($values, 'quiz_entity');
@@ -88,13 +88,13 @@ class QuizEntity extends Entity {
   }
 
   /**
-   * @return QuestionLoader
+   * @return QuestionIO
    */
-  public function getQuestionLoader() {
-    if (NULL === $this->question_loader) {
-      $this->question_loader = new QuestionLoader($this);
+  public function getQuestionIO() {
+    if (NULL === $this->question_io) {
+      $this->question_io = new QuestionIO($this);
     }
-    return $this->question_loader;
+    return $this->question_io;
   }
 
   /**
@@ -119,7 +119,7 @@ class QuizEntity extends Entity {
    * @return boolean
    */
   public function addQuestion($question) {
-    $questions = $this->getQuestionLoader()->getQuestions();
+    $questions = $this->getQuestionIO()->getQuestions();
 
     // Do not add a question if it's already been added.
     foreach ($questions as $q) {
