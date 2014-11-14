@@ -37,4 +37,4 @@ How to create a quiz
 FAQ
 ---
 Q. I'm getting tons of errors when I try to install this module! Why?
-A. Make sure you've installed this module with PHP 5.x and Drupal 6.x. 
+A. Make sure you've installed this module with PHP 5.x and Drupal 6.x.

@@ -384,13 +384,19 @@ abstract class QuestionPlugin {
 
   /**
    * Save this Question to the specified Quiz.
+   *
+   * @param int $quiz_qid
+   * @param int $quiz_vid
+   * @return bool
+   *  TRUE if relationship is made.
    */
-  function saveRelationships() {
-    if (empty($this->question->quiz_qid) || empty($this->question->quiz_vid)) {
-      return;
+  function saveRelationships($quiz_qid, $quiz_vid) {
+    $quiz_qid = isset($this->question->quiz_qid) ? $this->question->quiz_qid : $quiz_qid;
+    $quiz_vid = isset($this->question->quiz_vid) ? $this->question->quiz_vid : $quiz_vid;
+    if (!$quiz_qid || !$quiz_vid || !$quiz = quiz_load($quiz_qid, $quiz_vid)) {
+      return FALSE;
     }
 
-    $quiz = quiz_load($this->question->quiz_qid, $this->question->quiz_vid);
     if (quiz_has_been_answered($quiz)) {
       // We need to revise the quiz if it has been answered
       $quiz->is_new_revision = 1;
@@ -435,6 +441,8 @@ abstract class QuestionPlugin {
     }
 
     quiz_update_max_score_properties(array($quiz->vid));
+
+    return TRUE;
   }
 
   /**
