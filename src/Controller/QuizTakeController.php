@@ -182,19 +182,19 @@ class QuizTakeController extends QuizTakeLegacyController {
     }
 
     // Write the layout for this result.
-    $quiz_result = entity_create('quiz_result', array(
+    $result = entity_create('quiz_result', array(
         'quiz_qid'   => $this->getQuizId(),
         'quiz_vid'   => $this->quiz->vid,
         'uid'        => $this->account->uid,
         'time_start' => REQUEST_TIME,
         'layout'     => $questions,
     ));
-    entity_save('quiz_result', $quiz_result);
+    entity_save('quiz_result', $result);
 
     $i = 0;
     foreach ($questions as $question) {
       $quiz_result_answer = entity_create('quiz_result_answer', array(
-          'result_id'    => $quiz_result->result_id,
+          'result_id'    => $result->result_id,
           'question_nid' => $question['nid'],
           'question_vid' => $question['vid'],
           'number'       => ++$i,
