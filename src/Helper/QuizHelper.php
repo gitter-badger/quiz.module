@@ -5,10 +5,8 @@ namespace Drupal\quiz\Helper;
 use Drupal\quiz\Entity\QuizEntity;
 use Drupal\quiz\Helper\Quiz\AccessHelper;
 use Drupal\quiz\Helper\Quiz\FeedbackHelper;
-use Drupal\quiz\Helper\Quiz\ResultHelper;
 use Drupal\quiz\Helper\Quiz\TakeJumperHelper;
 use Drupal\quiz\Helper\Quiz\TakingHelper;
-use stdClass;
 
 class QuizHelper {
 
@@ -75,14 +73,6 @@ class QuizHelper {
   public function setQuestionHelper($questionHelper) {
     $this->questionHelper = $questionHelper;
     return $this;
-  }
-
-  /**
-   * @param QuizEntity $quiz
-   * @param \Drupal\quiz_question\Entity\Question $question
-   */
-  public function addQuestion($quiz, $question) {
-
   }
 
   /**
