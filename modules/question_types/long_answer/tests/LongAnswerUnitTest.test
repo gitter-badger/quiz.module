@@ -80,16 +80,11 @@ class LongAnswerTestCase extends QuizQuestionTestCase {
       $settings = array('rubric' => 'LA 1 rubric.');
     }
 
-    // Login as our privileged user.
-    $this->drupalLogin($this->admin);
-
-    $question_node = $this->drupalCreateNode(array(
-        'type'  => $this->question_node_type,
-        'title' => 'LA 1 title',
-        'body'  => array(LANGUAGE_NONE => array(array('value' => 'LA 1 body text.'))),
-      ) + $settings);
-
-    return $question_node;
+    return $this->drupalCreateNode(array(
+          'type'  => $this->question_node_type,
+          'title' => 'LA 1 title',
+          'body'  => array(LANGUAGE_NONE => array(array('value' => 'LA 1 body text.'))),
+        ) + $settings);
   }
 
 }
