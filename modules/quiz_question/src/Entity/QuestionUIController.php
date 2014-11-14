@@ -12,19 +12,37 @@ class QuestionUIController extends EntityDefaultUIController {
   public function hook_menu() {
     $items = parent::hook_menu();
 
-    // Custom default structure by entity.module
+    // "Questions" should be a tab of /admin/content
     $items['admin/content/quiz-questions']['type'] = MENU_LOCAL_TASK;
 
+    // Change /admin/content/quiz-question/manage/ to /quiz-question/
+    $items['quiz-question/%entity_object/edit'] = $items['admin/content/quiz-questions/manage/%entity_object'];
+    $items['quiz-question/%entity_object/edit']['title arguments'][1] = 1;
+    $items['quiz-question/%entity_object/edit']['page arguments'][1] = 1;
+    $items['quiz-question/%entity_object/edit']['access arguments'][2] = 1;
+    $items['quiz-question/%entity_object/%'] = $items['admin/content/quiz-questions/manage/%entity_object/%'];
+    $items['quiz-question/%entity_object/%']['page arguments'][2] = 1;
+    $items['quiz-question/%entity_object/%']['page arguments'][3] = 2;
+    $items['quiz-question/%entity_object/%']['access arguments'][2] = 1;
+
     // Change path from /admin/content/quiz/add -> /quizz/add
-    unset($items['admin/content/quiz-questions/add']);
     $items['quiz-question/add'] = array(
-        'title'            => 'Add question',
-        'access callback'  => 'entity_access',
-        'access arguments' => array('create', 'quiz_question'),
-        'file path'        => drupal_get_path('module', 'quiz_question'),
-        'file'             => 'quiz_question.pages.inc',
-        'page callback'    => 'quiz_question_adding_landing_page',
-    );
+        'file path'     => drupal_get_path('module', 'quiz_question'),
+        'file'          => 'quiz_question.pages.inc',
+        'page callback' => 'quiz_question_adding_landing_page',
+      ) + $items['admin/content/quiz-questions/add'];
+
+    // Remove unneeded menu items
+    unset($items['admin/content/quiz-questions/manage/%entity_object']);
+    unset($items['admin/content/quiz-questions/manage/%entity_object/edit']);
+    unset($items['admin/content/quiz-questions/manage/%entity_object/clone']);
+    unset($items['admin/content/quiz-questions/add']);
+
+    return $items + $this->getExtraMenuItems();
+  }
+
+  private function getExtraMenuItems() {
+    $items = array();
 
     foreach (array_keys(quiz_question_get_types()) as $name) {
       $items['quiz-question/add/' . str_replace('_', '-', $name)] = array(
