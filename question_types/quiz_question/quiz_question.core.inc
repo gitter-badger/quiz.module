@@ -330,12 +330,16 @@ abstract class QuizQuestion {
 
   /**
    * Save this Question to the specified Quiz.
+   * @param int $quiz_nid
+   * @param int $quiz_vid
+   * @return bool
+   *  TRUE if relationship is made.
    */
   function saveRelationships($quiz_nid = NULL, $quiz_vid = NULL) {
     $quiz_nid = isset($this->node->quiz_nid) ? $this->node->quiz_nid : $quiz_nid;
     $quiz_vid = isset($this->node->quiz_vid) ? $this->node->quiz_vid : $quiz_vid;
     if (!$quiz_nid || !$quiz_vid || !$quiz_node = node_load($quiz_nid, $quiz_vid)) {
-      return;
+      return FALSE;
     }
 
     // We need to revise the quiz node if it has been answered
@@ -376,6 +380,8 @@ abstract class QuizQuestion {
 
     quiz_update_max_score_properties($quizzes_to_update);
     quiz_update_max_score_properties(array($quiz_node->vid));
+
+    return TRUE;
   }
 
   /**
