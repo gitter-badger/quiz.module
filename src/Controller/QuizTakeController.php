@@ -64,7 +64,7 @@ class QuizTakeController extends QuizTakeLegacyController {
         throw new RuntimeException(t('This @quiz is closed.', array('@quiz' => QUIZ_NAME)));
       }
 
-      $this->result = quiz_controller()->getResultGenerator()->generate($this->quiz);
+      $this->result = quiz_controller()->getResultGenerator()->generate($this->quiz, $this->account);
       $this->result_id = $this->result->result_id;
       $_SESSION['quiz'][$this->getQuizId()]['result_id'] = $this->result->result_id;
       $_SESSION['quiz'][$this->getQuizId()]['current'] = 1;

@@ -14,7 +14,7 @@ class ResultGenerator {
    * @return Result
    * @throws RuntimeException
    */
-  public function generate(QuizEntity $quiz) {
+  public function generate(QuizEntity $quiz, $account) {
     if (!$questions = $quiz->getQuestionIO()->getQuestionList()) {
       throw new RuntimeException(t(
         'No questions were found. Please !assign before trying to take this @quiz.', array(
@@ -22,10 +22,10 @@ class ResultGenerator {
           '!assign' => l(t('assign questions'), 'quiz/' . $quiz->identifier() . '/questions')
       )));
     }
-    return $this->doGenerate($quiz, $questions);
+    return $this->doGenerate($quiz, $questions, $account);
   }
 
-  private function doGenerate($quiz, $questions) {
+  private function doGenerate($quiz, $questions, $account) {
     // correct item numbers
     $count = $display_count = 0;
     $question_list = array();
@@ -42,7 +42,7 @@ class ResultGenerator {
     $result = entity_create('quiz_result', array(
         'quiz_qid'   => $quiz->identifier(),
         'quiz_vid'   => $quiz->vid,
-        'uid'        => $this->account->uid,
+        'uid'        => $account->uid,
         'time_start' => REQUEST_TIME,
         'layout'     => $question_list,
     ));
