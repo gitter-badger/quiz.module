@@ -64,12 +64,11 @@ class QuizTakeController extends QuizTakeLegacyController {
         throw new RuntimeException(t('This @quiz is closed.', array('@quiz' => QUIZ_NAME)));
       }
 
-      $this->result = $this->createQuizResultObject();
+      $this->result = quiz_controller()->getResultGenerator()->generate($this->quiz);
       $this->result_id = $this->result->result_id;
       $_SESSION['quiz'][$this->getQuizId()]['result_id'] = $this->result->result_id;
       $_SESSION['quiz'][$this->getQuizId()]['current'] = 1;
 
-      // Call hook_quiz_begin().
       module_invoke_all('quiz_begin', $this->quiz, $this->result->result_id);
     }
 
@@ -164,45 +163,6 @@ class QuizTakeController extends QuizTakeLegacyController {
     }
 
     return TRUE;
-  }
-
-  /**
-   * Initialize a quiz attempt.
-   *
-   * @return \Drupal\quiz\Entity\Result
-   *   The quiz attempt.
-   */
-  private function createQuizResultObject() {
-    if (!$questions = $this->quiz->getQuestionIO()->getQuestionList()) {
-      throw new RuntimeException(t(
-        'No questions were found. Please !assign_questions before trying to take this @quiz.', array(
-          '@quiz'             => QUIZ_NAME,
-          '!assign_questions' => l(t('assign questions'), 'quiz/' . $this->getQuizId() . '/questions')
-      )));
-    }
-
-    // Write the layout for this result.
-    $result = entity_create('quiz_result', array(
-        'quiz_qid'   => $this->getQuizId(),
-        'quiz_vid'   => $this->quiz->vid,
-        'uid'        => $this->account->uid,
-        'time_start' => REQUEST_TIME,
-        'layout'     => $questions,
-    ));
-    entity_save('quiz_result', $result);
-
-    $i = 0;
-    foreach ($questions as $question) {
-      $quiz_result_answer = entity_create('quiz_result_answer', array(
-          'result_id'    => $result->result_id,
-          'question_nid' => $question['nid'],
-          'question_vid' => $question['vid'],
-          'number'       => ++$i,
-      ));
-      entity_save('quiz_result_answer', $quiz_result_answer);
-    }
-
-    return quiz_result_load($result->result_id);
   }
 
 }

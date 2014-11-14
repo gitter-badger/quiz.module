@@ -3,6 +3,7 @@
 namespace Drupal\quiz\Entity\QuizEntity;
 
 use Drupal\quiz\Entity\QuizEntity;
+use Drupal\quiz_question\Entity\Question;
 use PDO;
 
 class QuestionIO {
@@ -72,49 +73,40 @@ class QuestionIO {
     if (QUESTION_CATEGORIZED_RANDOM == $this->quiz->randomization) {
       $questions = $this->buildCategoziedQuestionList();
     }
-    else {
-      $questions = $this->getRequiredQuestions();
-    }
-
-    $count = 0;
-    $display_count = 0;
-    $question_list = array();
-    foreach ($questions as &$question) {
-      $display_count++;
-      $question['number'] = ++$count;
-      if ($question['type'] !== 'quiz_page') {
-        $question['display_number'] = $display_count;
-      }
-      $question_list[$count] = $question;
-    }
-
-    return $question_list;
+    return $questions = $this->getRequiredQuestions();
   }
 
   /**
    * @return array
    */
   private function getRequiredQuestions() {
-    $questions = array();
-
     // Get required questions first.
     $query = db_query('
-        SELECT qnr.question_nid as nid, qnr.question_vid as vid, n.type, qnr.qr_id, qnr.qr_pid
-        FROM {quiz_relationship} qnr
-          JOIN {node} n ON qnr.question_nid = n.nid
-          LEFT JOIN {quiz_relationship} qnr2 ON (qnr.qr_pid = qnr2.qr_id OR (qnr.qr_pid IS NULL AND qnr.qr_id = qnr2.qr_id))
-        WHERE qnr.quiz_vid = :quiz_vid
-          AND qnr.question_status = :question_status
-          AND n.status = 1
-        ORDER BY qnr2.weight, qnr.weight', array(
+        SELECT
+          relationship.question_nid as nid,
+          relationship.question_vid as vid,
+          question.type,
+          relationship.qr_id,
+          relationship.qr_pid
+        FROM {quiz_relationship} relationship
+          JOIN {node} question ON relationship.question_nid = question.nid
+          LEFT JOIN {quiz_relationship} sub_relationship ON (
+              relationship.qr_pid = sub_relationship.qr_id
+              OR (relationship.qr_pid IS NULL AND relationship.qr_id = sub_relationship.qr_id)
+          )
+        WHERE relationship.quiz_vid = :quiz_vid
+          AND relationship.question_status = :question_status
+          AND question.status = 1
+        ORDER BY sub_relationship.weight, relationship.weight', array(
         ':quiz_vid'        => $this->quiz->vid,
         ':question_status' => QUESTION_ALWAYS
     ));
-    $i = 0;
+
+    // Just to make it easier on us, let's use a 1-based index.
+    $i = 1;
+    $questions = array();
     while ($question_node = $query->fetchAssoc()) {
-      // Just to make it easier on us, let's use a 1-based index.
-      $i++;
-      $questions[$i] = $question_node;
+      $questions[$i++] = $question_node;
     }
 
     // Get random questions for the remainder.
@@ -182,8 +174,7 @@ class QuestionIO {
    * not be used to decide what questions a user should answer when taking a
    * quiz. quiz_build_question_list is written for that purpose.
    *
-   * @return
-   *   An array of questions.
+   * @return \Drupal\quiz_question\Entity\Question[]
    */
   public function getQuestions() {
     $questions = array();

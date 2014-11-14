@@ -21,7 +21,7 @@ class Relationship extends Entity {
   /**
    * Get question object.
    *
-   * @return \Drupal\quiz_question\Entity\Question
+   * @return Question
    */
   public function getQuestion() {
     return node_load($this->question_nid, $this->question_vid);
