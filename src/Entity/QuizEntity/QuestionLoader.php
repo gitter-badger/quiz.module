@@ -208,8 +208,8 @@ class QuestionLoader {
       $this->getSubQuestions($question->qr_id, $questions);
     }
 
-    foreach ($questions as &$node) {
-      $node = $this->reloadQuestion($node);
+    foreach ($questions as &$question) {
+      $question = $this->reloadQuestion($question);
     }
 
     return $questions;

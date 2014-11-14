@@ -79,7 +79,7 @@ class QuizHelper {
 
   /**
    * @param QuizEntity $quiz
-   * @param stdClass $question
+   * @param \Drupal\quiz_question\Entity\Question $question
    */
   public function addQuestion($quiz, $question) {
     $quiz_questions = $quiz->getQuestionLoader()->getQuestions();

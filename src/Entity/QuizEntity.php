@@ -3,6 +3,7 @@
 namespace Drupal\quiz\Entity;
 
 use Drupal\quiz\Entity\QuizEntity\QuestionLoader;
+use Drupal\quiz_question\Entity\Question;
 use Entity;
 
 class QuizEntity extends Entity {
@@ -50,7 +51,7 @@ class QuizEntity extends Entity {
    */
   public $keep_results = QUIZ_KEEP_ALL;
 
-  /** @var \Drupal\quiz\Entity\QuizEntity\QuestionLoader */
+  /** @var QuestionLoader */
   private $question_loader;
 
   public function __construct(array $values = array()) {

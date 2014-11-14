@@ -440,9 +440,10 @@ abstract class QuestionPlugin {
   /**
    * Finds out if a question has been answered or not
    *
-   * This function also returns TRUE if a quiz that this question belongs to have been answered.
-   * Even if the question itself haven't been answered. This is because the question might have
-   * been rendered and a user is about to answer it…
+   * This function also returns TRUE if a quiz that this question belongs to
+   * have been answered. Even if the question itself haven't been answered.
+   * This is because the question might have been rendered and a user is about
+   * to answer it…
    *
    * @return
    *   true if question has been answered or is about to be answered…
