@@ -91,6 +91,9 @@ class QuestionLoader {
     return $questions_out;
   }
 
+  /**
+   * @return array
+   */
   private function getRequiredQuestions() {
     $questions = array();
 
@@ -118,9 +121,10 @@ class QuestionLoader {
     if ($this->quiz->number_of_random_questions > 0) {
       $random_questions = $this->getRandomQuestions();
       $questions = array_merge($questions, $random_questions);
+
+      // Unable to find enough requested random questions.
       if ($this->quiz->number_of_random_questions > count($random_questions)) {
-        // Unable to find enough requested random questions.
-        return FALSE;
+        return array();
       }
     }
 

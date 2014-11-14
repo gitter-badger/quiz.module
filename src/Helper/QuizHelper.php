@@ -261,7 +261,6 @@ class QuizHelper {
 
   /**
    * @param string $question_type
-   *
    * @return string
    *   Name of module matching the question type, as given by quiz_question_info()
    *   hook.

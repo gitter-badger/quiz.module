@@ -8,7 +8,7 @@ use stdClass;
 
 class QuizTakeController extends QuizTakeLegacyController {
 
-  /** @var stdClass */
+  /** @var \Drupal\quiz\Entity\Result */
   private $result;
 
   /** @var stdClass */

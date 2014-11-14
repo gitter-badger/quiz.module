@@ -127,15 +127,16 @@ class AccessHelper {
       return FALSE;
     }
 
-    // User maybe revisiting the quiz, trying to resume
+    // User maybe revisiting the quiz, trying to resume.
     if (!isset($_SESSION['quiz'][$quiz->qid]) && !user_is_anonymous()) {
-      $controller = new QuizTakeController($quiz, $user, FALSE);
+      $controller = new QuizTakeController($quiz, $user);
       if (FALSE === $controller->initQuizResume()) {
         return FALSE;
       }
     }
 
-    if ($quiz->allow_jumping) { // Access to go to any question
+    // Access to go to any question.
+    if ($quiz->allow_jumping) {
       return TRUE;
     }
 
@@ -157,7 +158,7 @@ class AccessHelper {
       return TRUE;
     }
 
-    // Enforce normal navigation. Previous answer was submitted
+    // Enforce normal navigation. Previous answer was submitted.
     if (!quiz_result_is_question_answered($result, $question_node_last)) {
       return FALSE;
     }

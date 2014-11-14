@@ -40,12 +40,11 @@ class ScoreIO {
       // Invoke hook_quiz_question_score().
       // We don't use module_invoke() because (1) we don't necessarily want to wed
       // quiz type to module, and (2) this is more efficient (no NULL checks).
-      $mod = quiz_question_module_for_type($question->type);
-      if (!$mod) {
+      if (!$module = quiz_question_module_for_type($question->type)) {
         continue;
       }
 
-      $function = $mod . '_quiz_question_score';
+      $function = $module . '_quiz_question_score';
       if (function_exists($function)) {
         // Allow for max score to be considered.
         $scores[] = $function($quiz, $question->question_nid, $question->question_vid, $result_id);

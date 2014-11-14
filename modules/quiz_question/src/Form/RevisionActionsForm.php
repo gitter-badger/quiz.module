@@ -157,17 +157,23 @@ class RevisionActionsForm {
 
     foreach ($form_state['values'] as $key => $value) {
       if (preg_match('/^[0-9]+-[0-9]+-[0,1]-[0,1]$/', $key)) {
-        $this->_submit($form_state, $key, $value);
+        $this->doSubmit($form_state, $key, $value);
       }
     }
   }
 
-  private function _submit(&$form_state, $key, $value) {
+  /**
+   * Details for static::submit().
+   * @param array $form_state
+   * @param string $key
+   * @param mixed $value
+   */
+  private function doSubmit(&$form_state, $key, $value) {
     // FORMAT: Update[0,1], revise[0,1] and publish[0,1]
     list($update, $revise, $publish) = str_split($value);
 
     // FORMAT: nid(int), vid(int), published[0,1] and answered[0,1]
-    list($qid, $vid, $published, $answered) = explode('-', $key);
+    list($qid, $vid, $published, ) = explode('-', $key);
 
     // If we are to revise the quiz we need to do that first…
     if ($revise == '1') {
@@ -179,7 +185,7 @@ class RevisionActionsForm {
       $quiz = quiz_load((int) $qid, (int) $vid);
     }
 
-    // If the quiz entity is to be revised and/or (un)published we save it now
+    // If the quiz entity is to be revised and/or (un)published we save it now.
     if (isset($quiz)) {
       $quiz->auto_created = TRUE;
       $quiz->status = $publish;
@@ -200,7 +206,7 @@ class RevisionActionsForm {
             WHERE quiz_vid = :quiz_vid
               AND question_nid = :question_nid', array(
           ':quiz_vid'     => $quiz_vid,
-          ':question_nid' => $form_state['values']['q_nid']
+          ':question_nid' => $form_state['values']['q_nid'],
         ))->fetch();
 
       $auto_update_max_score = 0;
@@ -226,7 +232,7 @@ class RevisionActionsForm {
                 AND question_nid = :question_nid', array(
           ':quiz_qid'     => $quiz_qid,
           ':quiz_vid'     => $quiz_vid,
-          ':question_nid' => $form_state['values']['q_nid']
+          ':question_nid' => $form_state['values']['q_nid'],
       ));
 
       if ($res_o = $res->fetch()) {
@@ -240,18 +246,11 @@ class RevisionActionsForm {
         $question_status = $res_o->question_status;
       }
       else {
-        $weight = 1 + db_query(
-            "SELECT MAX(weight)
-              FROM {quiz_relationship}
-              WHERE quiz_vid = :quiz_vid", array(
-              ':quiz_vid' => $quiz_vid))->fetchField();
+        $weight_sql = 'SELECT MAX(weight) FROM {quiz_relationship} WHERE quiz_vid = :quiz_vid';
+        $weight = 1 + db_query($weight_sql, array(':quiz_vid' => $quiz_vid))->fetchField();
 
-        $quiz_randomization = db_query(
-          "SELECT randomization
-            FROM {quiz_entity_revision}
-            WHERE qid = :qid AND vid = :vid", array(
-            ':qid' => $quiz_qid,
-            ':vid' => $quiz_vid))->fetchField();
+        $randomization_sql = 'SELECT randomization FROM {quiz_entity_revision} WHERE vid = :vid';
+        $quiz_randomization = db_query($randomization_sql, array(':vid' => $quiz_vid))->fetchField();
 
         $question_status = $quiz_randomization == 2 ? QUESTION_RANDOM : QUESTION_ALWAYS;
       }

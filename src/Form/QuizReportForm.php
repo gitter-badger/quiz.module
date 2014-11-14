@@ -7,11 +7,11 @@ class QuizReportForm {
   /**
    * Form for showing feedback, and for editing the feedback if necessary…
    *
-   * @param $form_state
+   * @param array $form_state
    *   FAPI form state(array)
-   * @param $questions
+   * @param array $questions
    *   array of questions to inclide in the report
-   * @return $form
+   * @return array
    *   FAPI form array
    */
   public function getForm($form, $form_state, $questions) {
@@ -78,35 +78,32 @@ class QuizReportForm {
   public function formSubmit($form, &$form_state) {
     global $user;
 
+    $quiz = $result = NULL;
+
     foreach ($form_state['values'] as $key => $q_values) {
-      // Questions has numeric keys in the report form
-      if (!is_numeric($key)) {
+      // Questions has numeric keys in the report form. Or questions store the
+      // name of the validation function with the key 'submit'. Or the submit
+      // function is not exist
+      if (!is_numeric($key) || !isset($q_values['submit']) || !function_exists($q_values['submit'])) {
         continue;
       }
 
-      // Questions store the name of the validation function with the key 'submit'
-      if (!isset($q_values['submit'])) {
-        continue;
+      if (NULL === $result) {
+        $result = quiz_result_load($q_values['result_id']);
+        $quiz = $result->getQuiz();
       }
 
-      // The submit function must exist
-      if (!function_exists($q_values['submit'])) {
-        continue;
-      }
-
-      $result_id = $q_values['result_id'];
-      $result = quiz_result_load($q_values['result_id']);
-      $quiz = $q_values['quiz'] = $result->getQuiz();
+      $q_values['quiz'] = $quiz;
 
       // We call the submit function provided by the question
       call_user_func($q_values['submit'], $q_values);
     }
 
     // Scores may have been changed. We take the necessary actions
-    $this->updateLastTotalScore($result_id, $quiz->vid);
+    $this->updateLastTotalScore($result->result_id, $quiz->vid);
     $changed = db_update('quiz_results')
       ->fields(array('is_evaluated' => 1))
-      ->condition('result_id', $result_id)
+      ->condition('result_id', $result->result_id)
       ->execute();
     $results_got_deleted = $result->maintenance($user->uid);
 
@@ -118,14 +115,14 @@ class QuizReportForm {
     // Notify the user if results got deleted as a result of him scoring an answer.
     $add = $quiz->keep_results == QUIZ_KEEP_BEST && $results_got_deleted ? ' ' . t('Note that this @quiz is set to only keep each users best answer.', array('@quiz' => QUIZ_NAME)) : '';
 
-    $score_data = $this->getScoreArray($result_id, $quiz->vid, TRUE);
+    $score_data = $this->getScoreArray($result->result_id, $quiz->vid, TRUE);
 
-    module_invoke_all('quiz_scored', $quiz, $score_data, $result_id);
+    module_invoke_all('quiz_scored', $quiz, $score_data, $result->result_id);
 
     drupal_set_message(t('The scoring data you provided has been saved.') . $add);
     if (user_access('score taken quiz answer') && !user_access('view any quiz results')) {
       if ($result && $result->uid == $user->uid) {
-        $form_state['redirect'] = 'quiz-result/' . $result_id;
+        $form_state['redirect'] = 'quiz-result/' . $result->result_id;
       }
     }
   }
@@ -165,6 +162,7 @@ class QuizReportForm {
    * @param int $result_id
    * @param int $quiz_vid
    * @param int $is_evaluated
+   * @return array
    */
   private function getScoreArray($result_id, $quiz_vid, $is_evaluated) {
     $properties = db_query(

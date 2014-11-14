@@ -110,8 +110,15 @@ abstract class QuestionPlugin {
       );
     }
 
-    if (!empty($this->question->nid) && ($properties = entity_load('quiz_question_properties', FALSE, array('nid' => $this->question->nid, 'vid' => $this->question->vid)))) {
-      $quiz_question = reset($properties);
+    if (!empty($this->question->nid)) {
+      $properties = entity_load('quiz_question_properties', FALSE, array(
+          'nid' => $this->question->nid,
+          'vid' => $this->question->vid
+      ));
+
+      if ($properties) {
+        $quiz_question = reset($properties);
+      }
     }
 
     $form['feedback'] = array(

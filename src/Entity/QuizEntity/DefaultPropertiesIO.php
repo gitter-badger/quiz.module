@@ -91,6 +91,11 @@ class DefaultPropertiesIO extends FormHelper {
     );
   }
 
+  /**
+   * Update quiz's default settings for context user.
+   * @global \stdClass $user
+   * @param QuizEntity $_quiz
+   */
   public function updateUserDefaultSettings(QuizEntity $_quiz) {
     global $user;
 
@@ -108,7 +113,7 @@ class DefaultPropertiesIO extends FormHelper {
       $user_quiz = clone $quiz;
       $user_quiz->uid = $user->uid;
 
-      // Find ID of old entry
+      // Find ID of old entry.
       $conditions = array('status' => -1, 'uid' => $user->uid, 'qid' => 0, 'vid' => 0);
       if ($quizzes = entity_load('quiz_entity', FALSE, $conditions)) {
         $_user_quiz = reset($quizzes);
