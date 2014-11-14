@@ -390,7 +390,7 @@ abstract class QuestionPlugin {
    * @return bool
    *  TRUE if relationship is made.
    */
-  function saveRelationships($quiz_qid, $quiz_vid) {
+  function saveRelationships($quiz_qid = NULL, $quiz_vid = NULL) {
     $quiz_qid = isset($this->question->quiz_qid) ? $this->question->quiz_qid : $quiz_qid;
     $quiz_vid = isset($this->question->quiz_vid) ? $this->question->quiz_vid : $quiz_vid;
     if (!$quiz_qid || !$quiz_vid || !$quiz = quiz_load($quiz_qid, $quiz_vid)) {
@@ -405,8 +405,8 @@ abstract class QuestionPlugin {
     }
 
     $values = array();
-    $values['quiz_qid'] = $quiz->qid;
-    $values['quiz_vid'] = $quiz->vid;
+    $values['quiz_qid'] = $quiz_qid;
+    $values['quiz_vid'] = $quiz_vid;
     $values['question_nid'] = $this->question->nid;
     $values['question_vid'] = $this->question->vid;
     $values['max_score'] = $this->getMaximumScore();
@@ -414,7 +414,7 @@ abstract class QuestionPlugin {
     $values['weight'] = 1 + db_query('SELECT MAX(weight) FROM {quiz_relationship} WHERE quiz_vid = :vid', array(':vid' => $quiz->vid))->fetchField();
     $randomization = db_query('SELECT randomization '
       . ' FROM {quiz_entity_revision} '
-      . ' WHERE qid = :qid AND vid = :vid', array(':qid' => $quiz->qid, ':vid' => $quiz->vid))->fetchField();
+      . ' WHERE qid = :qid AND vid = :vid', array(':qid' => $quiz_qid, ':vid' => $quiz_vid))->fetchField();
     $values['question_status'] = $randomization == 2 ? QUESTION_RANDOM : QUESTION_ALWAYS;
     entity_create('quiz_question_relationship', $values)->save();
 
