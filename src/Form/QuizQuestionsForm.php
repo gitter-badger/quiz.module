@@ -36,9 +36,7 @@ class QuizQuestionsForm extends BaseForm {
     $this->addFieldsForRandomQuiz($form, $quiz);
 
     // @todo deal with $include_random
-    $questions = $quiz->getQuestionIO()->getQuestions();
-
-    if (empty($questions)) {
+    if (!$questions = $quiz->getQuestionIO()->getQuestions()) {
       $form['question_list']['no_questions'] = array(
           '#markup' => '<div id = "no-questions">' . t('There are currently no questions in this @quiz. Assign existing questions by using the question browser below. You can also use the links above to create new questions.', array('@quiz' => QUIZ_NAME)) . '</div>',
       );
