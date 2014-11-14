@@ -202,7 +202,7 @@ class QuizTakeController extends QuizTakeLegacyController {
       entity_save('quiz_result_answer', $quiz_result_answer);
     }
 
-    return quiz_result_load($quiz_result->result_id);
+    return quiz_result_load($result->result_id);
   }
 
 }
