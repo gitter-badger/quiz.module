@@ -37,7 +37,6 @@ class QuestionIO {
       }
       $query->range(0, $term->number);
       $query->orderBy('RAND()');
-
       $result = $query->execute();
       $count = 0;
       while ($question = $result->fetchAssoc()) {
@@ -70,7 +69,7 @@ class QuestionIO {
    * @return array[] Array of question info.
    */
   public function getQuestionList() {
-    if ($this->quiz->randomization == 3) {
+    if (QUESTION_CATEGORIZED_RANDOM == $this->quiz->randomization) {
       $questions = $this->buildCategoziedQuestionList();
     }
     else {
@@ -79,16 +78,17 @@ class QuestionIO {
 
     $count = 0;
     $display_count = 0;
-    $questions_out = array();
+    $question_list = array();
     foreach ($questions as &$question) {
       $display_count++;
       $question['number'] = ++$count;
       if ($question['type'] !== 'quiz_page') {
         $question['display_number'] = $display_count;
       }
-      $questions_out[$count] = $question;
+      $question_list[$count] = $question;
     }
-    return $questions_out;
+
+    return $question_list;
   }
 
   /**
@@ -215,18 +215,20 @@ class QuestionIO {
     return $questions;
   }
 
-  private function getSubQuestions($qr_pid, &$questions) {
-    $query = db_select('node', 'n');
-    $query->fields('n', array('nid', 'type'));
-    $query->fields('nr', array('vid', 'title'));
-    $query->fields('qnr', array('question_status', 'weight', 'max_score', 'auto_update_max_score', 'qr_id', 'qr_pid'));
-    $query->addField('n', 'vid', 'latest_vid');
-    $query->innerJoin('node_revision', 'nr', 'n.nid = nr.nid');
-    $query->innerJoin('quiz_relationship', 'qnr', 'nr.vid = qnr.question_vid');
-    $query->condition('qr_pid', $qr_pid);
-    $query->orderBy('weight');
-    $result = $query->execute();
-    foreach ($result as $question) {
+  private function getSubQuestions($parent_id, &$questions) {
+    $select = db_select('node', 'n');
+    $select->innerJoin('node_revision', 'nr', 'n.nid = nr.nid');
+    $select->innerJoin('quiz_relationship', 'qnr', 'nr.vid = qnr.question_vid');
+    $select
+      ->fields('n', array('nid', 'type'))
+      ->fields('nr', array('vid', 'title'))
+      ->fields('qnr', array('question_status', 'weight', 'max_score', 'auto_update_max_score', 'qr_id', 'qr_pid'))
+      ->addField('n', 'vid', 'latest_vid');
+    $query = $select
+      ->condition('qr_pid', $parent_id)
+      ->orderBy('weight')
+      ->execute();
+    foreach ($query as $question) {
       $questions[] = $question;
     }
   }
