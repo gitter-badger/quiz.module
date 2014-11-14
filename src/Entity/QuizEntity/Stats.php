@@ -2,6 +2,9 @@
 
 namespace Drupal\quiz\Entity\QuizEntity;
 
+/**
+ * Collection of helper methods on statistics.
+ */
 class Stats {
 
   /**

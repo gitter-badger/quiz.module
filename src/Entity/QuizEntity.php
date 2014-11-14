@@ -14,7 +14,15 @@ class QuizEntity extends Entity {
   /** @var int Quiz Revision ID */
   public $vid;
 
-  /** @var int */
+  /**
+   * Status of a quiz.
+   *
+   * If status is -1, quiz is used as default properties when user uses quiz
+   *  creating form.
+   *
+   * @see \Drupal\quiz\Entity\QuizEntity\DefaultPropertiesIO.
+   * @var int
+   */
   public $status;
 
   /** @var string The name of the quiz type. */
@@ -58,6 +66,13 @@ class QuizEntity extends Entity {
     parent::__construct($values, 'quiz_entity');
   }
 
+  /**
+   * @return \Drupal\quiz\Entity\QuizEntityController
+   */
+  public function getController() {
+    return quiz_controller();
+  }
+
   public function save() {
     global $user;
 
@@ -71,7 +86,7 @@ class QuizEntity extends Entity {
     }
 
     // Default properties
-    foreach (quiz_controller()->getSettingIO()->getQuizDefaultSettings() as $k => $v) {
+    foreach ($this->getController()->getSettingIO()->getQuizDefaultSettings() as $k => $v) {
       if (!isset($this->{$k})) {
         $this->{$k} = $v;
       }
@@ -114,6 +129,8 @@ class QuizEntity extends Entity {
 
   /**
    * Add question to quiz.
+   *
+   * @TODO: Move this to QuestionIO.
    *
    * @param Question $question
    * @return boolean

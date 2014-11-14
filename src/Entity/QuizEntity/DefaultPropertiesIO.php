@@ -7,6 +7,8 @@ use Drupal\quiz\Entity\QuizEntity;
 
 /**
  * Read and write default properties for quiz entity.
+ *
+ * We have a small trick here: status = -1
  */
 class DefaultPropertiesIO extends FormHelper {
 

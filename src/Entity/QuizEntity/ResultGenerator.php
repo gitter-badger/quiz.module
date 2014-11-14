@@ -6,10 +6,14 @@ use Drupal\quiz\Entity\QuizEntity;
 use Drupal\quiz\Entity\Result;
 use RuntimeException;
 
+/**
+ * Generate result entity with dummy page/question layout.
+ *
+ * This class is used when use start taking a quiz.
+ */
 class ResultGenerator {
 
   /**
-   *
    * @param QuizEntity $quiz
    * @return Result
    * @throws RuntimeException
