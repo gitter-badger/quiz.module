@@ -4,6 +4,7 @@ namespace Drupal\quiz\Entity;
 
 use DatabaseTransaction;
 use Drupal\quiz\Entity\QuizEntity\DefaultPropertiesIO;
+use Drupal\quiz\Entity\QuizEntity\MaxScoreWriter;
 use Drupal\quiz\Entity\QuizEntity\Stats;
 use EntityAPIController;
 use stdClass;
@@ -15,6 +16,9 @@ class QuizEntityController extends EntityAPIController {
 
   /** @var Stats */
   private $stats;
+
+  /** @var MaxScoreWriter */
+  private $max_score_writer;
 
   /**
    * @return DefaultPropertiesIO
@@ -31,6 +35,13 @@ class QuizEntityController extends EntityAPIController {
       $this->stats = new Stats();
     }
     return $this->stats;
+  }
+
+  public function getMaxScoreWriter() {
+    if (NULL === $this->max_score_writer) {
+      $this->max_score_writer = new MaxScoreWriter();
+    }
+    return $this->max_score_writer;
   }
 
   /**
@@ -97,7 +108,7 @@ class QuizEntityController extends EntityAPIController {
   }
 
   /**
-   * @param Drupal\quiz\Entity\QuizEntity $quiz
+   * @param QuizEntity $quiz
    * @param DatabaseTransaction $transaction
    */
   public function save($quiz, DatabaseTransaction $transaction = NULL) {

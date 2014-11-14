@@ -95,7 +95,7 @@ class QuizHelper {
     $question->quiz_qid = $quiz->qid;
     $question->quiz_vid = $quiz->vid;
     quiz_question_get_plugin($question)->saveRelationships();
-    $this->updateMaxScoreProperty(array($quiz->vid));
+    quiz_controller()->getMaxScoreWriter()->update(array($quiz->vid));
   }
 
   /**
@@ -175,69 +175,8 @@ class QuizHelper {
         ->execute();
     }
 
-    $this->updateMaxScoreProperty(array($quiz->vid));
+    quiz_controller()->getMaxScoreWriter()->update(array($quiz->vid));
     return TRUE;
-  }
-
-  /**
-   * Updates the max_score property on the specified quizzes
-   *
-   * @param $quiz_vids
-   *  Array with the vid's of the quizzes to update
-   */
-  public function updateMaxScoreProperty($quiz_vids) {
-    if (empty($quiz_vids)) {
-      return;
-    }
-
-    // Max score = random questions's score + always questions's score
-    $score_random = 'max_score_for_random * number_of_random_questions';
-    $score_always = 'SELECT COALESCE(SUM(max_score), 0) '
-      . ' FROM {quiz_relationship} relationship'
-      . ' WHERE relationship.question_status = :status AND quiz_vid = {quiz_entity_revision}.vid';
-    db_update('quiz_entity_revision')
-      ->expression('max_score', "($score_random) + ($score_always)", array(':status' => QUESTION_ALWAYS))
-      ->condition('vid', $quiz_vids)
-      ->execute();
-
-    // If quiz as question mode = QUESTION_ALWAYS
-    // Max score = sum of max score of each question in quiz.
-    $_score = 'SELECT COALESCE(SUM(qt.max_score * qt.number), 0)
-            FROM {quiz_terms} qt
-            WHERE qt.nid = {quiz_entity_revision}.qid AND qt.vid = {quiz_entity_revision}.vid';
-    db_update('quiz_entity_revision')
-      ->expression('max_score', "($_score)")
-      ->condition('randomization', QUESTION_CATEGORIZED_RANDOM)
-      ->condition('vid', $quiz_vids)
-      ->execute();
-
-    // Update changed timestamp of quiz revisions
-    db_update('quiz_entity_revision')
-      ->fields(array('changed' => REQUEST_TIME))
-      ->condition('vid', $quiz_vids)
-      ->execute();
-
-    // Update changed timestamp of quiz
-    db_update('quiz_entity')
-      ->fields(array('changed' => REQUEST_TIME))
-      ->condition('vid', $quiz_vids)
-      ->execute();
-
-    // Find quiz revisions those have max score <> 0
-    // @QUESTION: Why we need this condition?
-    $_quiz_vids = db_query('SELECT vid'
-      . ' FROM {quiz_entity_revision}'
-      . ' WHERE vid IN (:vid) AND max_score <> :max_score', array(
-        ':vid'       => $quiz_vids,
-        ':max_score' => 0))->fetchCol();
-    if (!empty($_quiz_vids)) {
-      $points_awarded = 'SELECT COALESCE(SUM(answer.points_awarded), 0) FROM {quiz_results_answers} answer WHERE answer.result_id = {quiz_results}.result_id';
-      $points_max = 'SELECT max_score FROM {quiz_entity_revision} qnp WHERE qnp.vid = {quiz_results}.quiz_vid';
-      db_update('quiz_results')
-        ->expression('score', "ROUND(100 * ($points_awarded) / ($points_max))")
-        ->condition('quiz_vid', $_quiz_vids)
-        ->execute();
-    }
   }
 
   /**
