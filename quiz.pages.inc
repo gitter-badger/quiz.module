@@ -8,7 +8,6 @@
  * functions are moved to classes.
  */
 use Drupal\quiz\Controller\Admin\QuizAdminSettingsController;
-use Drupal\quiz\Controller\Admin\QuizQuestionAdminController;
 use Drupal\quiz\Controller\Admin\QuizRevisionsAdminController;
 use Drupal\quiz\Controller\QuizQuestionFeedbackController;
 use Drupal\quiz\Controller\QuizTakeController;
@@ -116,7 +115,7 @@ function quiz_entity_form_submit($form, &$form_state) {
 }
 
 function quiz_question_admin_page(QuizEntity $quiz) {
-  $obj = new QuizQuestionAdminController($quiz);
+  module_load_include('pages.inc', 'quiz_question');
 
   if ($quiz->randomization >= 3) {
     return drupal_get_form('quiz_categorized_form', $quiz);
@@ -133,11 +132,7 @@ function quiz_question_admin_page(QuizEntity $quiz) {
               '#title'       => t('Create new question'),
               '#collapsible' => TRUE,
               '#collapsed'   => TRUE,
-              '#value'       => '',
-              'links'        => array(
-                  '#theme' => 'item_list',
-                  '#items' => $obj->getQuestionAddingLinks(),
-              ),
+              '#value'       => quiz_question_adding_landing_page(),
           ),
           'form'   => drupal_get_form('quiz_questions_form', $quiz),
       ),
