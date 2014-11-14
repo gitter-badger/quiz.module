@@ -173,16 +173,12 @@ class QuizTakeController extends QuizTakeLegacyController {
    *   The quiz attempt.
    */
   private function createQuizResultObject() {
-    // Create question list.
-    $questions = $this->quiz->getQuestionIO()->getQuestionList();
-    if ($questions === FALSE) {
-      $msg = t('Not enough random questions were found. Please add more questions before trying to take this @quiz.', array('@quiz' => QUIZ_NAME));
-      throw new RuntimeException($msg);
-    }
-
-    if (!count($questions)) {
-      $msg = t('No questions were found. Please !assign_questions before trying to take this @quiz.', array('@quiz' => QUIZ_NAME, '!assign_questions' => l(t('assign questions'), 'quiz/' . $this->getQuizId() . '/questions')));
-      throw new RuntimeException($msg);
+    if (!$questions = $this->quiz->getQuestionIO()->getQuestionList()) {
+      throw new RuntimeException(t(
+        'No questions were found. Please !assign_questions before trying to take this @quiz.', array(
+          '@quiz'             => QUIZ_NAME,
+          '!assign_questions' => l(t('assign questions'), 'quiz/' . $this->getQuizId() . '/questions')
+      )));
     }
 
     // Write the layout for this result.
