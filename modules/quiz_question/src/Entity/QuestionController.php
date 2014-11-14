@@ -8,6 +8,7 @@ use EntityAPIController;
 class QuestionController extends EntityAPIController {
 
   /**
+   * Implements EntityAPIControllerInterface.
    *
    * @param Question $question
    * @param DatabaseTransaction $transaction
@@ -22,6 +23,7 @@ class QuestionController extends EntityAPIController {
 
   /**
    * Implements EntityAPIControllerInterface.
+   *
    * @param string $hook
    * @param Question $question
    */
@@ -58,6 +60,7 @@ class QuestionController extends EntityAPIController {
   }
 
   /**
+   * Implements EntityAPIControllerInterface.
    * @param Question $question
    * @param string $view_mode
    * @param string $langcode

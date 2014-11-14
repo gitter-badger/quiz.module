@@ -81,4 +81,12 @@ class Question extends Entity {
     throw new \RuntimeException('Question plugin not found.');
   }
 
+  /**
+   * Override parent defaultUri method.
+   * @return array
+   */
+  protected function defaultUri() {
+    return array('path' => 'quiz-question/' . $this->identifier());
+  }
+
 }
