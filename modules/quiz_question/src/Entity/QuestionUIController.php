@@ -113,7 +113,17 @@ class QuestionUIController extends EntityDefaultUIController {
     $plugin_info = $question->getPluginInfo();
     $plugin_name = $plugin_info['name'];
     $additional_cols[] = $question->getQuestionType()->label . ' (' . $plugin_name . ')';
-    return parent::overviewTableRow($conditions, $id, $question, $additional_cols);
+    $columns = parent::overviewTableRow($conditions, $id, $question, $additional_cols);
+
+    // change manage prefix from '/admin/content/quiz-questions/manage/' to 'quiz-question/'
+    foreach ($columns as &$column) {
+      if (!is_string($column)) {
+        continue;
+      }
+      $column = str_replace("/admin/content/quiz-questions/manage/{$id}\"", "/quiz-question/{$id}/edit\"", $column);
+      $column = str_replace('/admin/content/quiz-questions/manage/', '/quiz-question/', $column);
+    }
+    return $columns;
   }
 
 }
