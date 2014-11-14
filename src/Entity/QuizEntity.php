@@ -112,4 +112,28 @@ class QuizEntity extends Entity {
       ))->fetchAll();
   }
 
+  /**
+   * Add question to quiz.
+   *
+   * @param Question $question
+   * @return boolean
+   */
+  public function addQuestion($question) {
+    $questions = $this->getQuestionLoader()->getQuestions();
+
+    // Do not add a question if it's already been added.
+    foreach ($questions as $q) {
+      if ($question->vid == $q->vid) {
+        return FALSE;
+      }
+    }
+
+    // Otherwise let's add a relationship!
+    $question->quiz_qid = $this->qid;
+    $question->quiz_vid = $this->vid;
+    $question->getPlugin()->saveRelationships();
+
+    return TRUE;
+  }
+
 }

@@ -82,20 +82,7 @@ class QuizHelper {
    * @param \Drupal\quiz_question\Entity\Question $question
    */
   public function addQuestion($quiz, $question) {
-    $quiz_questions = $quiz->getQuestionLoader()->getQuestions();
 
-    // Do not add a question if it's already been added (selected in an earlier checkbox)
-    foreach ($quiz_questions as $q) {
-      if ($question->vid == $q->vid) {
-        return FALSE;
-      }
-    }
-
-    // Otherwise let's add a relationship!
-    $question->quiz_qid = $quiz->qid;
-    $question->quiz_vid = $quiz->vid;
-    quiz_question_get_plugin($question)->saveRelationships();
-    quiz_controller()->getMaxScoreWriter()->update(array($quiz->vid));
   }
 
   /**

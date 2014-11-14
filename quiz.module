@@ -173,10 +173,12 @@ function quiz_has_been_answered($quiz) {
 
 /**
  * Action to add questions to the current quiz.
+ *
+ * @param \Drupal\quiz_question\Entity\Question $question
+ * @return bool
  */
 function quiz_add_question_to_quiz($question) {
-  $quiz = quiz_load(__quiz_get_context_id());
-  return quiz()->getQuizHelper()->addQuestion($quiz, $question);
+  return quiz_load(__quiz_get_context_id())->addQuestion($question);
 }
 
 /**
