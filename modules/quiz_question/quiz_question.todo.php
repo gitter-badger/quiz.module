@@ -8,6 +8,21 @@ use Drupal\quiz_question\Entity\QuestionType;
 # ---------------------------------------------------------------
 
 /**
+ * Implements hook_permission()
+ */
+function quiz_question_permisison() {
+  $perms = array();
+
+  $perms['administer quiz questions'] = array(
+      'title'           => t('Administer quiz questions'),
+      'description'     => t('Have all permissions on all questions.'),
+      'restrict access' => TRUE,
+  );
+
+  return $perms;
+}
+
+/**
  * Get all question types.
  */
 function quiz_question_get_types() {

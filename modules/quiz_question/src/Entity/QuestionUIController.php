@@ -38,7 +38,14 @@ class QuestionUIController extends EntityDefaultUIController {
     unset($items['admin/content/quiz-questions/manage/%entity_object/clone']);
     unset($items['admin/content/quiz-questions/add']);
 
+    $this->fixMenuItemPermissions($items);
+
     return $items + $this->getExtraMenuItems();
+  }
+
+  private function fixMenuItemPermissions(&$items) {
+    $items['admin/content/quiz-questions']['access callback'] = 'user_access';
+    $items['admin/content/quiz-questions']['access arguments'] = array('administer quiz questions');
   }
 
   private function getExtraMenuItems() {
