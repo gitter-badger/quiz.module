@@ -93,4 +93,27 @@ class QuestionUIController extends EntityDefaultUIController {
     return $items;
   }
 
+  /**
+   * {@inheritdoc}
+   * Override parent method to provide more column.
+   */
+  protected function overviewTableHeaders($conditions, $rows, $additional_header = array()) {
+    $additional_header[] = t('Type');
+    $headers = parent::overviewTableHeaders($conditions, $rows, $additional_header);
+    $headers[0] = t('Question');
+    return $headers;
+  }
+
+  /**
+   * {@inheritdoc}
+   * Override parent method to provide more column.
+   * @param \Drupal\quiz_question\Entity\Question $question
+   */
+  protected function overviewTableRow($conditions, $id, $question, $additional_cols = array()) {
+    $plugin_info = $question->getPluginInfo();
+    $plugin_name = $plugin_info['name'];
+    $additional_cols[] = $question->getQuestionType()->label . ' (' . $plugin_name . ')';
+    return parent::overviewTableRow($conditions, $id, $question, $additional_cols);
+  }
+
 }
