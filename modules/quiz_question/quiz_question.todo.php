@@ -22,19 +22,19 @@ function quiz_question_permisison() {
   foreach (quiz_question_get_types() as $name => $info) {
     $perms += array(
         "create $name question"     => array(
-            'title' => t('%type_name: Create new question', array('%type_name' => $info->name)),
+            'title' => t('%type_name: Create new question', array('%type_name' => $info->label)),
         ),
         "edit own $name question"   => array(
-            'title' => t('%type_name: Edit own question', array('%type_name' => $info->name)),
+            'title' => t('%type_name: Edit own question', array('%type_name' => $info->label)),
         ),
         "edit any $name question"   => array(
-            'title' => t('%type_name: Edit any question', array('%type_name' => $info->name)),
+            'title' => t('%type_name: Edit any question', array('%type_name' => $info->label)),
         ),
         "delete own $name question" => array(
-            'title' => t('%type_name: Delete own question', array('%type_name' => $info->name)),
+            'title' => t('%type_name: Delete own question', array('%type_name' => $info->label)),
         ),
         "delete any $name question" => array(
-            'title' => t('%type_name: Delete any question', array('%type_name' => $info->name)),
+            'title' => t('%type_name: Delete any question', array('%type_name' => $info->label)),
         ),
     );
   }
