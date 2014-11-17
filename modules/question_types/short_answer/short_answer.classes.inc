@@ -46,7 +46,6 @@ class ShortAnswerQuestion extends QuestionPlugin {
         ->execute();
     }
     else {
-
       db_update('quiz_short_answer_node_properties')
         ->fields(array(
             'correct_answer'            => $this->question->correct_answer,
@@ -96,11 +95,11 @@ class ShortAnswerQuestion extends QuestionPlugin {
    *
    * @see QuizQuestion#getNodeProperties()
    */
-  public function getNodeProperties() {
+  public function load() {
     if (isset($this->entityProperties)) {
       return $this->entityProperties;
     }
-    $props = parent::getNodeProperties();
+    $props = parent::load();
     $res_a = db_query('SELECT correct_answer, correct_answer_evaluation FROM {quiz_short_answer_node_properties}
       WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->qid, ':vid' => $this->question->vid))->fetchAssoc();
     $this->entityProperties = (is_array($res_a)) ? array_merge($props, $res_a) : $props;

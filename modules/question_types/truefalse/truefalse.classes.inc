@@ -77,11 +77,11 @@ class TrueFalseQuestion extends QuestionPlugin {
    *
    * @see QuizQuestion#getNodeProperties()
    */
-  public function getNodeProperties() {
+  public function load() {
     if (isset($this->entityProperties)) {
       return $this->entityProperties;
     }
-    $props = parent::getNodeProperties();
+    $props = parent::load();
 
     $res_a = db_query('SELECT correct_answer '
       . ' FROM {quiz_truefalse_node} '

@@ -21,6 +21,19 @@ class QuestionController extends EntityAPIController {
     return parent::save($question, $transaction);
   }
 
+  public function load($ids = array(), $conditions = array()) {
+    $questions = parent::load($ids, $conditions);
+
+    /* @var $question \Drupal\quiz_question\Entity\Question */
+    foreach ($questions as $question) {
+      foreach ($question->getPlugin()->load() as $k => $v) {
+        $question->$k = $v;
+      }
+    }
+
+    return $questions;
+  }
+
   /**
    * Implements EntityAPIControllerInterface.
    *

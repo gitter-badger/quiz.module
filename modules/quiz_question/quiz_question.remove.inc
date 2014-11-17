@@ -26,7 +26,7 @@ function quiz_question_node_info() {
  */
 function quiz_question_load($node) {
   foreach ($node as &$question) {
-    foreach (quiz_question_get_provider($question, TRUE)->getNodeProperties() as $property => $value) {
+    foreach (quiz_question_get_provider($question, TRUE)->load() as $property => $value) {
       $question->$property = $value;
     }
   }

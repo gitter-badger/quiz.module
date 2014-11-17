@@ -153,11 +153,11 @@ class MatchingQuestion extends QuestionPlugin {
    *
    * @see QuizQuestion#getNodeProperties()
    */
-  public function getNodeProperties() {
+  public function load() {
     if (isset($this->entityProperties)) {
       return $this->entityProperties;
     }
-    $props = parent::getNodeProperties();
+    $props = parent::load();
 
     $res_a = db_query('SELECT choice_penalty FROM {quiz_matching_properties}
             WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->qid, ':vid' => $this->question->vid))->fetchAssoc();

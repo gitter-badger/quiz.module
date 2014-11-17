@@ -216,7 +216,7 @@ abstract class QuestionPlugin {
    *
    * @return array
    */
-  public function getNodeProperties() {
+  public function load() {
     if (isset($this->entityProperties)) {
       return $this->entityProperties;
     }

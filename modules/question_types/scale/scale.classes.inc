@@ -308,11 +308,11 @@ class ScaleQuestion extends QuestionPlugin {
    *
    * @see QuizQuestion#getNodeProperties()
    */
-  public function getNodeProperties() {
+  public function load() {
     if (isset($this->entityProperties)) {
       return $this->entityProperties;
     }
-    $props = parent::getNodeProperties();
+    $props = parent::load();
 
     $res = db_query('SELECT id, answer, a.answer_collection_id
             FROM {quiz_scale_node_properties} p

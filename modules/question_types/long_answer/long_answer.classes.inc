@@ -83,11 +83,11 @@ class LongAnswerQuestion extends QuestionPlugin {
    *
    * @see QuizQuestion#getNodeProperties()
    */
-  public function getNodeProperties() {
+  public function load() {
     if (isset($this->entityProperties)) {
       return $this->entityProperties;
     }
-    $props = parent::getNodeProperties();
+    $props = parent::load();
 
     $res_a = db_query('SELECT rubric FROM {quiz_long_answer_node_properties}
       WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->qid, ':vid' => $this->question->vid))->fetchAssoc();
