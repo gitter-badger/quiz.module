@@ -189,7 +189,7 @@ class QuizQuestionsForm extends BaseForm {
    * @param $question_types
    *   array of all available question types
    */
-  private function addQuestionsToForm(&$form, &$questions, &$quiz, &$question_types) {
+  private function addQuestionsToForm(&$form, $questions, &$quiz, &$question_types) {
     $form['question_list']['weights'] = array('#tree' => TRUE);
     $form['question_list']['qr_ids'] = array('#tree' => TRUE);
     $form['question_list']['qr_pids'] = array('#tree' => TRUE);
@@ -204,7 +204,7 @@ class QuizQuestionsForm extends BaseForm {
     // @TODO: Replace entire form with usage of question instance
     foreach ($questions as $question) {
       $question = is_array($question) ? (object) $question : $question;
-      $question_node = node_load($question->nid, $question->vid);
+      $question_node = node_load($question->nid);
       $instance = quiz_question_get_plugin($question_node);
 
       $fieldset = 'question_list';
@@ -271,11 +271,10 @@ class QuizQuestionsForm extends BaseForm {
         $question_titles = l($question_node->title, 'node/' . $question_node->nid, $link_options);
       }
       else {
-        $question_titles = check_plain($question->title);
+        $question_titles = check_plain($question_node->title);
       }
 
       $form[$fieldset]['titles'][$id] = array('#markup' => $question_titles);
-
 
       $form[$fieldset]['types'][$id] = array(
           '#markup'        => $question_types[$question->type]['name'],
@@ -304,7 +303,7 @@ class QuizQuestionsForm extends BaseForm {
       else {
         $update_cell = array(
             '#type'  => 'checkbox',
-            '#title' => l(t('Latest'), 'node/' . $question->nid . '/revisions/' . $question->latest_vid . '/view')
+            '#title' => l(t('Latest'), 'node/' . $question->nid . '/revisions/' . $question->vid . '/view')
             . ' of ' .
             l(t('revisions'), 'node/' . $question->nid . '/revisions'),
         );
