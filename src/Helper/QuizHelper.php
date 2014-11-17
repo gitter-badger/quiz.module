@@ -130,7 +130,7 @@ class QuizHelper {
       $question_inserts[$question->qr_id] = array(
           'quiz_qid'              => $quiz->qid,
           'quiz_vid'              => $quiz->vid,
-          'question_nid'          => $question->nid,
+          'question_nid'          => $question->qid,
           'question_vid'          => $question_vid,
           'question_status'       => $question->state,
           'weight'                => $question->weight,

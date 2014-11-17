@@ -160,7 +160,7 @@ class QuizQuestionsForm extends BaseForm {
       $instance = quiz_question_get_provider($question);
 
       $fieldset = 'question_list';
-      $id = $question->nid . '-' . $question->vid;
+      $id = $question->qid . '-' . $question->vid;
 
       $form[$fieldset]['weights'][$id] = array(
           '#type'          => 'textfield',
@@ -220,7 +220,7 @@ class QuizQuestionsForm extends BaseForm {
         $link_options = array(
             'attributes' => array('class' => array('handle-changes')),
         );
-        $question_titles = l($question->title, 'node/' . $question->nid, $link_options);
+        $question_titles = l($question->title, 'quiz-question/' . $question->qid, $link_options);
       }
       else {
         $question_titles = check_plain($question->title);
@@ -241,7 +241,7 @@ class QuizQuestionsForm extends BaseForm {
               'attributes' => array('class' => array('handle-changes')),
             )
           ),
-          '#access' => node_access('update', node_load($question->nid, $question->vid)),
+          '#access' => entity_access('update', 'quiz_entity', $entity),
       );
 
       // For js enabled browsers questions are removed by pressing a remove link
@@ -256,9 +256,9 @@ class QuizQuestionsForm extends BaseForm {
       else {
         $update_cell = array(
             '#type'  => 'checkbox',
-            '#title' => l(t('Latest'), 'node/' . $question->nid . '/revisions/' . $question->vid . '/view')
+            '#title' => l(t('Latest'), 'quiz-question/' . $question->qid . '/revisions/' . $question->vid . '/view')
             . ' of ' .
-            l(t('revisions'), 'node/' . $question->nid . '/revisions'),
+            l(t('revisions'), 'quiz-question/' . $question->qid . '/revisions'),
         );
       }
       $form[$fieldset]['revision'][$id] = $update_cell;
@@ -298,31 +298,26 @@ class QuizQuestionsForm extends BaseForm {
       return;
     }
 
-    $question_types = array_keys(quiz_question_get_plugin_info());
+    foreach (array_keys($weight_map) as $id) {
+      list($question_qid, $question_vid) = explode('-', $id, 2);
 
-    foreach ($weight_map as $id => $weight) {
-      list($nid, $vid) = explode('-', $id, 2);
-
-      // If a node isn't one of the question types we remove it from the question list
-      $has_questions = (Boolean) db_select('node', 'n')
-          ->fields('n', array('nid'))
-          ->condition('type', $question_types, 'IN')
-          ->addTag('node_access')
-          ->condition('n.nid', $nid)
-          ->execute()
-          ->fetchField();
-      if (!$has_questions) {
+      // If a question isn't one of the question types we remove it from the question list
+      $valid_question = db_select('quiz_question', 'question')
+        ->fields('question', array('qid'))
+        ->condition('question.qid', $question_qid)
+        ->execute()
+        ->fetchField();
+      if (!$valid_question) {
         form_set_error('none', 'One of the supplied questions was invalid. It has been removed from the quiz.');
         unset($form_state['values']['weights'][$id]);
       }
-
       // We also make sure that we don't have duplicate questions in the quiz.
-      elseif (in_array($nid, $already_checked)) {
+      elseif (in_array($question_qid, $already_checked)) {
         form_set_error('none', 'A duplicate question has been removed. You can only ask a question once per quiz.');
         unset($form_state['values']['weights'][$id]);
       }
       else {
-        $already_checked[] = $nid;
+        $already_checked[] = $question_qid;
       }
     }
 
@@ -474,7 +469,7 @@ class QuizQuestionsForm extends BaseForm {
       }
       list($nid, $vid) = explode('-', $id, 2);
       $question = new stdClass();
-      $question->nid = (int) $nid;
+      $question->qid = (int) $nid;
       $question->vid = (int) $vid;
       if (isset($compulsories)) {
         if ($compulsories[$id] == 1) {
