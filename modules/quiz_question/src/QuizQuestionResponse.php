@@ -3,6 +3,7 @@
 namespace Drupal\quiz_question;
 
 use Drupal\quiz_question\QuestionPlugin;
+use Drupal\quiz_question\Entity\Question;
 use stdClass;
 
 /**
@@ -30,16 +31,16 @@ abstract class QuizQuestionResponse {
    * @param $result_id
    *  The result ID for the user's result set. There is one result ID per time
    *  the user takes a quiz.
-   * @param $question_node
-   *  The question node.
+   * @param Question $question
+   *  The question entity.
    * @param $answer
    *  The answer (dependent on question type).
    */
-  public function __construct($result_id, stdClass $question_node, $answer = NULL) {
+  public function __construct($result_id, Question $question, $answer = NULL) {
     $this->result_id = $result_id;
     $this->result = quiz_result_load($result_id);
-    $this->question = $question_node;
-    $this->quizQuestion = quiz_question_get_provider($question_node);
+    $this->question = $question;
+    $this->quizQuestion = quiz_question_get_provider($question);
     $this->answer = $answer;
     $result = db_query('SELECT is_skipped, is_doubtful '
       . ' FROM {quiz_results_answers} '
@@ -47,8 +48,8 @@ abstract class QuizQuestionResponse {
       . '   AND question_nid = :question_nid '
       . '   AND question_vid = :question_vid', array(
         ':result_id'    => $result_id,
-        ':question_nid' => $question_node->nid,
-        ':question_vid' => $question_node->vid
+        ':question_nid' => $question->nid,
+        ':question_vid' => $question->vid
       ))->fetch();
     if (is_object($result)) {
       $this->is_doubtful = $result->is_doubtful;

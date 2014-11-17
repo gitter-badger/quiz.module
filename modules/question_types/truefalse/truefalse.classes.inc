@@ -208,8 +208,8 @@ class TrueFalseResponse extends QuizQuestionResponse {
   /**
    * Constructor
    */
-  public function __construct($result_id, stdClass $question_node, $answer = NULL) {
-    parent::__construct($result_id, $question_node, $answer);
+  public function __construct($result_id, \Drupal\quiz_question\Entity\Question $question, $answer = NULL) {
+    parent::__construct($result_id, $question, $answer);
     if (!isset($answer)) {
       if ($response = $this->getUserAnswer()) {
         $this->answer = $response->answer;

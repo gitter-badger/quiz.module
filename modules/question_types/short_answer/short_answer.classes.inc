@@ -343,12 +343,12 @@ class ShortAnswerResponse extends QuizQuestionResponse {
   /**
    * Constructor
    */
-  public function __construct($result_id, stdClass $question_node, $answer = NULL) {
-    parent::__construct($result_id, $question_node, $answer);
+  public function __construct($result_id, \Drupal\quiz_question\Entity\Question $question, $answer = NULL) {
+    parent::__construct($result_id, $question, $answer);
     if (!isset($answer)) {
       $r = db_query('SELECT answer_id, answer, is_evaluated, score, question_vid, question_nid, result_id, answer_feedback, answer_feedback_format
         FROM {quiz_short_answer_user_answers}
-        WHERE question_nid = :qnid AND question_vid = :qvid AND result_id = :rid', array(':qnid' => $question_node->nid, ':qvid' => $question_node->vid, ':rid' => $result_id)
+        WHERE question_nid = :qnid AND question_vid = :qvid AND result_id = :rid', array(':qnid' => $question->nid, ':qvid' => $question->vid, ':rid' => $result_id)
         )->fetch();
 
       if (!empty($r)) {

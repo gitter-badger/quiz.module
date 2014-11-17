@@ -22,7 +22,8 @@ use Drupal\quiz_question\QuizQuestionResponse;
  * Extension of QuizQuestion.
  */
 class DDLinesQuestion extends QuestionPlugin {
-   /**
+
+  /**
    * Get the form used to create a new question.
    *
    * @param
@@ -30,67 +31,66 @@ class DDLinesQuestion extends QuestionPlugin {
    * @return
    *  Must return a FAPI array.
    */
-
   public function getCreationForm(array &$form_state = NULL) {
 
     $elements = '';
-    if(isset($this->question->translation_source)) {
+    if (isset($this->question->translation_source)) {
       $elements = $this->question->translation_source->ddlines_elements;
     }
-    elseif(isset($this->question->ddlines_elements)) {
+    elseif (isset($this->question->ddlines_elements)) {
       $elements = $this->question->ddlines_elements;
     }
 
     $form['ddlines_elements'] = array(
-      '#type' => 'hidden',
-      '#default_value' => $elements,
+        '#type'          => 'hidden',
+        '#default_value' => $elements,
     );
 
     $default_settings = $this->getDefaultAltSettings();
 
     $form['settings'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Settings'),
-      '#collapsible' => TRUE,
-      '#collapsed' => FALSE,
-      '#weight' => -3,
+        '#type'        => 'fieldset',
+        '#title'       => t('Settings'),
+        '#collapsible' => TRUE,
+        '#collapsed'   => FALSE,
+        '#weight'      => -3,
     );
     $form['settings']['feedback_enabled'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Enable feedback'),
-      '#description' => t('When taking the test, and this option is enabled, a wrong placement of an alternative, will make it jump back. Also, this makes it possible to add comments to both correct and wrong answers.'),
-      '#default_value' => isset($this->question->translation_source) ? $this->question->translation_source->feedback_enabled : $default_settings['feedback']['enabled'],
-      '#parents' => array('feedback_enabled'),
+        '#type'          => 'checkbox',
+        '#title'         => t('Enable feedback'),
+        '#description'   => t('When taking the test, and this option is enabled, a wrong placement of an alternative, will make it jump back. Also, this makes it possible to add comments to both correct and wrong answers.'),
+        '#default_value' => isset($this->question->translation_source) ? $this->question->translation_source->feedback_enabled : $default_settings['feedback']['enabled'],
+        '#parents'       => array('feedback_enabled'),
     );
     $form['settings']['hotspot_radius'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Hotspot radius'),
-      '#description' => t('The radius of the hotspot in pixels'),
-      '#default_value' => isset($this->question->translation_source) ? $this->question->translation_source->hotspot_radius : $default_settings['hotspot']['radius'],
-      '#parents' => array('hotspot_radius'),
+        '#type'          => 'textfield',
+        '#title'         => t('Hotspot radius'),
+        '#description'   => t('The radius of the hotspot in pixels'),
+        '#default_value' => isset($this->question->translation_source) ? $this->question->translation_source->hotspot_radius : $default_settings['hotspot']['radius'],
+        '#parents'       => array('hotspot_radius'),
     );
 
     $form['settings']['execution_mode'] = array(
-      '#type' => 'radios',
-      '#title' => t('Execution mode'),
-      '#description' => t('The mode for taking the test.'),
-      '#default_value' => isset($this->question->translation_source) ? $this->question->translation_source->execution_mode : $default_settings['execution_mode'],
-      '#options' => array (
-        0 => t('With lines'),
-        1 => t('Drag label'),
-      ),
-      '#parents' => array('execution_mode'),
+        '#type'          => 'radios',
+        '#title'         => t('Execution mode'),
+        '#description'   => t('The mode for taking the test.'),
+        '#default_value' => isset($this->question->translation_source) ? $this->question->translation_source->execution_mode : $default_settings['execution_mode'],
+        '#options'       => array(
+            0 => t('With lines'),
+            1 => t('Drag label'),
+        ),
+        '#parents'       => array('execution_mode'),
     );
 
-    drupal_add_library('system','ui.resizable');
+    drupal_add_library('system', 'ui.resizable');
 
     $default_settings['mode'] = 'edit';
     $default_settings['editmode'] = isset($this->question->nid) ? 'update' : 'add';
     $form['#attached']['js'][] = array(
-  		'data' => array(
-    		'quiz_ddlines' => $default_settings
+        'data' => array(
+            'quiz_ddlines' => $default_settings
         ),
-  		'type' => 'setting'
+        'type' => 'setting'
     );
 
     _quiz_ddlines_add_js_and_css();
@@ -148,38 +148,38 @@ class DDLinesQuestion extends QuestionPlugin {
     $form = parent::getAnsweringForm($form_state, $result_id);
 
     $form['helptext'] = array(
-      '#markup' => t('Answer this question by dragging each rectangular label to the correct circular hotspot.'),
-      '#weight' => 0,
+        '#markup' => t('Answer this question by dragging each rectangular label to the correct circular hotspot.'),
+        '#weight' => 0,
     );
 
     // Form element containing the correct answers
     $form['ddlines_elements'] = array(
-      '#type' => 'hidden',
-      '#default_value' => isset($this->question->ddlines_elements) ? $this->question->ddlines_elements : '',
+        '#type'          => 'hidden',
+        '#default_value' => isset($this->question->ddlines_elements) ? $this->question->ddlines_elements : '',
     );
 
     // Form element containing the user answers
     // The quiz module requires this element to be named "tries":
-    $form['tries'] = array (
-      '#type' => 'hidden',
-      '#default_value' => '',
+    $form['tries'] = array(
+        '#type'          => 'hidden',
+        '#default_value' => '',
     );
 
     $image_uri = $this->question->field_image['und'][0]['uri'];
-    $image_url = image_style_url('large',$image_uri);
+    $image_url = image_style_url('large', $image_uri);
 
-    $form['image'] = array (
-      '#markup' => '<div class="image-preview">'.theme('image', array('path' => $image_url)).'</div>',
-      /*'#weight' => 0,*/
+    $form['image'] = array(
+        '#markup' => '<div class="image-preview">' . theme('image', array('path' => $image_url)) . '</div>',
+      /* '#weight' => 0, */
     );
 
     $default_settings = $this->getDefaultAltSettings();
     $default_settings['mode'] = 'take';
     $form['#attached']['js'][] = array(
-  		'data' => array(
-    		'quiz_ddlines' => $default_settings
+        'data' => array(
+            'quiz_ddlines' => $default_settings
         ),
-  		'type' => 'setting'
+        'type' => 'setting'
     );
 
     _quiz_ddlines_add_js_and_css();
@@ -206,22 +206,22 @@ class DDLinesQuestion extends QuestionPlugin {
     if ($is_new || $this->question->revision == 1) {
       $id = db_insert('quiz_ddlines_node')
         ->fields(array(
-          'nid' => $this->question->nid,
-          'vid' => $this->question->vid,
-          'feedback_enabled' => $this->question->feedback_enabled,
-          'hotspot_radius' => $this->question->hotspot_radius,
-          'ddlines_elements' => $this->question->ddlines_elements,
-          'execution_mode' => $this->question->execution_mode,
+            'nid'              => $this->question->nid,
+            'vid'              => $this->question->vid,
+            'feedback_enabled' => $this->question->feedback_enabled,
+            'hotspot_radius'   => $this->question->hotspot_radius,
+            'ddlines_elements' => $this->question->ddlines_elements,
+            'execution_mode'   => $this->question->execution_mode,
         ))
         ->execute();
     }
     else {
       db_update('quiz_ddlines_node')
         ->fields(array(
-          'ddlines_elements' => $this->question->ddlines_elements,
-          'hotspot_radius' => $this->question->hotspot_radius,
-          'feedback_enabled' => $this->question->feedback_enabled,
-          'execution_mode' => $this->question->execution_mode,
+            'ddlines_elements' => $this->question->ddlines_elements,
+            'hotspot_radius'   => $this->question->hotspot_radius,
+            'feedback_enabled' => $this->question->feedback_enabled,
+            'execution_mode'   => $this->question->execution_mode,
         ))
         ->condition('nid', $this->question->nid)
         ->condition('vid', $this->question->vid)
@@ -262,7 +262,7 @@ class DDLinesQuestion extends QuestionPlugin {
     // Nothing todo here
   }
 
-/**
+  /**
    * Implementation of delete
    *
    * @see QuizQuestion#delete()
@@ -298,6 +298,7 @@ class DDLinesQuestion extends QuestionPlugin {
     $delete_results->execute();
     parent::delete($only_this_version);
   }
+
 }
 
 /**
@@ -312,15 +313,15 @@ class DDLinesResponse extends QuizQuestionResponse {
   /**
    * Constructor
    */
-  public function __construct($result_id, stdClass $question_node, $tries = NULL) {
-    parent::__construct($result_id, $question_node, $tries);
+  public function __construct($result_id, \Drupal\quiz_question\Entity\Question $question, $tries = NULL) {
+    parent::__construct($result_id, $question, $tries);
 
     // Is answers set in form?
     if (isset($tries)) {
       // Tries contains the answer decoded as JSON:
       // {"label_id":x,"hotspot_id":y},{…}
       $decoded = json_decode($tries);
-      if(is_array($decoded)) {
+      if (is_array($decoded)) {
         foreach ($decoded as $answer) {
           $this->user_answers[$answer->label_id] = $answer->hotspot_id;
         }
@@ -343,9 +344,9 @@ class DDLinesResponse extends QuizQuestionResponse {
   public function save() {
     $user_answer_id = db_insert('quiz_ddlines_user_answers')
       ->fields(array(
-        'question_nid' => $this->question->nid,
-        'question_vid' => $this->question->vid,
-        'result_id' => $this->result_id,
+          'question_nid' => $this->question->nid,
+          'question_vid' => $this->question->vid,
+          'result_id'    => $this->result_id,
       ))
       ->execute();
 
@@ -356,7 +357,6 @@ class DDLinesResponse extends QuizQuestionResponse {
       $query->values(array($user_answer_id, $key, $value));
     }
     $query->execute();
-
   }
 
   /**
@@ -392,7 +392,7 @@ class DDLinesResponse extends QuizQuestionResponse {
     // Count number of correct answers:
     $correct_count = 0;
 
-    foreach($results as $result) {
+    foreach ($results as $result) {
       $correct_count += ($result == AnswerStatus::CORRECT) ? 1 : 0;
     }
 
@@ -409,18 +409,18 @@ class DDLinesResponse extends QuizQuestionResponse {
   public function getReportFormResponse() {
     // Have to do node_load, since quiz does not do this. Need the field_image…
     $img_field = field_get_items('node', node_load($this->question->nid), 'field_image');
-    $img_rendered = theme('image', array('path' => image_style_url('large',$img_field[0]['uri'])));
+    $img_rendered = theme('image', array('path' => image_style_url('large', $img_field[0]['uri'])));
 
-    $image_path = base_path() . drupal_get_path('module', 'quiz_ddlines').'/theme/images/';
+    $image_path = base_path() . drupal_get_path('module', 'quiz_ddlines') . '/theme/images/';
 
-    $html = '<h3>'.t('Your answers').'</h3>';
-    $html .= '<div class="icon-descriptions"><div><img src="'.$image_path.'icon_ok.gif">'.t('Means alternative is placed on the correct spot').'</div>';
-    $html .= '<div><img src="'.$image_path.'icon_wrong.gif">'.t('Means alternative is placed on the wrong spot, or not placed at all'). '</div></div>';
-    $html .= '<div class="quiz-ddlines-user-answers" id="'.$this->question->nid.'">';
+    $html = '<h3>' . t('Your answers') . '</h3>';
+    $html .= '<div class="icon-descriptions"><div><img src="' . $image_path . 'icon_ok.gif">' . t('Means alternative is placed on the correct spot') . '</div>';
+    $html .= '<div><img src="' . $image_path . 'icon_wrong.gif">' . t('Means alternative is placed on the wrong spot, or not placed at all') . '</div></div>';
+    $html .= '<div class="quiz-ddlines-user-answers" id="' . $this->question->nid . '">';
     $html .= $img_rendered;
     $html .= '</div>';
-    $html .= '<h3>'.t('Correct answers').'</h3>';
-    $html .= '<div class="quiz-ddlines-correct-answers" id="'.$this->question->nid.'">';
+    $html .= '<h3>' . t('Correct answers') . '</h3>';
+    $html .= '<div class="quiz-ddlines-correct-answers" id="' . $this->question->nid . '">';
     $html .= $img_rendered;
     $html .= '</div>';
 
@@ -437,28 +437,28 @@ class DDLinesResponse extends QuizQuestionResponse {
 
     $elements_answered = array();
 
-    foreach ($this->user_answers as $label_id => $hotspot_id ) {
+    foreach ($this->user_answers as $label_id => $hotspot_id) {
 
-      if(!isset($hotspot_id)) {
+      if (!isset($hotspot_id)) {
         continue;
       }
 
       // Find correct answer:
       $element = array(
-        'feedback_wrong' => '',
-        'feedback_correct' => '',
-        'color' => $this->getElementColor($elements, $label_id)
+          'feedback_wrong'   => '',
+          'feedback_correct' => '',
+          'color'            => $this->getElementColor($elements, $label_id)
       );
 
       $label = $this->getLabel($elements, $label_id);
       $hotspot = $this->getHotspot($elements, $hotspot_id);
 
-      if(isset($hotspot)) {
+      if (isset($hotspot)) {
         $elements_answered[] = $hotspot->id;
         $element['hotspot'] = $hotspot;
       }
 
-      if(isset($label)) {
+      if (isset($label)) {
         $elements_answered[] = $label->id;
         $element['label'] = $label;
       }
@@ -470,22 +470,22 @@ class DDLinesResponse extends QuizQuestionResponse {
     // Need to add the alternatives not answered by the user.
     // Create dummy elements for these:
     foreach ($elements as $el) {
-      if(!in_array($el->label->id, $elements_answered)) {
+      if (!in_array($el->label->id, $elements_answered)) {
         $element = array(
-        	'feedback_wrong' => '',
-        	'feedback_correct' => '',
-        	'color' => $el->color,
-            'label' => $el->label,
+            'feedback_wrong'   => '',
+            'feedback_correct' => '',
+            'color'            => $el->color,
+            'label'            => $el->label,
         );
         $answers->elements[] = $element;
       }
 
-      if(!in_array($el->hotspot->id, $elements_answered)) {
+      if (!in_array($el->hotspot->id, $elements_answered)) {
         $element = array(
-        	'feedback_wrong' => '',
-        	'feedback_correct' => '',
-        	'color' => $el->color,
-            'hotspot' => $el->hotspot,
+            'feedback_wrong'   => '',
+            'feedback_correct' => '',
+            'color'            => $el->color,
+            'hotspot'          => $el->hotspot,
         );
         $answers->elements[] = $element;
       }
@@ -497,7 +497,7 @@ class DDLinesResponse extends QuizQuestionResponse {
     $settings['hotspot']['radius'] = $this->question->hotspot_radius;
 
     // Image path:
-    $settings['quiz_imagepath'] = base_path() . drupal_get_path('module', 'quiz_ddlines').'/theme/images/';
+    $settings['quiz_imagepath'] = base_path() . drupal_get_path('module', 'quiz_ddlines') . '/theme/images/';
 
     drupal_add_js(array('quiz_ddlines' => $settings), 'setting');
 
@@ -507,7 +507,7 @@ class DDLinesResponse extends QuizQuestionResponse {
   }
 
   private function getElementColor($list, $id) {
-    foreach($list as $element) {
+    foreach ($list as $element) {
       if ($element->label->id == $id) {
         return $element->color;
       }
@@ -515,7 +515,7 @@ class DDLinesResponse extends QuizQuestionResponse {
   }
 
   private function getHotspot($list, $id) {
-    foreach($list as $element) {
+    foreach ($list as $element) {
       if ($element->hotspot->id == $id) {
         return $element->hotspot;
       }
@@ -523,7 +523,7 @@ class DDLinesResponse extends QuizQuestionResponse {
   }
 
   private function getLabel($list, $id) {
-    foreach($list as $element) {
+    foreach ($list as $element) {
       if ($element->label->id == $id) {
         return $element->label;
       }
@@ -532,7 +532,7 @@ class DDLinesResponse extends QuizQuestionResponse {
 
   private function isAnswerCorrect($list, $label_id, $hotspot_id) {
     foreach ($list as $element) {
-      if($element->label->id == $label_id) {
+      if ($element->label->id == $label_id) {
         return ($element->hotspot->id == $hotspot_id);
       }
     }
@@ -549,10 +549,10 @@ class DDLinesResponse extends QuizQuestionResponse {
 
     // Iterate through the correct answers, and check
     // the users answer:
-    foreach(json_decode($this->question->ddlines_elements)->elements as $element) {
+    foreach (json_decode($this->question->ddlines_elements)->elements as $element) {
       $source_id = $element->label->id;
 
-      if(isset($this->user_answers[$source_id])) {
+      if (isset($this->user_answers[$source_id])) {
         $results[$element->label->id] = ($this->user_answers[$source_id] == $element->hotspot->id) ? AnswerStatus::CORRECT : AnswerStatus::WRONG;
       }
       else {
@@ -562,4 +562,5 @@ class DDLinesResponse extends QuizQuestionResponse {
 
     return $results;
   }
+
 }

@@ -119,6 +119,11 @@ function quiz_question_get_provider(&$question, $cache = FALSE) {
     $question = quiz_question_entity_load(NULL, $question->vid);
   }
 
+  // @TODO: Remove debugging code
+  if (!$question instanceof \Drupal\quiz_question\Entity\Question) {
+    return;
+  }
+
   // No cached instance of QuizQuestion has been returned. We construct a new instance
   $plugin_info = $question->getPluginInfo();
   if (!$constructor = $plugin_info['question provider']) {

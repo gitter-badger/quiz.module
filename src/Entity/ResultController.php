@@ -66,26 +66,28 @@ class ResultController extends EntityAPIController {
   private function loadLayout(Result $result) {
     $layout = entity_load('quiz_result_answer', FALSE, array('result_id' => $result->result_id));
 
-    foreach ($layout as $question) {
+    foreach ($layout as $answer) {
       // @kludge
       // This is bulky but now we have to manually find the type and parents of
       // the question. This is the only information that is not stored in the
-      // quiz attempt. We reference back to the node relationships for this
+      // quiz attempt. We reference back to the quiz relationships for this
       // current version to get the hieararchy.
-      $sql = "SELECT n.type, qnr.qr_id, qnr.qr_pid
-        FROM {quiz_results} result
-          INNER JOIN {quiz_relationship} qnr ON result.quiz_vid = qnr.quiz_vid
-          INNER JOIN {node} n ON (qnr.question_nid = n.nid)
-        WHERE result.result_id = :result_id AND n.nid = :nid";
-      $extra = db_query($sql, array(
-          ':result_id' => $result->result_id,
-          ':nid'       => $question->question_nid))->fetch();
+      $select = db_select('quiz_results', 'result');
+      $select->innerJoin('quiz_relationship', 'relationship', 'result.quiz_vid = relationship.quiz_vid');
+      $select->innerJoin('quiz_question', 'question', 'relationship.question_nid = question.qid');
+      $extra = $select
+        ->fields('question', array('type'))
+        ->fields('relationship', array('qr_id', 'qr_pid'))
+        ->condition('result.result_id', $result->result_id)
+        ->condition('question.qid', $answer->question_nid)
+        ->execute()
+        ->fetch();
 
-      $result->layout[$question->number] = array(
-          'display_number' => $question->number,
-          'nid'            => $question->question_nid,
-          'vid'            => $question->question_vid,
-          'number'         => $question->number,
+      $result->layout[$answer->number] = array(
+          'display_number' => $answer->number,
+          'nid'            => $answer->question_nid,
+          'vid'            => $answer->question_vid,
+          'number'         => $answer->number,
           'type'           => $extra->type,
           'qr_id'          => $extra->qr_id,
           'qr_pid'         => $extra->qr_pid,

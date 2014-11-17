@@ -445,12 +445,12 @@ class MatchingResponse extends QuizQuestionResponse {
   /**
    * Constructor
    */
-  public function __construct($result_id, stdClass $question_node, $answer = NULL) {
-    parent::__construct($result_id, $question_node, $answer);
+  public function __construct($result_id, \Drupal\quiz_question\Entity\Question $question, $answer = NULL) {
+    parent::__construct($result_id, $question, $answer);
     if (!isset($answer)) {
       $res = db_query('SELECT ua.answer, score, ua.match_id FROM {quiz_matching_user_answers} ua
               JOIN {quiz_matching_node} n ON n.match_id = ua.match_id
-              WHERE n.nid = :nid AND n.vid = :vid AND ua.result_id = :result_id', array(':nid' => $question_node->nid, ':vid' => $question_node->vid, ':result_id' => $result_id));
+              WHERE n.nid = :nid AND n.vid = :vid AND ua.result_id = :result_id', array(':nid' => $question->nid, ':vid' => $question->vid, ':result_id' => $result_id));
       $this->answer = array();
       while ($obj = $res->fetch()) {
         $this->answer[$obj->match_id] = $obj->answer;

@@ -809,12 +809,12 @@ class MultichoiceResponse extends QuizQuestionResponse {
    * Constructor.
    *
    * @param type $result_id
-   * @param stdClass $question_node
+   * @param \Drupal\quiz_question\Entity\Question $question
    * @param type $values
    *   Form state values.
    */
-  public function __construct($result_id, stdClass $question_node, $values = NULL) {
-    parent::__construct($result_id, $question_node, $values['user_answer']);
+  public function __construct($result_id, \Drupal\quiz_question\Entity\Question $question, $values = NULL) {
+    parent::__construct($result_id, $question, $values['user_answer']);
     $this->user_answer_ids = array();
     // tries is the tries part of the post data
     if (isset($values['user_answer'])) {
