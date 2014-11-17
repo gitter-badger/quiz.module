@@ -138,12 +138,12 @@ class QuizEntity extends Entity {
    * @param Question $question
    * @return boolean
    */
-  public function addQuestion($question) {
+  public function addQuestion(Question $question) {
     $questions = $this->getQuestionIO()->getQuestionList();
 
     // Do not add a question if it's already been added.
     foreach ($questions as $_question) {
-      if ($question->vid == $_question->vid) {
+      if ($question->vid == $_question['vid']) {
         return FALSE;
       }
     }
