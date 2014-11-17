@@ -19,6 +19,26 @@ function quiz_question_permisison() {
       'restrict access' => TRUE,
   );
 
+  foreach (quiz_question_get_types() as $name => $info) {
+    $perms += array(
+        "create $name question"     => array(
+            'title' => t('%type_name: Create new question', array('%type_name' => $info->name)),
+        ),
+        "edit own $name question"   => array(
+            'title' => t('%type_name: Edit own question', array('%type_name' => $info->name)),
+        ),
+        "edit any $name question"   => array(
+            'title' => t('%type_name: Edit any question', array('%type_name' => $info->name)),
+        ),
+        "delete own $name question" => array(
+            'title' => t('%type_name: Delete own question', array('%type_name' => $info->name)),
+        ),
+        "delete any $name question" => array(
+            'title' => t('%type_name: Delete any question', array('%type_name' => $info->name)),
+        ),
+    );
+  }
+
   return $perms;
 }
 
