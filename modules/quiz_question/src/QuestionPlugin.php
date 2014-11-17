@@ -341,7 +341,7 @@ abstract class QuestionPlugin {
    * Element validator (for repeat until correct).
    */
   public static function elementValidate(&$element, &$form_state) {
-    $quiz = quiz_load(__quiz_get_context_id());
+    $quiz = quiz_load(quiz_get_id_from_url());
 
     $question_nid = $element['#array_parents'][1];
     $answer = $form_state['values']['question'][$question_nid];

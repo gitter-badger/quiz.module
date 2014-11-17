@@ -316,7 +316,7 @@ class QuizQuestionsForm extends BaseForm {
    * Validate that the supplied questions are real.
    */
   public function formValidate($form, $form_state) {
-    if (!$quiz = quiz_load(__quiz_get_context_id())) {
+    if (!$quiz = quiz_load(quiz_get_id_from_url())) {
       $msg = t('A critical error has occured. Please report error code 28 on the quiz project page.');
       form_set_error('changed', $msg);
       return;
@@ -389,7 +389,7 @@ class QuizQuestionsForm extends BaseForm {
    */
   public function formSubmit($form, &$form_state) {
     /* @var $quiz QuizEntity */
-    $quiz = quiz_load(__quiz_get_context_id());
+    $quiz = quiz_load(quiz_get_id_from_url());
 
     // Update the refresh latest quizzes table so that we know what the users latest quizzes are
     if (variable_get('quiz_auto_revisioning', 1)) {

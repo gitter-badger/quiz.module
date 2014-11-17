@@ -19,8 +19,6 @@ use Drupal\quiz\Quiz;
  * Then they are in quiz.pages.inc.
  *
  * Views support is included in includes/views/quiz.views.inc
- *
- * Functions start with __quiz_ will be removed.
  */
 define('QUIZ_VIEWS_DIR', drupal_get_path('module', 'quiz') . '/includes/views');
 
@@ -190,7 +188,7 @@ function quiz_has_been_answered($quiz) {
  * @return bool
  */
 function quiz_add_question_to_quiz($question) {
-  return quiz_load(__quiz_get_context_id())->addQuestion($question);
+  return quiz_load(quiz_get_id_from_url())->addQuestion($question);
 }
 
 /**
@@ -234,10 +232,6 @@ function quiz_icon($icon) {
   return theme('quiz_answer_result', array('type' => $icon));
 }
 
-// ---------------------
-//  Internal functions
-// ---------------------
-
 /**
  * Helper function used when validating integers.
  *
@@ -261,6 +255,6 @@ function quiz_valid_integer($value, $min = 1, $max = NULL) {
  * Get quiz ID from page context — /quiz/%
  * @return int
  */
-function __quiz_get_context_id() {
-  return (int) arg(1);
+function quiz_get_id_from_url($path = NULL) {
+  return (int) arg(1, $path);
 }

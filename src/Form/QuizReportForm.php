@@ -38,7 +38,7 @@ class QuizReportForm {
 
     if (arg(4) === 'feedback') {
       // @todo figure something better than args.
-      $quiz = quiz_load(__quiz_get_context_id());
+      $quiz = quiz_load(quiz_get_id_from_url());
       $quiz_id = $quiz->qid;
       if (empty($_SESSION['quiz'][$quiz_id])) { // Quiz is done.
         $form['finish'] = array('#type' => 'submit', '#value' => t('Finish'));
@@ -55,7 +55,7 @@ class QuizReportForm {
    * Submit handler to go to the next question from the question feedback.
    */
   public function formSubmitFeedback($form, &$form_state) {
-    $quiz_id = __quiz_get_context_id();
+    $quiz_id = quiz_get_id_from_url();
     $form_state['redirect'] = "quiz/{$quiz_id}/take/" . $_SESSION['quiz'][$quiz_id]['current'];
   }
 
