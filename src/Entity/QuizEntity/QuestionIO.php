@@ -169,51 +169,6 @@ class QuestionIO {
   }
 
   /**
-   * Retrieve list of published questions assigned to quiz.
-   *
-   * This function should be used for question browsers and similiar… It should
-   * not be used to decide what questions a user should answer when taking a
-   * quiz. quiz_build_question_list is written for that purpose.
-   *
-   * @return \Drupal\quiz_question\Entity\Question[]
-   */
-  public function getQuestions() {
-    $questions = array();
-    foreach ($this->getQuestionList() as $question) {
-      $questions[] = $this->reloadQuestion((object) $question);
-    }
-    return $questions;
-  }
-
-  /**
-   * Map node properties to a question object.
-   *
-   *  This was 'quiz_node_map($node)' before.
-   *
-   * @param array $row
-   *
-   * @return
-   *  Question object.
-   */
-  private function reloadQuestion($row) {
-    $question = node_load($row->nid, $row->vid);
-
-    // Append extra fields.
-    $question->question_status = isset($row->question_status) ? $row->question_status : QUESTION_NEVER;
-    if (isset($row->max_score)) {
-      $question->max_score = $row->max_score;
-    }
-    if (isset($row->auto_update_max_score)) {
-      $question->auto_update_max_score = $row->auto_update_max_score;
-    }
-    $question->latest_vid = $row->vid;
-    $question->weight = $row->weight;
-    $question->qr_id = $row->qr_id;
-    $question->qr_pid = $row->qr_pid;
-    return $question;
-  }
-
-  /**
    * Get all of the question nid/vids by taxonomy term ID.
    *
    * @param int $term_id
