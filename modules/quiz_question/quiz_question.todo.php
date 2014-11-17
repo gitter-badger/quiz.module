@@ -10,7 +10,7 @@ use Drupal\quiz_question\Entity\QuestionType;
 /**
  * Implements hook_permission()
  */
-function quiz_question_permisison() {
+function quiz_question_permission() {
   $perms = array();
 
   $perms['administer quiz questions'] = array(
