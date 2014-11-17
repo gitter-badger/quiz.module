@@ -24,6 +24,8 @@ function quiz_question_permisison() {
 
 /**
  * Get all question types.
+ *
+ * @return \Drupal\quiz_question\Entity\QuestionType[]
  */
 function quiz_question_get_types() {
   return entity_load_multiple_by_name('quiz_question_type');
