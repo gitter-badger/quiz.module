@@ -73,35 +73,37 @@ class QuizAnsweringForm {
     $form['#result'] = $this->result;
 
     foreach ($questions as $question) {
-      $question = quiz_question_get_provider($question);
-      $this->buildQuestionItem($question, $form, $form_state);
+      $provider = quiz_question_get_provider($question);
+      $this->buildQuestionItem($provider, $form, $form_state);
     }
 
     // Build buttons
-    $allow_skipping = isset($question->type) ? $question->type !== 'quiz_directions' : $question->question->type;
+    $allow_skipping = isset($question->type) ? $question->type !== 'quiz_directions' : $question->type;
     $this->buildSubmitButtons($form, $allow_skipping);
 
     return $form;
   }
 
-  private function buildQuestionItem($question_instance, &$form, $form_state) {
-    $question = $question_instance->question;
+  private function buildQuestionItem($question_provider, &$form, $form_state) {
+    $question = $question_provider->question;
 
     // Element for a single question
-    $element = $question_instance->getAnsweringForm($form_state, $this->result->result_id);
-    node_build_content($question, 'question');
-    unset($question->content['answers']);
-    $form['questions'][$question->nid] = array(
+    $element = $question_provider->getAnsweringForm($form_state, $this->result->result_id);
+
+    $output = entity_view('quiz_question', array($question));
+    unset($output['quiz_question'][$question->qid]['answers']);
+
+    $form['questions'][$question->qid] = array(
         '#attributes' => array('class' => array(drupal_html_class('quiz-question-' . $question->type))),
         '#type'       => 'container',
-        'header'      => $question->content,
-        'question'    => array('#tree' => TRUE, $question->nid => $element),
+        'header'      => $output,
+        'question'    => array('#tree' => TRUE, $question->qid => $element),
     );
 
     // Should we disable this question?
     if (empty($this->quiz->allow_change) && quiz_result_is_question_answered($this->result, $question)) {
       // This question was already answered, and not skipped.
-      $form['questions'][$question->nid]['#disabled'] = TRUE;
+      $form['questions'][$question->qid]['#disabled'] = TRUE;
     }
 
     if ($this->quiz->mark_doubtful) {
@@ -123,7 +125,7 @@ class QuizAnsweringForm {
         . '   AND question_vid = :question_vid';
       $form['is_doubtful']['#default_value'] = db_query($sql, array(
           ':result_id'    => $this->result->result_id,
-          ':question_nid' => $question->nid,
+          ':question_nid' => $question->qid,
           ':question_vid' => $question->vid))->fetchField();
     }
   }

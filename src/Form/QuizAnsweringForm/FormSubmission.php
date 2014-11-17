@@ -101,14 +101,15 @@ class FormSubmission extends TakingHelper {
     elseif (!empty($form_state['values']['question'])) {
       foreach (array_keys($form_state['values']['question']) as $question_id) {
         foreach ($this->result->layout as $item) {
-          if ($item['nid'] == $question_id) {
+          if ($question_id == $item['nid']) {
             $question_array = $item;
             $current_question = quiz_question_entity_load($item['nid'], $item['vid']);
           }
         }
 
-        $_answer = $form_state['values']['question'][$question_id];
-        $instance = quiz_answer_controller()->getInstance($this->result->result_id, $current_question, $_answer);
+        $answer_value = $form_state['values']['question'][$question_id];
+
+        $instance = quiz_answer_controller()->getInstance($this->result->result_id, $current_question, $answer_value);
         $instance->delete();
         $instance->saveResult();
         $response = $instance->toBareObject();
