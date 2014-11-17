@@ -44,7 +44,9 @@ abstract class QuizQuestionTestCase extends QuizTestCase {
       unset($values['body']);
     }
 
-    return entity_create('quiz_question', $values);
+    $question = entity_create('quiz_question', $values);
+    $question->save();
+    return $question;
   }
 
 }
