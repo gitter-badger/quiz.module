@@ -345,7 +345,7 @@ abstract class QuestionPlugin {
 
     $question_nid = $element['#array_parents'][1];
     $answer = $form_state['values']['question'][$question_nid];
-    $current_question = node_load($question_nid);
+    $current_question = quiz_question_entity_load($question_nid);
 
     // There was an answer submitted.
     $response = quiz_answer_controller()->getInstance($_SESSION['quiz'][$quiz->qid]['result_id'], $current_question, $answer);

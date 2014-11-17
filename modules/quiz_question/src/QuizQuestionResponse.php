@@ -299,10 +299,10 @@ abstract class QuizQuestionResponse {
    *  FAPI form array holding the question
    */
   public function getReportFormQuestion() {
-    $node = node_load($this->question->nid);
-    $node->no_answer_form = TRUE;
-    node_build_content($node, 'question');
-    return $node->content;
+    $question = quiz_question_entity_load($this->question->nid);
+    $question->no_answer_form = TRUE;
+    node_build_content($question, 'question');
+    return $question->content;
   }
 
   /**

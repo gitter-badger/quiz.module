@@ -58,7 +58,7 @@ class FormSubmission extends TakingHelper {
   public function formBlankSubmit($form, &$form_state) {
     foreach (array_keys($form_state['input']['question']) as $question_id) {
       // Loop over all question inputs provided, and record them as skipped.
-      $question = node_load($question_id);
+      $question = quiz_question_entity_load($question_id);
 
       // Delete the user's answer.
       quiz_answer_controller()->getInstance($this->result->result_id, $question)
@@ -103,15 +103,15 @@ class FormSubmission extends TakingHelper {
         foreach ($this->result->layout as $item) {
           if ($item['nid'] == $question_id) {
             $question_array = $item;
-            $current_question = node_load($item['nid'], $item['vid']);
+            $current_question = quiz_question_entity_load($item['nid'], $item['vid']);
           }
         }
 
         $_answer = $form_state['values']['question'][$question_id];
-        $qi_instance = quiz_answer_controller()->getInstance($this->result->result_id, $current_question, $_answer);
-        $qi_instance->delete();
-        $qi_instance->saveResult();
-        $response = $qi_instance->toBareObject();
+        $instance = quiz_answer_controller()->getInstance($this->result->result_id, $current_question, $_answer);
+        $instance->delete();
+        $instance->saveResult();
+        $response = $instance->toBareObject();
         quiz_result_controller()
           ->getWriter()
           ->saveQuestionResult($this->quiz, $response, array('set_msg' => TRUE, 'question_data' => $question_array));
@@ -173,7 +173,7 @@ class FormSubmission extends TakingHelper {
     // have pages of unanswered questions. Also kills a lot of the skip code that
     // was necessary before.
     foreach ($this->result->layout as $qinfo) {
-      $current_question = node_load($qinfo['nid'], $qinfo['vid']);
+      $current_question = quiz_question_entity_load($qinfo['nid'], $qinfo['vid']);
 
       foreach ($this->result->layout as $question) {
         if ($question['nid'] == $current_question->nid) {

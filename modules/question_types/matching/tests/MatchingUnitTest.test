@@ -50,12 +50,9 @@ class MatchingTestCase extends QuizQuestionTestCase {
     }
 
     // create drupal node
-    $node = $this->drupalCreateNode($settings);
-    $load = node_load($node->nid);
-
-    // @todo verify save
-
-    return $load;
+    // @TODO verify save
+    $question = $this->drupalCreateNode($settings);
+    return quiz_question_entity_load($question->nid);
   }
 
 }

@@ -145,11 +145,11 @@ class AccessHelper {
     $question_index = $page_number;
     $qinfo_last = $page_number == 1 ? NULL : $result->layout[$question_index - 1];
     $qinfo = $result->layout[$question_index];
-    $question_node = node_load($qinfo['nid'], $qinfo['vid']);
-    $question_node_last = node_load($qinfo_last['nid'], $qinfo_last['vid']);
+    $question = quiz_question_entity_load($qinfo['nid'], $qinfo['vid']);
+    $question_last = quiz_question_entity_load($qinfo_last['nid'], $qinfo_last['vid']);
 
     // No backwards navigation & Already have an answer for the requested question.
-    if (!$quiz->backwards_navigation && quiz_result_is_question_answered($result, $question_node)) {
+    if (!$quiz->backwards_navigation && quiz_result_is_question_answered($result, $question)) {
       return FALSE;
     }
 
@@ -159,7 +159,7 @@ class AccessHelper {
     }
 
     // Enforce normal navigation. Previous answer was submitted.
-    if (!quiz_result_is_question_answered($result, $question_node_last)) {
+    if (!quiz_result_is_question_answered($result, $question_last)) {
       return FALSE;
     }
 

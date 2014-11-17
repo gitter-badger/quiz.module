@@ -35,28 +35,28 @@ function short_answer_edit_score($vid, $result_id) {
     return;
   }
 
-  $node = node_load($nid, $vid);
-  if (!$node || $node->type != 'short_answer') {
+  $question = quiz_question_entity_load($nid, $vid);
+  if (!$question || $question->type !== 'short_answer') {
     drupal_not_found();
     return;
   }
 
-  $answer = (object) short_answer_get_answer($node->nid, $node->vid, $result_id);
+  $answer = (object) short_answer_get_answer($question->nid, $question->vid, $result_id);
   if (!$answer) {
     drupal_not_found();
     return;
   }
 
-  if ($node->max_score > 0) {
-    $answer->rel_score = round($answer->score * $answer->rel_max_score / $node->max_score);
+  if ($question->max_score > 0) {
+    $answer->rel_score = round($answer->score * $answer->rel_max_score / $question->max_score);
   }
   else {
     $answer->rel_score = 0;
   }
 
-  drupal_set_title(t('Score answer to "@title"', array('@title' => $node->title)), PASS_THROUGH);
+  drupal_set_title(t('Score answer to "@title"', array('@title' => $question->title)), PASS_THROUGH);
 
-  return drupal_get_form('short_answer_score_form', $node, $answer);
+  return drupal_get_form('short_answer_score_form', $question, $answer);
 }
 
 /**

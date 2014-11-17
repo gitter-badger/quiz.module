@@ -61,7 +61,7 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
     $settings['alternatives'][2]['score_if_chosen'] = 0;
     $settings['alternatives'][2]['score_if_not_chosen'] = 0;
 
-    $question = node_load($this->drupalCreateNode($settings)->nid);
+    $question = quiz_question_entity_load($this->drupalCreateNode($settings)->nid);
 
     $this->assertNotNull($question->alternatives[0]['id'], 'Alternative A was created as part of question save.');
     $this->assertNotNull($question->alternatives[1]['id'], 'Alternative B was created as part of question save.');
@@ -171,9 +171,9 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
   function testReorderingUI() {
     $this->drupalLogin($this->admin);
     $this->drupalGet('node/add/multichoice');
-    $question_node = $this->testCreateQuizQuestion();
-    $quiz = $this->linkQuestionToQuiz($question_node);
-    $this->drupalGet("node/$question_node->nid/edit");
+    $question = $this->testCreateQuizQuestion();
+    $quiz = $this->linkQuestionToQuiz($question);
+    $this->drupalGet("node/$question->nid/edit");
     $this->drupalPost(NULL, array(
         'alternatives[0][answer][value]' => 'Correct answer 1',
         'alternatives[0][weight]'        => 1,
@@ -190,19 +190,19 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
     $this->assertTrue($a < $b, 'A comes before B');
     $this->assertTrue($b < $c, 'B comes before C');
 
-    $this->drupalPost(NULL, array("question[$question_node->nid][user_answer]" => 1), t('Finish'));
+    $this->drupalPost(NULL, array("question[$question->nid][user_answer]" => 1), t('Finish'));
     $this->assertText('You got 1 of 1 possible points.');
     $this->assertText('Your score: 100%');
 
     // Now screw them up.
-    $this->drupalGet("node/$question_node->nid/edit");
+    $this->drupalGet("node/$question->nid/edit");
     $this->drupalPost(NULL, array(
         'alternatives[0][weight]' => 3,
         'alternatives[1][weight]' => 2,
         'alternatives[2][weight]' => 1), t('Save'));
-    $question_node = node_load($question_node->nid);
+    $question = quiz_question_entity_load($question->nid);
     $this->drupalGet("quiz/$quiz->qid/questions");
-    $this->drupalPost(NULL, array("revision[$question_node->nid-$question_node->vid]" => TRUE), t('Submit'));
+    $this->drupalPost(NULL, array("revision[$question->nid-$question->vid]" => TRUE), t('Submit'));
 
     // Take the quiz again.
     $this->drupalGet("quiz/$quiz->qid/take");
@@ -214,7 +214,7 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
     $this->assertTrue($b > $c, 'B comes after C');
 
     // Check that the correct answer did not change even with the weight adjustment.
-    $this->drupalPost(NULL, array("question[$question_node->nid][user_answer]" => 4), t('Finish'));
+    $this->drupalPost(NULL, array("question[$question->nid][user_answer]" => 4), t('Finish'));
     $this->assertText('You got 1 of 1 possible points.');
     $this->assertText('Your score: 100%');
   }

@@ -63,7 +63,7 @@ class QuizReportForm {
    * Validate a single question sub-form.
    */
   public static function validateElement(&$element, &$form_state) {
-    $question = node_load($element['nid']['#value'], $element['vid']['#value']);
+    $question = quiz_question_entity_load($element['nid']['#value'], $element['vid']['#value']);
     if ($quizQuestionResponse = quiz_answer_controller()->getInstance($element['result_id']['#value'], $question)) {
       $quizQuestionResponse->getReportFormValidate($element, $form_state);
     }

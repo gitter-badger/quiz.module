@@ -58,7 +58,7 @@ class NodeInsertHelper extends NodeHelper {
   }
 
   private function copyQuestion($quiz, $relationship) {
-    $original_question = node_load($relationship->question_nid);
+    $original_question = quiz_question_entity_load($relationship->question_nid);
 
     // Set variables we can't or won't carry with us to the translated node to NULL.
     $original_question->nid = $original_question->vid = $original_question->created = $original_question->changed = NULL;

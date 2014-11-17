@@ -38,7 +38,7 @@ class QuizAnsweringForm {
    */
   public static function findPageQuestions($result, $page) {
     $page_id = NULL;
-    $questions = array(node_load($page->nid));
+    $questions = array(quiz_question_entity_load($page->nid));
 
     foreach ($result->layout as $item) {
       if ($item['vid'] == $page->vid) {
@@ -49,7 +49,7 @@ class QuizAnsweringForm {
 
     foreach ($result->layout as $item) {
       if ($page_id == $item['qr_pid']) {
-        $questions[] = node_load($item['nid']);
+        $questions[] = quiz_question_entity_load($item['nid']);
       }
     }
 
@@ -192,7 +192,7 @@ class QuizAnsweringForm {
     }
 
     foreach (array_keys($form_state['values']['question']) as $question_id) {
-      if ($current_question = node_load($question_id)) {
+      if ($current_question = quiz_question_entity_load($question_id)) {
         // There was an answer submitted.
         quiz_question_get_provider($current_question)->getAnsweringFormValidate($form, $form_state);
       }

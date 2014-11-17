@@ -24,7 +24,7 @@ class Relationship extends Entity {
    * @return Question
    */
   public function getQuestion() {
-    return node_load($this->question_nid, $this->question_vid);
+    return quiz_question_entity_load($this->question_nid, $this->question_vid);
   }
 
 }
