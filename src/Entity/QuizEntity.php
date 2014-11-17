@@ -149,9 +149,7 @@ class QuizEntity extends Entity {
     }
 
     // Otherwise let's add a relationship!
-    $question->getPlugin()->saveRelationships($this->qid, $this->vid);
-
-    return TRUE;
+    return $question->getPlugin()->saveRelationships($this->qid, $this->vid);
   }
 
 }
