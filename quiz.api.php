@@ -37,10 +37,10 @@ function hook_quiz_question_info() {
 }
 
 /**
- * Implements hook_quiz_question_plugin_info_alter().
+ * Implements hook_quiz_question_info_alter().
  */
-function hook_quiz_question_plugin_info_alter(&$info) {
-
+function hook_quiz_question_info_alter(&$info) {
+  // …
 }
 
 /**

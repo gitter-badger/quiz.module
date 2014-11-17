@@ -39,7 +39,7 @@ function quiz_question_get_plugin_info($name = NULL, $reset = FALSE) {
         $info[$type] = $definition;
       }
     }
-    drupal_alter('quiz_question_plugin_info', $info);
+    drupal_alter('quiz_question_info', $info);
   }
   return NULL !== $name ? $info[$name] : $info;
 }
