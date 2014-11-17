@@ -30,7 +30,7 @@ class QuizQuestionFeedbackController {
   public function buildRenderArray($question) {
     require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'quiz') . '/quiz.pages.inc';
 
-    $types = quiz_get_question_types();
+    $types = quiz_question_get_info();
     $module = $types[$question->type]['module'];
 
     // Invoke hook_get_report().

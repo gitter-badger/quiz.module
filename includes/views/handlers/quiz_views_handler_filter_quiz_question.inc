@@ -8,15 +8,15 @@ class quiz_views_handler_filter_quiz_question extends views_handler_filter_boole
   function query() {
     $this->ensure_my_table();
     $field = "$this->table_alias.$this->real_field";
-    $types = array_keys(quiz_get_question_types());
+    $types = array_keys(quiz_question_get_info());
     $in = $this->value ? 'IN' : 'NOT IN';
     $this->query->add_where($this->options['group'], db_and()->condition($field, $types, $in));
   }
 
   function get_value_options() {
     $this->value_options = array(
-      1 => t('Yes'),
-      0 => t('No'),
+        1 => t('Yes'),
+        0 => t('No'),
     );
   }
 

@@ -245,7 +245,7 @@ class QuizHelper {
    *   hook.
    */
   public function getQuestionModuleFromType($question_type) {
-    $types = quiz_get_question_types();
+    $types = quiz_question_get_info();
     if (!isset($types[$question_type])) {
       drupal_set_message(t('The module for the questiontype %type is not enabled', array('%type' => $question_type)), 'warning');
       return FALSE;

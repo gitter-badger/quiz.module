@@ -3,7 +3,6 @@
 namespace Drupal\quiz\Entity\QuizEntity;
 
 use Drupal\quiz\Entity\QuizEntity;
-use Drupal\quiz_question\Entity\Question;
 use PDO;
 
 class QuestionIO {
@@ -15,10 +14,31 @@ class QuestionIO {
   }
 
   /**
+   * Retrieves a list of questions (to be taken) for a given quiz.
+   *
+   * If the quiz has random questions this function only returns a random
+   * selection of those questions. This function should be used to decide
+   * what questions a quiz taker should answer.
+   *
+   * This question list is stored in the user's result, and may be different
+   * when called multiple times. It should only be used to generate the layout
+   * for a quiz attempt and NOT used to do operations on the questions inside of
+   * a quiz.
+   *
+   * @return array[] Array of question info.
+   */
+  public function getQuestionList() {
+    if (QUESTION_CATEGORIZED_RANDOM == $this->quiz->randomization) {
+      $questions = $this->buildCategoziedQuestionList();
+    }
+    return $questions = $this->getRequiredQuestions();
+  }
+
+  /**
    * Builds the questionlist for quizzes with categorized random questions
    */
   public function buildCategoziedQuestionList() {
-    if (!$question_types = array_keys(quiz_get_question_types())) {
+    if (!$question_types = array_keys(quiz_question_get_info())) {
       return array();
     }
 
@@ -53,27 +73,6 @@ class QuestionIO {
       }
     }
     return $questions;
-  }
-
-  /**
-   * Retrieves a list of questions (to be taken) for a given quiz.
-   *
-   * If the quiz has random questions this function only returns a random
-   * selection of those questions. This function should be used to decide
-   * what questions a quiz taker should answer.
-   *
-   * This question list is stored in the user's result, and may be different
-   * when called multiple times. It should only be used to generate the layout
-   * for a quiz attempt and NOT used to do operations on the questions inside of
-   * a quiz.
-   *
-   * @return array[] Array of question info.
-   */
-  public function getQuestionList() {
-    if (QUESTION_CATEGORIZED_RANDOM == $this->quiz->randomization) {
-      $questions = $this->buildCategoziedQuestionList();
-    }
-    return $questions = $this->getRequiredQuestions();
   }
 
   /**
@@ -198,7 +197,7 @@ class QuestionIO {
         ->fields('n', array('nid', 'vid'))
         ->condition('n.status', 1)
         ->condition('tn.tid', $term_ids)
-        ->condition('n.type', array_keys(quiz_get_question_types()))
+        ->condition('n.type', array_keys(quiz_question_get_info()))
         ->orderRandom()
         ->range(0, $amount)
         ->execute()->fetchAll(PDO::FETCH_ASSOC);

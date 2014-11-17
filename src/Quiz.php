@@ -140,7 +140,7 @@ class Quiz {
    */
   function getVocabularies() {
     $vocabularies = array();
-    $types = array_keys(quiz_get_question_types());
+    $types = array_keys(quiz_question_get_info());
     foreach ($types as $type) {
       foreach (taxonomy_get_vocabularies($type) as $vid => $vocabulary) {
         $vocabularies[$vid] = $vocabulary;

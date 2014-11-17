@@ -21,31 +21,6 @@ require_once dirname(__FILE__) . '/quiz_question.hooks.inc';
 require_once dirname(__FILE__) . '/quiz_question.todo.php';
 
 /**
- * Retrieve list of question types.
- *
- * @TODO Duplication of quiz_question_get_info.
- *
- * @return
- *  Array of question types.
- */
-function quiz_get_question_types() {
-  static $question_types = array();
-
-  // We vastly improves performance by statically caching the question types.
-  if (!empty($question_types)) {
-    return $question_types;
-  }
-
-  // Get question types from the modules that defines them.
-  if (!$question_types = module_invoke_all('quiz_question_info')) {
-    $msg = t('You need to install and enable at least one question type (multichoice for instance) to use quiz.');
-    throw new RuntimeException($msg);
-  }
-
-  return $question_types;
-}
-
-/**
  * Get the information about various implementations of quiz questions.
  *
  * @param string $name
@@ -58,7 +33,6 @@ function quiz_get_question_types() {
  */
 function quiz_question_get_info($name = NULL, $reset = FALSE) {
   $info = &drupal_static(__FUNCTION__, array());
-
   if (empty($info) || $reset) {
     foreach (module_invoke_all('quiz_question_info') as $type => $definition) {
       if (!empty($definition['question provider'])) { # We only want the ones with classes.
@@ -67,7 +41,6 @@ function quiz_question_get_info($name = NULL, $reset = FALSE) {
     }
     drupal_alter('quiz_question_info', $info);
   }
-
   return NULL !== $name ? $info[$name] : $info;
 }
 
