@@ -79,28 +79,20 @@ class QuestionIO {
    * @return array
    */
   private function getRequiredQuestions() {
-    // Get required questions first.
-    $query = db_query('
-        SELECT
-          relationship.question_nid as nid,
-          relationship.question_vid as vid,
-          question.type,
-          relationship.qr_id,
-          relationship.qr_pid,
-          relationship.weight
-        FROM {quiz_relationship} relationship
-          JOIN {node} question ON relationship.question_nid = question.nid
-          LEFT JOIN {quiz_relationship} sub_relationship ON (
-              relationship.qr_pid = sub_relationship.qr_id
-              OR (relationship.qr_pid IS NULL AND relationship.qr_id = sub_relationship.qr_id)
-          )
-        WHERE relationship.quiz_vid = :quiz_vid
-          AND relationship.question_status = :question_status
-          AND question.status = 1
-        ORDER BY sub_relationship.weight, relationship.weight', array(
-        ':quiz_vid'        => $this->quiz->vid,
-        ':question_status' => QUESTION_ALWAYS
-    ));
+    $select = db_select('quiz_relationship', 'relationship');
+    $select->innerJoin('node', 'question', 'relationship.question_nid = question.nid');
+    $select->leftJoin('quiz_relationship', 'sub_relationship', 'relationship.qr_pid = sub_relationship.qr_id OR OR (relationship.qr_pid IS NULL AND relationship.qr_id = sub_relationship.qr_id)');
+    $select->addField('relationship', 'question_nid', 'nid');
+    $select->addField('relationship', 'question_vid', 'vid');
+    $select->addField('question', 'type');
+    $select->fields('relationship', array('qr_id', 'qr_pid', 'weight'));
+    $query = $select
+      ->condition('relationship.quiz_vid', $this->quiz->vid)
+      ->condition('relationship.question_status', QUESTION_ALWAYS)
+      ->condition('question.status', 1)
+      ->orderBy('sub_relationship.weight')
+      ->orderBy('relationship.weight')
+      ->execute();
 
     // Just to make it easier on us, let's use a 1-based index.
     $i = 1;
