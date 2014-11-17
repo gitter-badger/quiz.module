@@ -41,6 +41,15 @@ function quiz_question_get_plugin_info($name = NULL, $reset = FALSE) {
     }
     drupal_alter('quiz_question_info', $info);
   }
+
+  // Question provider must be instance of QuizQuestion class.
+  foreach ($info as $name => $plugin_info) {
+    if (!is_subclass_of($plugin_info['question provider'], 'QuestionPlugin')) {
+      $msg = t("The question-type %name isn't a QuizQuestion. It needs to extend the QuizQuestion class.", array('%name' => $name));
+      drupal_set_message($msg, 'error', FALSE);
+    }
+  }
+
   return NULL !== $name ? $info[$name] : $info;
 }
 
