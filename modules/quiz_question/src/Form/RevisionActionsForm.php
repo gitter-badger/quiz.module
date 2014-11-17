@@ -34,7 +34,7 @@ class RevisionActionsForm {
     $quiz_vids = array();
     foreach ($_SESSION['quiz_question_kept'] as $nid_vid) {
       list($nid, $vid) = explode('-', $nid_vid);
-      if (_quiz_is_int($nid, 0) && _quiz_is_int($vid, 0)) {
+      if (quiz_valid_integer($nid, 0) && quiz_valid_integer($vid, 0)) {
         $quiz_qids[] = $nid;
         $quiz_vids[] = $vid;
       }

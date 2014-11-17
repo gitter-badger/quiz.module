@@ -331,12 +331,12 @@ class QuizQuestionsForm extends BaseForm {
     $weight_map = $form_state['values']['weights'];
 
     // Make sure the number of random questions is a positive number
-    if (isset($form_state['values']['num_random_questions']) && !_quiz_is_int($form_state['values']['num_random_questions'], 0)) {
+    if (isset($form_state['values']['num_random_questions']) && !quiz_valid_integer($form_state['values']['num_random_questions'], 0)) {
       form_set_error('num_random_questions', 'The number of random questions needs to be a positive number');
     }
 
     // Make sure the max score for random questions is a positive number
-    if (isset($form_state['values']['max_score_for_random']) && !_quiz_is_int($form_state['values']['max_score_for_random'], 0)) {
+    if (isset($form_state['values']['max_score_for_random']) && !quiz_valid_integer($form_state['values']['max_score_for_random'], 0)) {
       form_set_error('max_score_for_random', 'The max score for random questions needs to be a positive number');
     }
 
@@ -376,7 +376,7 @@ class QuizQuestionsForm extends BaseForm {
     // We make sure max score is a positive number
     $max_scores = $form_state['values']['max_scores'];
     foreach ($max_scores as $id => $max_score) {
-      if (!_quiz_is_int($max_score, 0)) {
+      if (!quiz_valid_integer($max_score, 0)) {
         form_set_error("max_scores][$id", t('Max score needs to be a positive number'));
       }
     }

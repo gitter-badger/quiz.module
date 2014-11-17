@@ -59,8 +59,10 @@ define('QUIZ_KEEP_ALL', 2);
  * @return \Drupal\quiz\Quiz
  */
 function quiz($className = 'Drupal\quiz\Quiz') {
-  static $obj;
-  return null === $obj ? ($obj = new $className) : $obj;
+  if (!$obj = &drupal_static(__FUNCTION__)) {
+    $obj = new $className;
+  }
+  return $obj;
 }
 
 /**
@@ -249,24 +251,16 @@ function quiz_icon($icon) {
  * @return
  *   TRUE if integer in the allowed range. FALSE otherwise.
  */
-function _quiz_is_int($value, $min = 1, $max = NULL) {
+function quiz_valid_integer($value, $min = 1, $max = NULL) {
   $to_return = ((string) $value === (string) (int) $value);
-
-  if (!$to_return) { // $value is not an integer.
-    return FALSE;
-  }
-
-  if ($value < $min) { // $value is too small.
-    return FALSE;
-  }
-
-  if (isset($max) && $value > $max) { // $value is too big.
-    return FALSE;
-  }
-
-  return TRUE; // $value is an integer in the allowed range.
+  // $value must be an integer, not too small, not too big.
+  return !$to_return || ($value < $min) || (isset($max) && $value > $max);
 }
 
+/**
+ * Get quiz ID from page context — /quiz/%
+ * @return int
+ */
 function __quiz_get_context_id() {
   return (int) arg(1);
 }

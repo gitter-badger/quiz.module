@@ -102,7 +102,7 @@ class QuizCategorizedForm extends BaseForm {
     /* @var $quiz QuizEntity */
     $quiz = $form['#quiz'];
 
-    if (!_quiz_is_int($quiz->qid)) {
+    if (!quiz_valid_integer($quiz->qid)) {
       $msg = t('A critical error has occured. Please report error code 28 on the quiz project page.');
       form_set_error('changed', $msg);
       return;
@@ -136,11 +136,11 @@ class QuizCategorizedForm extends BaseForm {
         form_set_value($form['tid'], $tid, $form_state);
       }
 
-      if (!_quiz_is_int($form_state['values']['number'])) {
+      if (!quiz_valid_integer($form_state['values']['number'])) {
         form_set_error('number', t('The number of questions needs to be a positive integer'));
       }
 
-      if (!_quiz_is_int($form_state['values']['max_score'], 0)) {
+      if (!quiz_valid_integer($form_state['values']['max_score'], 0)) {
         form_set_error('max_score', t('The max score needs to be a positive integer or 0'));
       }
     }

@@ -145,7 +145,7 @@ function short_answer_score_form_validate($form, $form_state) {
   $max = (int) $form_state['values']['rel_max_score'];
   $given = (int) $form_state['values']['score'];
 
-  if (!_quiz_is_int($form_state['values']['score'], 0, $max)) {
+  if (!quiz_valid_integer($form_state['values']['score'], 0, $max)) {
     $args = array('@score' => $given, '@max' => $max);
     form_error($form['score'], t('The score needs to be a number between 0 and @max', $args));
   }

@@ -57,7 +57,7 @@ class MultichoiceQuestion extends QuestionPlugin {
       for ($i = 0; isset($this->question->alternatives[$i]); $i++) {
         $short = &$this->question->alternatives[$i];
         $short['score_if_not_chosen'] = 0;
-        if (isset($short['correct']) && $short['correct'] == 1 && !_quiz_is_int($short['score_if_chosen'], 1)) {
+        if (isset($short['correct']) && $short['correct'] == 1 && !quiz_valid_integer($short['score_if_chosen'], 1)) {
           $short['score_if_chosen'] = 1;
         }
       }

@@ -13,13 +13,13 @@ class NodeValidateHelper {
     }
 
     if (!empty($quiz->pass_rate)) {
-      if (!_quiz_is_int($quiz->pass_rate, 0, 100)) {
+      if (!quiz_valid_integer($quiz->pass_rate, 0, 100)) {
         form_set_error('pass_rate', t('"Passing rate" must be a number between 0 and 100.'));
       }
     }
 
     if (isset($quiz->time_limit)) {
-      if (!_quiz_is_int($quiz->time_limit, 0)) {
+      if (!quiz_valid_integer($quiz->time_limit, 0)) {
         form_set_error('time_limit', t('"Time limit" must be a positive number.'));
       }
     }
@@ -59,7 +59,7 @@ class NodeValidateHelper {
     if ($node->pass_rate && (isset($option['option_start']) || isset($option['option_end']))) {
       // Check for a number between 0-100.
       foreach (array('option_start' => 'start', 'option_end' => 'end') as $bound => $bound_text) {
-        if (!_quiz_is_int($option[$bound], 0, 100)) {
+        if (!quiz_valid_integer($option[$bound], 0, 100)) {
           form_set_error($bound, t('The range %start value must be a number between 0 and 100.', array('%start' => $bound_text)));
         }
       }
