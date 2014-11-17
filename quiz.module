@@ -235,20 +235,22 @@ function quiz_icon($icon) {
 /**
  * Helper function used when validating integers.
  *
- * @param $value
+ * @param int $value
  *   The value to be validated.
- * @param $min
+ * @param int $min
  *   The minimum value $value is allowed to be.
- * @param $max
+ * @param int $max
  *   The maximum value $value is allowed to be.
  *
  * @return
  *   TRUE if integer in the allowed range. FALSE otherwise.
  */
 function quiz_valid_integer($value, $min = 1, $max = NULL) {
-  $to_return = ((string) $value === (string) (int) $value);
-  // $value must be an integer, not too small, not too big.
-  return !$to_return || ($value < $min) || (isset($max) && $value > $max);
+  $to_return = (string) $value === (string) (int) $value;
+  if ((!$to_return) || ($value < $min) || (isset($max) && ($value > $max))) {
+    return FALSE;
+  }
+  return TRUE;
 }
 
 /**
