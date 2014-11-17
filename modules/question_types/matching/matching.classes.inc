@@ -42,7 +42,7 @@ class MatchingQuestion extends QuestionPlugin {
     if ($is_new) {
       db_insert('quiz_matching_properties')
         ->fields(array(
-            'nid'            => $this->question->nid,
+            'nid'            => $this->question->qid,
             'vid'            => $this->question->vid,
             'choice_penalty' => $this->question->choice_penalty,
         ))
@@ -53,7 +53,7 @@ class MatchingQuestion extends QuestionPlugin {
         ->fields(array(
             'choice_penalty' => $this->question->choice_penalty,
         ))
-        ->condition('nid', $this->question->nid)
+        ->condition('nid', $this->question->qid)
         ->condition('vid', $this->question->vid)
         ->execute();
     }
@@ -66,7 +66,7 @@ class MatchingQuestion extends QuestionPlugin {
         if (!empty($match['question']) && !empty($match['answer'])) {
           $id = db_insert('quiz_matching_node')
             ->fields(array(
-                'nid'      => $this->question->nid,
+                'nid'      => $this->question->qid,
                 'vid'      => $this->question->vid,
                 'question' => $match['question'],
                 'answer'   => $match['answer'],
@@ -116,24 +116,24 @@ class MatchingQuestion extends QuestionPlugin {
   public function delete($only_this_version = FALSE) {
     parent::delete($only_this_version);
 
-    $delete_properties = db_delete('quiz_matching_properties')->condition('nid', $this->question->nid);
+    $delete_properties = db_delete('quiz_matching_properties')->condition('nid', $this->question->qid);
 
     if ($only_this_version) {
       $delete_properties->condition('vid', $this->question->vid);
 
-      $match_id = db_query('SELECT match_id FROM {quiz_matching_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->nid, ':vid' => $this->question->vid))->fetchCol();
+      $match_id = db_query('SELECT match_id FROM {quiz_matching_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->qid, ':vid' => $this->question->vid))->fetchCol();
       db_delete('quiz_matching_user_answers')
         ->condition('match_id', is_array($match_id) ? $match_id : array(0), 'IN')
         ->execute();
 
       db_delete('quiz_matching_node')
-        ->condition('nid', $this->question->nid)
+        ->condition('nid', $this->question->qid)
         ->condition('vid', $this->question->vid)
         ->execute();
     }
     // Delete all versions of this question.
     else {
-      $match_id = db_query('SELECT match_id FROM {quiz_matching_node} WHERE nid = :nid', array(':nid' => $this->question->nid))->fetchCol();
+      $match_id = db_query('SELECT match_id FROM {quiz_matching_node} WHERE nid = :nid', array(':nid' => $this->question->qid))->fetchCol();
       if (!empty($match_id)) {
         db_delete('quiz_matching_user_answers')
           ->condition('match_id', $match_id, 'IN')
@@ -141,7 +141,7 @@ class MatchingQuestion extends QuestionPlugin {
       }
 
       db_delete('quiz_matching_node')
-        ->condition('nid', $this->question->nid)
+        ->condition('nid', $this->question->qid)
         ->execute();
     }
 
@@ -160,14 +160,14 @@ class MatchingQuestion extends QuestionPlugin {
     $props = parent::getNodeProperties();
 
     $res_a = db_query('SELECT choice_penalty FROM {quiz_matching_properties}
-            WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->nid, ':vid' => $this->question->vid))->fetchAssoc();
+            WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->qid, ':vid' => $this->question->vid))->fetchAssoc();
 
     if (is_array($res_a)) {
       $props = array_merge($props, $res_a);
     }
 
     //$sql = "SELECT match_id, question, answer, feedback FROM {quiz_matching_node} WHERE nid = %d AND vid = %d";
-    $query = db_query('SELECT match_id, question, answer, feedback FROM {quiz_matching_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->nid, ':vid' => $this->question->vid));
+    $query = db_query('SELECT match_id, question, answer, feedback FROM {quiz_matching_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->qid, ':vid' => $this->question->vid));
     while ($result = $query->fetch()) {
       $props['match'][] = array(
           'match_id' => $result->match_id,
@@ -259,7 +259,7 @@ class MatchingQuestion extends QuestionPlugin {
    * Question response validator.
    */
   public function getAnsweringFormValidate(array &$form, array &$form_state = NULL) {
-    $question_answer = $form_state['values']['question'][$this->question->nid];
+    $question_answer = $form_state['values']['question'][$this->question->qid];
     foreach ($question_answer as $value) {
       if ($value != 'def') {
         return TRUE;
@@ -296,7 +296,7 @@ class MatchingQuestion extends QuestionPlugin {
   public function getSubquestions() {
     $matches = $select_option = array();
     //$sql = "SELECT match_id, question, answer, feedback FROM {quiz_matching_node} WHERE nid = %d AND vid = %d";
-    $query = db_query('SELECT match_id, question, answer, feedback FROM {quiz_matching_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->nid, ':vid' => $this->question->vid));
+    $query = db_query('SELECT match_id, question, answer, feedback FROM {quiz_matching_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->qid, ':vid' => $this->question->vid));
     while ($result = $query->fetch()) {
       $matches[] = array(
           'match_id' => $result->match_id,
@@ -388,7 +388,7 @@ class MatchingQuestion extends QuestionPlugin {
    */
   private function getDefaultAltSettings() {
     // If the node is being updated the default settings are those stored in the node
-    if (isset($this->question->nid)) {
+    if (isset($this->question->qid)) {
       $settings['choice_penalty'] = $this->question->choice_penalty;
     }
     // The user is creating his first matching node
@@ -423,7 +423,7 @@ class MatchingQuestion extends QuestionPlugin {
    */
   public function getCorrectAnswer() {
     $correct_answers = array();
-    $query = db_query('SELECT match_id, question, answer, feedback FROM {quiz_matching_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->nid, ':vid' => $this->question->vid));
+    $query = db_query('SELECT match_id, question, answer, feedback FROM {quiz_matching_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->qid, ':vid' => $this->question->vid));
     while ($result = $query->fetch()) {
       $correct_answers[$result->match_id] = array(
           'match_id' => $result->match_id,
@@ -486,7 +486,7 @@ class MatchingResponse extends QuizQuestionResponse {
    * @see QuizQuestionResponse#delete()
    */
   public function delete() {
-    $match_id = db_query('SELECT match_id FROM {quiz_matching_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->nid, ':vid' => $this->question->vid))->fetchCol();
+    $match_id = db_query('SELECT match_id FROM {quiz_matching_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->qid, ':vid' => $this->question->vid))->fetchCol();
     db_delete('quiz_matching_user_answers')
       ->condition('match_id', is_array($match_id) ? $match_id : array(0), 'IN')
       ->condition('result_id', $this->result_id)

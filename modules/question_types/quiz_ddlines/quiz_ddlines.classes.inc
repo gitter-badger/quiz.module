@@ -85,7 +85,7 @@ class DDLinesQuestion extends QuestionPlugin {
     drupal_add_library('system', 'ui.resizable');
 
     $default_settings['mode'] = 'edit';
-    $default_settings['editmode'] = isset($this->question->nid) ? 'update' : 'add';
+    $default_settings['editmode'] = isset($this->question->qid) ? 'update' : 'add';
     $form['#attached']['js'][] = array(
         'data' => array(
             'quiz_ddlines' => $default_settings
@@ -116,7 +116,7 @@ class DDLinesQuestion extends QuestionPlugin {
     $settings = array();
 
     // If the node exists, use saved value
-    if (isset($this->question->nid)) {
+    if (isset($this->question->qid)) {
       $settings['feedback']['enabled'] = $this->question->feedback_enabled;
       $settings['hotspot']['radius'] = $this->question->hotspot_radius;
       $settings['execution_mode'] = $this->question->execution_mode;
@@ -206,7 +206,7 @@ class DDLinesQuestion extends QuestionPlugin {
     if ($is_new || $this->question->revision == 1) {
       $id = db_insert('quiz_ddlines_node')
         ->fields(array(
-            'nid'              => $this->question->nid,
+            'nid'              => $this->question->qid,
             'vid'              => $this->question->vid,
             'feedback_enabled' => $this->question->feedback_enabled,
             'hotspot_radius'   => $this->question->hotspot_radius,
@@ -223,7 +223,7 @@ class DDLinesQuestion extends QuestionPlugin {
             'feedback_enabled' => $this->question->feedback_enabled,
             'execution_mode'   => $this->question->execution_mode,
         ))
-        ->condition('nid', $this->question->nid)
+        ->condition('nid', $this->question->qid)
         ->condition('vid', $this->question->vid)
         ->execute();
     }
@@ -240,7 +240,7 @@ class DDLinesQuestion extends QuestionPlugin {
     }
     $props = parent::getNodeProperties();
 
-    $res_a = db_query('SELECT feedback_enabled, hotspot_radius, ddlines_elements, execution_mode FROM {quiz_ddlines_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->nid, ':vid' => $this->question->vid))->fetchAssoc();
+    $res_a = db_query('SELECT feedback_enabled, hotspot_radius, ddlines_elements, execution_mode FROM {quiz_ddlines_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->qid, ':vid' => $this->question->vid))->fetchAssoc();
 
     if (is_array($res_a)) {
       $props = array_merge($props, $res_a);
@@ -268,8 +268,8 @@ class DDLinesQuestion extends QuestionPlugin {
    * @see QuizQuestion#delete()
    */
   public function delete($only_this_version = FALSE) {
-    $delete_node = db_delete('quiz_ddlines_node')->condition('nid', $this->question->nid);
-    $delete_results = db_delete('quiz_ddlines_user_answers')->condition('question_nid', $this->question->nid);
+    $delete_node = db_delete('quiz_ddlines_node')->condition('nid', $this->question->qid);
+    $delete_results = db_delete('quiz_ddlines_user_answers')->condition('question_nid', $this->question->qid);
 
     if ($only_this_version) {
       $delete_node->condition('vid', $this->question->vid);
@@ -279,10 +279,10 @@ class DDLinesQuestion extends QuestionPlugin {
     // Delete from table quiz_ddlines_user_answer_multi
     $user_answer_ids = array();
     if ($only_this_version) {
-      $query = db_query('SELECT id FROM {quiz_ddlines_user_answers} WHERE question_nid = :nid AND question_vid = :vid', array(':nid' => $this->question->nid, ':vid' => $this->question->vid));
+      $query = db_query('SELECT id FROM {quiz_ddlines_user_answers} WHERE question_nid = :nid AND question_vid = :vid', array(':nid' => $this->question->qid, ':vid' => $this->question->vid));
     }
     else {
-      $query = db_query('SELECT id FROM {quiz_ddlines_user_answers} WHERE question_nid = :nid', array(':nid' => $this->question->nid));
+      $query = db_query('SELECT id FROM {quiz_ddlines_user_answers} WHERE question_nid = :nid', array(':nid' => $this->question->qid));
     }
     while ($user_answer = $query->fetch()) {
       $user_answer_ids[] = $user_answer->id;
@@ -331,7 +331,7 @@ class DDLinesResponse extends QuizQuestionResponse {
     else {
       $res = db_query('SELECT label_id, hotspot_id FROM {quiz_ddlines_user_answers} ua
               LEFT OUTER JOIN {quiz_ddlines_user_answer_multi} uam ON(uam.user_answer_id = ua.id)
-              WHERE ua.result_id = :result_id AND ua.question_nid = :question_nid AND ua.question_vid = :question_vid', array(':result_id' => $result_id, ':question_nid' => $this->question->nid, ':question_vid' => $this->question->vid));
+              WHERE ua.result_id = :result_id AND ua.question_nid = :question_nid AND ua.question_vid = :question_vid', array(':result_id' => $result_id, ':question_nid' => $this->question->qid, ':question_vid' => $this->question->vid));
       while ($row = $res->fetch()) {
         $this->user_answers[$row->label_id] = $row->hotspot_id;
       }
@@ -344,7 +344,7 @@ class DDLinesResponse extends QuizQuestionResponse {
   public function save() {
     $user_answer_id = db_insert('quiz_ddlines_user_answers')
       ->fields(array(
-          'question_nid' => $this->question->nid,
+          'question_nid' => $this->question->qid,
           'question_vid' => $this->question->vid,
           'result_id'    => $this->result_id,
       ))
@@ -365,7 +365,7 @@ class DDLinesResponse extends QuizQuestionResponse {
   public function delete() {
 
     $user_answer_ids = array();
-    $query = db_query('SELECT id FROM {quiz_ddlines_user_answers} WHERE question_nid = :nid AND question_vid = :vid AND result_id = :result_id', array(':nid' => $this->question->nid, ':vid' => $this->question->vid, ':result_id' => $this->result_id));
+    $query = db_query('SELECT id FROM {quiz_ddlines_user_answers} WHERE question_nid = :nid AND question_vid = :vid AND result_id = :result_id', array(':nid' => $this->question->qid, ':vid' => $this->question->vid, ':result_id' => $this->result_id));
     while ($answer = $query->fetch()) {
       $user_answer_ids[] = $answer->id;
     }
@@ -378,7 +378,7 @@ class DDLinesResponse extends QuizQuestionResponse {
 
     db_delete('quiz_ddlines_user_answers')
       ->condition('result_id', $this->result_id)
-      ->condition('question_nid', $this->question->nid)
+      ->condition('question_nid', $this->question->qid)
       ->condition('question_vid', $this->question->vid)
       ->execute();
   }
@@ -408,7 +408,7 @@ class DDLinesResponse extends QuizQuestionResponse {
 
   public function getReportFormResponse() {
     // Have to do node_load, since quiz does not do this. Need the field_image…
-    $img_field = field_get_items('quiz_question', quiz_question_entity_load($this->question->nid), 'field_image');
+    $img_field = field_get_items('quiz_question', quiz_question_entity_load($this->question->qid), 'field_image');
     $img_rendered = theme('image', array('path' => image_style_url('large', $img_field[0]['uri'])));
 
     $image_path = base_path() . drupal_get_path('module', 'quiz_ddlines') . '/theme/images/';
@@ -416,17 +416,17 @@ class DDLinesResponse extends QuizQuestionResponse {
     $html = '<h3>' . t('Your answers') . '</h3>';
     $html .= '<div class="icon-descriptions"><div><img src="' . $image_path . 'icon_ok.gif">' . t('Means alternative is placed on the correct spot') . '</div>';
     $html .= '<div><img src="' . $image_path . 'icon_wrong.gif">' . t('Means alternative is placed on the wrong spot, or not placed at all') . '</div></div>';
-    $html .= '<div class="quiz-ddlines-user-answers" id="' . $this->question->nid . '">';
+    $html .= '<div class="quiz-ddlines-user-answers" id="' . $this->question->qid . '">';
     $html .= $img_rendered;
     $html .= '</div>';
     $html .= '<h3>' . t('Correct answers') . '</h3>';
-    $html .= '<div class="quiz-ddlines-correct-answers" id="' . $this->question->nid . '">';
+    $html .= '<div class="quiz-ddlines-correct-answers" id="' . $this->question->qid . '">';
     $html .= $img_rendered;
     $html .= '</div>';
 
     // No form to put things in, are therefore using the js settings instead
     $settings = array();
-    $correct_id = "correct-{$this->question->nid}";
+    $correct_id = "correct-{$this->question->qid}";
     $settings[$correct_id] = json_decode($this->question->ddlines_elements);
     $elements = $settings[$correct_id]->elements;
 
@@ -491,7 +491,7 @@ class DDLinesResponse extends QuizQuestionResponse {
       }
     }
 
-    $settings["answers-{$this->question->nid}"] = $answers;
+    $settings["answers-{$this->question->qid}"] = $answers;
     $settings['mode'] = 'result';
     $settings['execution_mode'] = $this->question->execution_mode;
     $settings['hotspot']['radius'] = $this->question->hotspot_radius;

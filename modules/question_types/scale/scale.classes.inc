@@ -56,7 +56,7 @@ class ScaleQuestion extends QuestionPlugin {
     if ($is_new_node) {
       $id = db_insert('quiz_scale_node_properties')
         ->fields(array(
-            'nid'                  => $this->question->nid,
+            'nid'                  => $this->question->qid,
             'vid'                  => $this->question->vid,
             'answer_collection_id' => $answer_collection_id,
         ))
@@ -67,7 +67,7 @@ class ScaleQuestion extends QuestionPlugin {
         ->fields(array(
             'answer_collection_id' => $answer_collection_id,
         ))
-        ->condition('nid', $this->question->nid)
+        ->condition('nid', $this->question->qid)
         ->condition('vid', $this->question->vid)
         ->execute();
     }
@@ -282,22 +282,22 @@ class ScaleQuestion extends QuestionPlugin {
     parent::delete($only_this_version);
     if ($only_this_version) {
       db_delete('quiz_scale_user_answers')
-        ->condition('question_nid', $this->question->nid)
+        ->condition('question_nid', $this->question->qid)
         ->condition('question_vid', $this->question->vid)
         ->execute();
 
       db_delete('quiz_scale_node_properties')
-        ->condition('nid', $this->question->nid)
+        ->condition('nid', $this->question->qid)
         ->condition('vid', $this->question->vid)
         ->execute();
     }
     else {
       db_delete('quiz_scale_user_answers')
-        ->condition('question_nid', $this->question->nid)
+        ->condition('question_nid', $this->question->qid)
         ->execute();
 
       db_delete('quiz_scale_node_properties')
-        ->condition('nid', $this->question->nid)
+        ->condition('nid', $this->question->qid)
         ->execute();
     }
     $this->deleteCollectionIfNotUsed($this->question->{0}->answer_collection_id, 0);
@@ -318,7 +318,7 @@ class ScaleQuestion extends QuestionPlugin {
             FROM {quiz_scale_node_properties} p
             JOIN {quiz_scale_answer} a ON (p.answer_collection_id = a.answer_collection_id)
             WHERE nid = :nid AND vid = :vid
-            ORDER BY a.id', array(':nid' => $this->question->nid, ':vid' => $this->question->vid));
+            ORDER BY a.id', array(':nid' => $this->question->qid, ':vid' => $this->question->vid));
     foreach ($res as $res_o) {
       $props[] = $res_o;
     }
@@ -377,7 +377,7 @@ class ScaleQuestion extends QuestionPlugin {
    * Question response validator.
    */
   public function getAnsweringFormValidate(array &$form, array &$form_state = NULL) {
-    if ($form_state['values']['question'][$this->question->nid] == '') {
+    if ($form_state['values']['question'][$this->question->qid] == '') {
       form_set_error('', t('You must provide an answer.'));
     }
   }
@@ -571,7 +571,7 @@ class ScaleResponse extends QuizQuestionResponse {
       $this->answer_id = intval($answer);
     }
     else {
-      $this->answer_id = db_query('SELECT answer_id FROM {quiz_scale_user_answers} WHERE result_id = :rid AND question_nid = :qnid AND question_vid = :qvid', array(':rid' => $result_id, ':qnid' => $this->question->nid, ':qvid' => $this->question->vid))->fetchField();
+      $this->answer_id = db_query('SELECT answer_id FROM {quiz_scale_user_answers} WHERE result_id = :rid AND question_nid = :qnid AND question_vid = :qvid', array(':rid' => $result_id, ':qnid' => $this->question->qid, ':qvid' => $this->question->vid))->fetchField();
     }
     $answer = db_query('SELECT answer FROM {quiz_scale_answer} WHERE id = :id', array(':id' => $this->answer_id))->fetchField();
     $this->answer = check_plain($answer);
@@ -588,7 +588,7 @@ class ScaleResponse extends QuizQuestionResponse {
           'answer_id'    => $this->answer_id,
           'result_id'    => $this->result_id,
           'question_vid' => $this->question->vid,
-          'question_nid' => $this->question->nid,
+          'question_nid' => $this->question->qid,
       ))
       ->execute();
   }
@@ -601,7 +601,7 @@ class ScaleResponse extends QuizQuestionResponse {
   public function delete() {
     db_delete('quiz_scale_user_answers')
       ->condition('result_id', $this->result_id)
-      ->condition('question_nid', $this->question->nid)
+      ->condition('question_nid', $this->question->qid)
       ->condition('question_vid', $this->question->vid)
       ->execute();
   }

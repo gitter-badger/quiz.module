@@ -27,7 +27,7 @@ class LongAnswerQuestion extends QuestionPlugin {
     if ($is_new || $this->question->revision == 1) {
       db_insert('quiz_long_answer_node_properties')
         ->fields(array(
-            'nid'    => $this->question->nid,
+            'nid'    => $this->question->qid,
             'vid'    => $this->question->vid,
             'rubric' => $this->question->rubric,
         ))
@@ -36,7 +36,7 @@ class LongAnswerQuestion extends QuestionPlugin {
     else {
       db_update('quiz_long_answer_node_properties')
         ->fields(array('rubric' => isset($this->question->rubric) ? $this->question->rubric : ''))
-        ->condition('nid', $this->question->nid)
+        ->condition('nid', $this->question->qid)
         ->condition('vid', $this->question->vid)
         ->execute();
     }
@@ -59,20 +59,20 @@ class LongAnswerQuestion extends QuestionPlugin {
   public function delete($only_this_version = FALSE) {
     if ($only_this_version) {
       db_delete('quiz_long_answer_user_answers')
-        ->condition('question_nid', $this->question->nid)
+        ->condition('question_nid', $this->question->qid)
         ->condition('question_vid', $this->question->vid)
         ->execute();
       db_delete('quiz_long_answer_node_properties')
-        ->condition('nid', $this->question->nid)
+        ->condition('nid', $this->question->qid)
         ->condition('vid', $this->question->vid)
         ->execute();
     }
     else {
       db_delete('quiz_long_answer_node_properties')
-        ->condition('nid', $this->question->nid)
+        ->condition('nid', $this->question->qid)
         ->execute();
       db_delete('quiz_long_answer_user_answers')
-        ->condition('question_nid', $this->question->nid)
+        ->condition('question_nid', $this->question->qid)
         ->execute();
     }
     parent::delete($only_this_version);
@@ -90,7 +90,7 @@ class LongAnswerQuestion extends QuestionPlugin {
     $props = parent::getNodeProperties();
 
     $res_a = db_query('SELECT rubric FROM {quiz_long_answer_node_properties}
-      WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->nid, ':vid' => $this->question->vid))->fetchAssoc();
+      WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->qid, ':vid' => $this->question->vid))->fetchAssoc();
 
     if (is_array($res_a)) {
       $props = array_merge($props, $res_a);
@@ -156,7 +156,7 @@ class LongAnswerQuestion extends QuestionPlugin {
    * Question response validator.
    */
   public function getAnsweringFormValidate(array &$form, array &$form_state = NULL) {
-    if ($form_state['values']['question'][$this->question->nid] == '') {
+    if ($form_state['values']['question'][$this->question->qid] == '') {
       form_set_error('', t('You must provide an answer.'));
     }
   }
@@ -303,7 +303,7 @@ class LongAnswerResponse extends QuizQuestionResponse {
     $this->answer_id = db_insert('quiz_long_answer_user_answers')
       ->fields(array(
           'answer'       => $this->answer,
-          'question_nid' => $this->question->nid,
+          'question_nid' => $this->question->qid,
           'question_vid' => $this->question->vid,
           'result_id'    => $this->result_id,
       ))
@@ -317,7 +317,7 @@ class LongAnswerResponse extends QuizQuestionResponse {
    */
   public function delete() {
     db_delete('quiz_long_answer_user_answers')
-      ->condition('question_nid', $this->question->nid)
+      ->condition('question_nid', $this->question->qid)
       ->condition('question_vid', $this->question->vid)
       ->condition('result_id', $this->result_id)
       ->execute();

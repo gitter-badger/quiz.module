@@ -23,7 +23,7 @@ class TrueFalseQuestion extends QuestionPlugin {
     if ($is_new || $this->question->revision == 1) {
       $id = db_insert('quiz_truefalse_node')
         ->fields(array(
-            'nid'            => $this->question->nid,
+            'nid'            => $this->question->qid,
             'vid'            => $this->question->vid,
             'correct_answer' => $this->question->correct_answer,
         ))
@@ -34,7 +34,7 @@ class TrueFalseQuestion extends QuestionPlugin {
         ->fields(array(
             'correct_answer' => (int) $this->question->correct_answer
         ))
-        ->condition('nid', $this->question->nid)
+        ->condition('nid', $this->question->qid)
         ->condition('vid', $this->question->vid)
         ->execute();
     }
@@ -58,10 +58,10 @@ class TrueFalseQuestion extends QuestionPlugin {
     parent::delete($only_this_version);
 
     $delete_ans = db_delete('quiz_truefalse_user_answers');
-    $delete_ans->condition('question_nid', $this->question->nid);
+    $delete_ans->condition('question_nid', $this->question->qid);
 
     $delete_node = db_delete('quiz_truefalse_node');
-    $delete_node->condition('nid', $this->question->nid);
+    $delete_node->condition('nid', $this->question->qid);
 
     if ($only_this_version) {
       $delete_ans->condition('question_vid', $this->question->vid);
@@ -86,7 +86,7 @@ class TrueFalseQuestion extends QuestionPlugin {
     $res_a = db_query('SELECT correct_answer '
       . ' FROM {quiz_truefalse_node} '
       . ' WHERE nid = :nid AND vid = :vid', array(
-        ':nid' => $this->question->nid,
+        ':nid' => $this->question->qid,
         ':vid' => $this->question->vid))->fetchAssoc();
 
     if (is_array($res_a)) {
@@ -145,7 +145,7 @@ class TrueFalseQuestion extends QuestionPlugin {
    * Question response validator.
    */
   public function getAnsweringFormValidate(array &$form, array &$form_state = NULL) {
-    if (is_null($form_state['values']['question'][$this->question->nid])) {
+    if (is_null($form_state['values']['question'][$this->question->qid])) {
       form_set_error('', t('You must provide an answer.'));
     }
   }
@@ -195,7 +195,7 @@ class TrueFalseQuestion extends QuestionPlugin {
    * This is a utility function. It is not defined in the interface.
    */
   public function getCorrectAnswer() {
-    return db_query('SELECT correct_answer FROM {quiz_truefalse_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->nid, ':vid' => $this->question->vid))->fetchField();
+    return db_query('SELECT correct_answer FROM {quiz_truefalse_node} WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->qid, ':vid' => $this->question->vid))->fetchField();
   }
 
 }
@@ -230,7 +230,7 @@ class TrueFalseResponse extends QuizQuestionResponse {
   public function save() {
     db_insert('quiz_truefalse_user_answers')
       ->fields(array(
-          'question_nid' => $this->question->nid,
+          'question_nid' => $this->question->qid,
           'question_vid' => $this->question->vid,
           'result_id'    => $this->result_id,
           'answer'       => (int) $this->answer,
@@ -246,7 +246,7 @@ class TrueFalseResponse extends QuizQuestionResponse {
    */
   public function delete() {
     db_delete('quiz_truefalse_user_answers')
-      ->condition('question_nid', $this->question->nid)
+      ->condition('question_nid', $this->question->qid)
       ->condition('question_vid', $this->question->vid)
       ->condition('result_id', $this->result_id)
       ->execute();

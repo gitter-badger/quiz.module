@@ -124,7 +124,7 @@ abstract class QuizQuestionResponse {
    */
   public function getMaxScore($weight_adjusted = TRUE) {
     if (!isset($this->question->max_score)) {
-      $this->question->max_score = $this->question->getMaximumScore();
+      $this->question->max_score = $this->question->getPlugin()->getMaximumScore();
     }
     if (isset($this->question->score_weight) && $weight_adjusted) {
       return round($this->question->max_score * $this->question->score_weight);
@@ -145,7 +145,7 @@ abstract class QuizQuestionResponse {
   function toBareObject() {
     $response = new stdClass();
     $response->score = $this->getScore(); // This can be 0 for unscored.
-    $response->question_nid = $this->question->nid;
+    $response->question_nid = $this->question->qid;
     $response->question_vid = $this->question->vid;
     $response->result_id = $this->result_id;
     $response->is_correct = (int) $this->isCorrect();
@@ -189,7 +189,7 @@ abstract class QuizQuestionResponse {
         'is_correct'   => $this->isCorrect(),
         'score'        => $this->getScore(),
         'question_vid' => $this->question->vid,
-        'question_nid' => $this->question->nid,
+        'question_nid' => $this->question->qid,
         'result_id'    => $this->result_id,
     );
     return $report;
@@ -210,7 +210,7 @@ abstract class QuizQuestionResponse {
     $form = array();
     $form['nid'] = array(
         '#type'  => 'value',
-        '#value' => $this->question->nid,
+        '#value' => $this->question->qid,
     );
     $form['vid'] = array(
         '#type'  => 'value',
@@ -299,7 +299,7 @@ abstract class QuizQuestionResponse {
    *  FAPI form array holding the question
    */
   public function getReportFormQuestion() {
-    $question = quiz_question_entity_load($this->question->nid);
+    $question = quiz_question_entity_load($this->question->qid);
     $question->no_answer_form = TRUE;
     node_build_content($question, 'question');
     return $question->content;

@@ -38,7 +38,7 @@ class ShortAnswerQuestion extends QuestionPlugin {
     if ($is_new || $this->question->revision == 1) {
       $id = db_insert('quiz_short_answer_node_properties')
         ->fields(array(
-            'nid'                       => $this->question->nid,
+            'nid'                       => $this->question->qid,
             'vid'                       => $this->question->vid,
             'correct_answer'            => $this->question->correct_answer,
             'correct_answer_evaluation' => $this->question->correct_answer_evaluation,
@@ -52,7 +52,7 @@ class ShortAnswerQuestion extends QuestionPlugin {
             'correct_answer'            => $this->question->correct_answer,
             'correct_answer_evaluation' => $this->question->correct_answer_evaluation,
         ))
-        ->condition('nid', $this->question->nid)
+        ->condition('nid', $this->question->qid)
         ->condition('vid', $this->question->vid)
         ->execute();
     }
@@ -77,10 +77,10 @@ class ShortAnswerQuestion extends QuestionPlugin {
   public function delete($only_this_version = FALSE) {
     parent::delete($only_this_version);
     $delete_ans = db_delete('quiz_short_answer_user_answers');
-    $delete_ans->condition('question_nid', $this->question->nid);
+    $delete_ans->condition('question_nid', $this->question->qid);
 
     $delete_node = db_delete('quiz_short_answer_node_properties');
-    $delete_node->condition('nid', $this->question->nid);
+    $delete_node->condition('nid', $this->question->qid);
 
     if ($only_this_version) {
       $delete_ans->condition('question_vid', $this->question->vid);
@@ -102,7 +102,7 @@ class ShortAnswerQuestion extends QuestionPlugin {
     }
     $props = parent::getNodeProperties();
     $res_a = db_query('SELECT correct_answer, correct_answer_evaluation FROM {quiz_short_answer_node_properties}
-      WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->nid, ':vid' => $this->question->vid))->fetchAssoc();
+      WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->qid, ':vid' => $this->question->vid))->fetchAssoc();
     $this->entityProperties = (is_array($res_a)) ? array_merge($props, $res_a) : $props;
     return $this->entityProperties;
   }
@@ -161,7 +161,7 @@ class ShortAnswerQuestion extends QuestionPlugin {
    * Question response validator.
    */
   public function getAnsweringFormValidate(array &$form, array &$form_state = NULL) {
-    if ($form_state['values']['question'][$this->question->nid] == '') {
+    if ($form_state['values']['question'][$this->question->qid] == '') {
       form_set_error('', t('You must provide an answer.'));
     }
   }
@@ -382,7 +382,7 @@ class ShortAnswerResponse extends QuizQuestionResponse {
     $this->answer_id = db_insert('quiz_short_answer_user_answers')
       ->fields(array(
           'answer'       => $this->answer,
-          'question_nid' => $this->question->nid,
+          'question_nid' => $this->question->qid,
           'question_vid' => $this->question->vid,
           'result_id'    => $this->result_id,
           'score'        => $this->getScore(FALSE),
@@ -398,7 +398,7 @@ class ShortAnswerResponse extends QuizQuestionResponse {
    */
   public function delete() {
     db_delete('quiz_short_answer_user_answers')
-      ->condition('question_nid', $this->question->nid)
+      ->condition('question_nid', $this->question->qid)
       ->condition('question_vid', $this->question->vid)
       ->condition('result_id', $this->result_id)
       ->execute();

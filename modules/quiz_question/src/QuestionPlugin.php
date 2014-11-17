@@ -110,9 +110,9 @@ abstract class QuestionPlugin {
       );
     }
 
-    if (!empty($this->question->nid)) {
+    if (!empty($this->question->qid)) {
       $properties = entity_load('quiz_question_properties', FALSE, array(
-          'nid' => $this->question->nid,
+          'nid' => $this->question->qid,
           'vid' => $this->question->vid
       ));
 
@@ -225,7 +225,7 @@ abstract class QuestionPlugin {
       'SELECT max_score
             FROM {quiz_question_properties}
             WHERE nid = :nid AND vid = :vid', array(
-        ':nid' => $this->question->nid,
+        ':nid' => $this->question->qid,
         ':vid' => $this->question->vid))->fetchField();
     $props['is_quiz_question'] = TRUE;
     $this->entityProperties = $props;
@@ -258,11 +258,11 @@ abstract class QuestionPlugin {
 
     db_merge('quiz_question_properties')
       ->key(array(
-          'nid' => $this->question->nid,
+          'nid' => $this->question->qid,
           'vid' => $this->question->vid,
       ))
       ->fields(array(
-          'nid'             => $this->question->nid,
+          'nid'             => $this->question->qid,
           'vid'             => $this->question->vid,
           'max_score'       => $this->getMaximumScore(),
           'feedback'        => !empty($this->question->feedback['value']) ? $this->question->feedback['value'] : '',
@@ -276,7 +276,7 @@ abstract class QuestionPlugin {
       if (user_access('manual quiz revisioning') && !variable_get('quiz_auto_revisioning', 1)) {
         unset($_GET['destination']);
         unset($_REQUEST['edit']['destination']);
-        drupal_goto('quiz-question/' . $this->question->nid . '/' . $this->question->vid . '/revision-actions');
+        drupal_goto('quiz-question/' . $this->question->qid . '/' . $this->question->vid . '/revision-actions');
       }
       // For users without the 'manual quiz revisioning' permission we submit the revision_actions form
       // silently with its default values set.
@@ -284,7 +284,7 @@ abstract class QuestionPlugin {
         $form_state = array();
         $form_state['values']['op'] = t('Submit');
         require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'quiz_question') . '/quiz_question.pages.inc';
-        drupal_form_submit('quiz_question_revision_actions', $form_state, $this->question->nid, $this->question->vid);
+        drupal_form_submit('quiz_question_revision_actions', $form_state, $this->question->qid, $this->question->vid);
       }
     }
   }
@@ -302,8 +302,8 @@ abstract class QuestionPlugin {
    */
   public function delete($only_this_version = FALSE) {
     // Delete answeres & properties
-    $remove_answer = db_delete('quiz_results_answers')->condition('question_nid', $this->question->nid);
-    $remove_properties = db_delete('quiz_question_properties')->condition('nid', $this->question->nid);
+    $remove_answer = db_delete('quiz_results_answers')->condition('question_nid', $this->question->qid);
+    $remove_properties = db_delete('quiz_question_properties')->condition('nid', $this->question->qid);
     if ($only_this_version) {
       $remove_answer->condition('question_vid', $this->question->vid);
       $remove_properties->condition('vid', $this->question->vid);
@@ -419,7 +419,7 @@ abstract class QuestionPlugin {
     $update_quiz_ids = array();
     $sql = 'SELECT quiz_vid as vid FROM {quiz_relationship} WHERE question_nid = :nid AND question_vid = :vid AND auto_update_max_score = 1';
     $result = db_query($sql, array(
-        ':nid' => $this->question->nid,
+        ':nid' => $this->question->qid,
         ':vid' => $this->question->vid));
     foreach ($result as $record) {
       $update_quiz_ids[] = $record->vid;
@@ -427,7 +427,7 @@ abstract class QuestionPlugin {
 
     db_update('quiz_relationship')
       ->fields(array('max_score' => $this->getMaximumScore()))
-      ->condition('question_nid', $this->question->nid)
+      ->condition('question_nid', $this->question->qid)
       ->condition('question_vid', $this->question->vid)
       ->condition('auto_update_max_score', 1)
       ->execute();
