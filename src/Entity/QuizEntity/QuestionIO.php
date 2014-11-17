@@ -46,13 +46,13 @@ class QuestionIO {
     $question_ids = array();
     $total_count = 0;
     foreach ($this->quiz->getTermsByVid() as $term) {
-      $query = db_select('node', 'question');
+      $query = db_select('quiz_question', 'question');
       if (!empty($question_ids)) {
-        $query->condition('question.nid', $question_ids, 'NOT IN');
+        $query->condition('question.qid', $question_ids, 'NOT IN');
       }
       $query->join('taxonomy_index', 'tn', 'question.nid = tn.nid');
       $result = $query
-        ->fields('question', array('nid', 'vid'))
+        ->fields('question', array('qid', 'vid'))
         ->fields('tn', array('tid'))
         ->condition('question.status', 1)
         ->condition('question.type', $question_types)
@@ -66,7 +66,7 @@ class QuestionIO {
         $question['tid'] = $term->tid;
         $question['number'] = $count + $total_count;
         $questions[] = $question;
-        $question_ids[] = $question['nid'];
+        $question_ids[] = $question['qid'];
       }
       $total_count += $count;
       if ($count < $term->number) {
@@ -81,7 +81,7 @@ class QuestionIO {
    */
   private function getRequiredQuestions() {
     $select = db_select('quiz_relationship', 'relationship');
-    $select->innerJoin('node', 'question', 'relationship.question_nid = question.nid');
+    $select->innerJoin('quiz_question', 'question', 'relationship.question_nid = question.qid');
 
     // Sub relationship
     $cond_1 = 'relationship.qr_pid = sub_relationship.qr_id';
@@ -141,7 +141,7 @@ class QuestionIO {
 
   private function doGetRandomQuestion($amount) {
     $select = db_select('quiz_relationship', 'relationship');
-    $select->join('node', 'question', 'relationship.question_nid = question.nid');
+    $select->join('quiz_question', 'question', 'relationship.question_nid = question.qid');
     $select->addField('relationship.question_nid', 'nid');
     $select->addField('relationship.question_vid', 'vid');
     $select->addExpression(':true', 'random', array(':true' => TRUE));
@@ -181,14 +181,15 @@ class QuestionIO {
     }
 
     // Get all published questions with one of the allowed term ids.
-    $query = db_select('node', 'n');
-    $query->innerJoin('taxonomy_index', 'tn', 'n.nid = tn.tid');
+    $query = db_select('question', 'question');
+    $query->innerJoin('taxonomy_index', 'tn', 'question.qid = tn.nid');
     $query->addExpression(1, 'random');
+
     return $query
-        ->fields('n', array('nid', 'vid'))
-        ->condition('n.status', 1)
+        ->fields('question', array('nid', 'vid'))
+        ->condition('question.status', 1)
         ->condition('tn.tid', $term_ids)
-        ->condition('n.type', array_keys(quiz_question_get_plugin_info()))
+        ->condition('question.type', array_keys(quiz_question_get_types()))
         ->orderRandom()
         ->range(0, $amount)
         ->execute()->fetchAll(PDO::FETCH_ASSOC);
