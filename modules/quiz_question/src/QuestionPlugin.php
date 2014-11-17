@@ -391,14 +391,12 @@ abstract class QuestionPlugin {
    *  TRUE if relationship is made.
    */
   function saveRelationships($quiz_qid = NULL, $quiz_vid = NULL) {
-    $quiz_qid = isset($this->question->quiz_qid) ? $this->question->quiz_qid : $quiz_qid;
-    $quiz_vid = isset($this->question->quiz_vid) ? $this->question->quiz_vid : $quiz_vid;
     if (!$quiz_qid || !$quiz_vid || !$quiz = quiz_load($quiz_qid, $quiz_vid)) {
       return FALSE;
     }
 
+    // We need to revise the quiz if it has been answered.
     if (quiz_has_been_answered($quiz)) {
-      // We need to revise the quiz if it has been answered
       $quiz->is_new_revision = 1;
       $quiz->save();
       drupal_set_message(t('New revision has been created for the @quiz %n', array('%n' => $quiz->title, '@quiz' => QUIZ_NAME)));
