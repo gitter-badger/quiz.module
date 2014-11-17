@@ -87,7 +87,8 @@ class QuestionIO {
           relationship.question_vid as vid,
           question.type,
           relationship.qr_id,
-          relationship.qr_pid
+          relationship.qr_pid,
+          relationship.weight
         FROM {quiz_relationship} relationship
           JOIN {node} question ON relationship.question_nid = question.nid
           LEFT JOIN {quiz_relationship} sub_relationship ON (
@@ -178,50 +179,10 @@ class QuestionIO {
    */
   public function getQuestions() {
     $questions = array();
-    $query = db_select('node', 'n');
-    $query->fields('n', array('nid', 'type'));
-    $query->fields('nr', array('vid', 'title'));
-    $query->fields('qnr', array('question_status', 'weight', 'max_score', 'auto_update_max_score', 'qr_id', 'qr_pid'));
-    $query->addField('n', 'vid', 'latest_vid');
-    $query->join('node_revision', 'nr', 'n.nid = nr.nid');
-    $query->leftJoin('quiz_relationship', 'qnr', 'nr.vid = qnr.question_vid');
-    $query->condition('n.status', 1);
-    $query->condition('qnr.quiz_qid', $this->quiz->qid);
-    if ($this->quiz->vid) {
-      $query->condition('qnr.quiz_vid', $this->quiz->vid);
+    foreach ($this->getQuestionList() as $question) {
+      $questions[] = $this->reloadQuestion((object) $question);
     }
-    $query->condition('qr_pid', NULL, 'IS');
-    $query->orderBy('qnr.weight');
-
-    $result = $query->execute();
-    foreach ($result as $question) {
-      $questions[] = $question;
-      $this->getSubQuestions($question->qr_id, $questions);
-    }
-
-    foreach ($questions as &$question) {
-      $question = $this->reloadQuestion($question);
-    }
-
     return $questions;
-  }
-
-  private function getSubQuestions($parent_id, &$questions) {
-    $select = db_select('node', 'n');
-    $select->innerJoin('node_revision', 'nr', 'n.nid = nr.nid');
-    $select->innerJoin('quiz_relationship', 'qnr', 'nr.vid = qnr.question_vid');
-    $select
-      ->fields('n', array('nid', 'type'))
-      ->fields('nr', array('vid', 'title'))
-      ->fields('qnr', array('question_status', 'weight', 'max_score', 'auto_update_max_score', 'qr_id', 'qr_pid'))
-      ->addField('n', 'vid', 'latest_vid');
-    $query = $select
-      ->condition('qr_pid', $parent_id)
-      ->orderBy('weight')
-      ->execute();
-    foreach ($query as $question) {
-      $questions[] = $question;
-    }
   }
 
   /**
@@ -229,28 +190,26 @@ class QuestionIO {
    *
    *  This was 'quiz_node_map($node)' before.
    *
-   * @param $node
-   *  The question node.
+   * @param array $row
    *
    * @return
    *  Question object.
    */
-  private function reloadQuestion($node) {
-    $question = node_load($node->nid, $node->vid);
+  private function reloadQuestion($row) {
+    $question = node_load($row->nid, $row->vid);
 
     // Append extra fields.
-    $question->latest_vid = $node->latest_vid;
-    $question->question_status = isset($node->question_status) ? $node->question_status : QUESTION_NEVER;
-    if (isset($node->max_score)) {
-      $question->max_score = $node->max_score;
+    $question->question_status = isset($row->question_status) ? $row->question_status : QUESTION_NEVER;
+    if (isset($row->max_score)) {
+      $question->max_score = $row->max_score;
     }
-    if (isset($node->auto_update_max_score)) {
-      $question->auto_update_max_score = $node->auto_update_max_score;
+    if (isset($row->auto_update_max_score)) {
+      $question->auto_update_max_score = $row->auto_update_max_score;
     }
-    $question->weight = $node->weight;
-    $question->qr_id = $node->qr_id;
-    $question->qr_pid = $node->qr_pid;
-
+    $question->latest_vid = $row->vid;
+    $question->weight = $row->weight;
+    $question->qr_id = $row->qr_id;
+    $question->qr_pid = $row->qr_pid;
     return $question;
   }
 

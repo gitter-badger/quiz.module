@@ -36,7 +36,7 @@ class QuizQuestionsForm extends BaseForm {
     $this->addFieldsForRandomQuiz($form, $quiz);
 
     // @todo deal with $include_random
-    if (!$questions = $quiz->getQuestionIO()->getQuestions()) {
+    if (!$questions = $quiz->getQuestionIO()->getQuestionList()) {
       $form['question_list']['no_questions'] = array(
           '#markup' => '<div id = "no-questions">' . t('There are currently no questions in this @quiz. Assign existing questions by using the question browser below. You can also use the links above to create new questions.', array('@quiz' => QUIZ_NAME)) . '</div>',
       );
@@ -201,10 +201,12 @@ class QuizQuestionsForm extends BaseForm {
       $form['question_list']['compulsories'] = array('#tree' => TRUE);
     }
 
+    // @TODO: Replace entire form with usage of question instance
     foreach ($questions as $question) {
-      // @todo replace entire form with usage of question instance
+      $question = is_array($question) ? (object) $question : $question;
       $question_node = node_load($question->nid, $question->vid);
       $instance = quiz_question_get_plugin($question_node);
+
       $fieldset = 'question_list';
       $id = $question->nid . '-' . $question->vid;
 
@@ -266,7 +268,7 @@ class QuizQuestionsForm extends BaseForm {
         $link_options = array(
             'attributes' => array('class' => array('handle-changes')),
         );
-        $question_titles = l($question->title, 'node/' . $question->nid, $link_options);
+        $question_titles = l($question_node->title, 'node/' . $question_node->nid, $link_options);
       }
       else {
         $question_titles = check_plain($question->title);
@@ -289,21 +291,22 @@ class QuizQuestionsForm extends BaseForm {
           ),
           '#access' => node_access('update', node_load($question->nid, $question->vid)),
       );
+
       // For js enabled browsers questions are removed by pressing a remove link
       $form[$fieldset]['remove_links'][$id] = array(
           '#markup' => '<a href="#" class="rem-link">' . t('Remove') . '</a>',
       );
+
       // Add a checkbox to update to the latest revision of the question
-      if ($question->vid == $question->latest_vid) {
+      if ($question->vid == $question_node->vid) {
         $update_cell = array('#markup' => t('<em>Up to date</em>'));
       }
       else {
         $update_cell = array(
             '#type'  => 'checkbox',
-            '#title' => (l(t('Latest'), 'node/' . $question->nid . '/revisions/' . $question->latest_vid . '/view')
+            '#title' => l(t('Latest'), 'node/' . $question->nid . '/revisions/' . $question->latest_vid . '/view')
             . ' of ' .
-            l(t('revisions'), 'node/' . $question->nid . '/revisions')
-            ),
+            l(t('revisions'), 'node/' . $question->nid . '/revisions'),
         );
       }
       $form[$fieldset]['revision'][$id] = $update_cell;
