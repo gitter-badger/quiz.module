@@ -199,7 +199,7 @@ function quiz_revisions_page(QuizEntity $quiz) {
 function quiz_take_page(QuizEntity $quiz) {
   global $user;
   $obj = new QuizTakeController($quiz, $user);
-  $obj->render();
+  return $obj->render();
 }
 
 /**
