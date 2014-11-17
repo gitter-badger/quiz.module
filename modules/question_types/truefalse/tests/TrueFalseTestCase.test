@@ -5,7 +5,7 @@
  */
 class TrueFalseTestCase extends QuizQuestionTestCase {
 
-  protected $question_plugin = 'truefalse';
+  protected $questionPlugin = 'truefalse';
 
   public static function getInfo() {
     return array(

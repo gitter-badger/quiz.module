@@ -6,7 +6,7 @@
 class MatchingTestCase extends QuizQuestionTestCase {
 
   // initializing attributes
-  protected $question_plugin = 'matching';
+  protected $questionPlugin = 'matching';
   var $title = '';
   var $body = '';
 

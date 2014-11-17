@@ -5,7 +5,7 @@
  */
 class ShortAnswerTestCase extends QuizQuestionTestCase {
 
-  protected $question_plugin = 'short_answer';
+  protected $questionPlugin = 'short_answer';
 
   public static function getInfo() {
     return array(

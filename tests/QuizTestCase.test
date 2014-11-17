@@ -10,7 +10,7 @@ abstract class QuizTestCase extends DrupalWebTestCase {
   protected $profile = 'testing';
   protected $extraModules = array();
   protected $extraUserPermissions = array();
-  protected $questionPlugin = 'quiz_question';
+  protected $questionPlugin;
 
   /**
    * Set up a question test case.
@@ -48,18 +48,9 @@ abstract class QuizTestCase extends DrupalWebTestCase {
     }
 
     // Test case needs create question plugin
-    if (!empty($this->questionPlugin)) {
-      $admin_permissions[] = "create {$this->questionPlugin} question";
-      $admin_permissions[] = "edit any {$this->questionPlugin} question";
-
-      // Create new question bundle
-      entity_create('quiz_question_type', array(
-          'type'        => $this->questionPlugin,
-          'label'       => $this->questionPlugin,
-          'plugin'      => $this->questionPlugin,
-          'description' => '',
-          'help'        => '',
-      ))->save();
+    if (!empty($this->questionPlugin) && $this->questionPlugin) {
+      $admin_permissions[] = "create default_{$this->questionPlugin} question";
+      $admin_permissions[] = "edit any default_{$this->questionPlugin} question";
     }
 
     $this->admin = $this->drupalCreateUser(array_unique($admin_permissions));
