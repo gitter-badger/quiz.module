@@ -22,6 +22,21 @@ class LongAnswerTestCase extends QuizQuestionTestCase {
   }
 
   /**
+   * Test adding and taking a truefalse question.
+   */
+  private function createQuizQuestion($settings = NULL) {
+    if (!$settings) {
+      $settings = array('rubric' => 'LA 1 rubric.');
+    }
+
+    return $this->createQuestion(array(
+          'type'  => $this->questionPlugin,
+          'title' => 'LA 1 title',
+          'body'  => array(LANGUAGE_NONE => array(array('value' => 'LA 1 body text.'))),
+        ) + $settings);
+  }
+
+  /**
    * Test manually graded questions. Also test feedback here instead of its own
    * test case.
    *
@@ -29,17 +44,17 @@ class LongAnswerTestCase extends QuizQuestionTestCase {
    * correctly.
    */
   public function testGradeAnswerManualFeedback() {
-    $question_node1 = $this->createQuizQuestion();
-    $quiz = $this->linkQuestionToQuiz($question_node1);
+    $question_1 = $this->createQuizQuestion();
+    $quiz = $this->linkQuestionToQuiz($question_1);
 
-    $question_node2 = $this->createQuizQuestion();
-    $this->linkQuestionToQuiz($question_node2, $quiz);
+    $question_2 = $this->createQuizQuestion();
+    $this->linkQuestionToQuiz($question_2, $quiz);
 
     // Test correct.
     $this->drupalLogin($this->user);
     $this->drupalGet("quiz/$quiz->qid/take");
-    $this->drupalPost(NULL, array("question[$question_node1->nid]" => 'the answer is the zero one infinity rule'), t('Next'));
-    $this->drupalPost(NULL, array("question[$question_node2->nid]" => 'the number two really is ridiculous'), t('Finish'));
+    $this->drupalPost(NULL, array("question[$question_1->qid]" => 'the answer is the zero one infinity rule'), t('Next'));
+    $this->drupalPost(NULL, array("question[$question_2->qid]" => 'the number two really is ridiculous'), t('Finish'));
     $this->assertText('Your score: 0%');
 
     // Strange behavior - extra spacing in the HTML.
@@ -70,21 +85,6 @@ class LongAnswerTestCase extends QuizQuestionTestCase {
     // Strange behavior - extra spacing in the HTML.
     $this->assertText('Feedback for answer 1.');
     $this->assertText('Feedback for answer 2.');
-  }
-
-  /**
-   * Test adding and taking a truefalse question.
-   */
-  private function createQuizQuestion($settings = NULL) {
-    if (!$settings) {
-      $settings = array('rubric' => 'LA 1 rubric.');
-    }
-
-    return $this->createQuestion(array(
-          'type'  => $this->questionPlugin,
-          'title' => 'LA 1 title',
-          'body'  => array(LANGUAGE_NONE => array(array('value' => 'LA 1 body text.'))),
-        ) + $settings);
   }
 
 }
