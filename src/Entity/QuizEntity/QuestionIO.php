@@ -43,29 +43,30 @@ class QuestionIO {
     }
 
     $questions = array();
-    $nids = array();
+    $question_ids = array();
     $total_count = 0;
     foreach ($this->quiz->getTermsByVid() as $term) {
-      $query = db_select('node', 'n');
-      $query->join('taxonomy_index', 'tn', 'n.nid = tn.nid');
-      $query->fields('n', array('nid', 'vid'));
-      $query->fields('tn', array('tid'));
-      $query->condition('n.status', 1);
-      $query->condition('n.type', $question_types);
-      $query->condition('tn.tid', $term->tid);
-      if (!empty($nids)) {
-        $query->condition('n.nid', $nids, 'NOT IN');
+      $query = db_select('node', 'question');
+      if (!empty($question_ids)) {
+        $query->condition('question.nid', $question_ids, 'NOT IN');
       }
-      $query->range(0, $term->number);
-      $query->orderBy('RAND()');
-      $result = $query->execute();
+      $query->join('taxonomy_index', 'tn', 'question.nid = tn.nid');
+      $result = $query
+        ->fields('question', array('nid', 'vid'))
+        ->fields('tn', array('tid'))
+        ->condition('question.status', 1)
+        ->condition('question.type', $question_types)
+        ->condition('question.tid', $term->tid)
+        ->range(0, $term->number)
+        ->orderRandom()
+        ->execute();
       $count = 0;
       while ($question = $result->fetchAssoc()) {
         $count++;
         $question['tid'] = $term->tid;
         $question['number'] = $count + $total_count;
         $questions[] = $question;
-        $nids[] = $question['nid'];
+        $question_ids[] = $question['nid'];
       }
       $total_count += $count;
       if ($count < $term->number) {
