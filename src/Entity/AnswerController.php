@@ -72,10 +72,9 @@ class AnswerController extends EntityAPIController {
     return FALSE;
   }
 
-  private function doGetInstance($question, $result_id, $answer) {
-    $info = quiz_question_get_plugin_info();
-    $response_provider = new $info[$question->type]['response provider']($result_id, $question, $answer);
-
+  private function doGetInstance(\Drupal\quiz_question\Entity\Question $question, $result_id, $answer) {
+    $plugin_info = $question->getPluginInfo();
+    $response_provider = new $plugin_info['response provider']($result_id, $question, $answer);
     if (!$response_provider instanceof QuizQuestionResponse) {
       throw new \RuntimeException('The question-response isn\'t a QuizQuestionResponse. It needs to extend the QuizQuestionResponse interface, or extend the abstractQuizQuestionResponse class.');
     }
