@@ -33,6 +33,7 @@ require_once dirname(__FILE__) . '/quiz_question.todo.php';
  */
 function quiz_question_get_plugin_info($name = NULL, $reset = FALSE) {
   $info = &drupal_static(__FUNCTION__, array());
+
   if (empty($info) || $reset) {
     foreach (module_invoke_all('quiz_question_info') as $type => $definition) {
       if (!empty($definition['question provider'])) { # We only want the ones with classes.
@@ -43,9 +44,9 @@ function quiz_question_get_plugin_info($name = NULL, $reset = FALSE) {
   }
 
   // Question provider must be instance of QuizQuestion class.
-  foreach ($info as $name => $plugin_info) {
-    if (!is_subclass_of($plugin_info['question provider'], 'QuestionPlugin')) {
-      $msg = t("The question-type %name isn't a QuizQuestion. It needs to extend the QuizQuestion class.", array('%name' => $name));
+  foreach ($info as $plugin_name => $plugin_info) {
+    if (!is_subclass_of($plugin_info['question provider'], 'Drupal\quiz_question\QuestionPlugin')) {
+      $msg = t("The question-type %name isn't a QuizQuestion. It needs to extend the QuizQuestion class.", array('%name' => $plugin_name));
       drupal_set_message($msg, 'error', FALSE);
     }
   }
