@@ -38,7 +38,7 @@ class QuestionIO {
    * Builds the questionlist for quizzes with categorized random questions
    */
   public function buildCategoziedQuestionList() {
-    if (!$question_types = array_keys(quiz_question_get_info())) {
+    if (!$question_types = array_keys(quiz_question_get_plugin_info())) {
       return array();
     }
 
@@ -197,7 +197,7 @@ class QuestionIO {
         ->fields('n', array('nid', 'vid'))
         ->condition('n.status', 1)
         ->condition('tn.tid', $term_ids)
-        ->condition('n.type', array_keys(quiz_question_get_info()))
+        ->condition('n.type', array_keys(quiz_question_get_plugin_info()))
         ->orderRandom()
         ->range(0, $amount)
         ->execute()->fetchAll(PDO::FETCH_ASSOC);

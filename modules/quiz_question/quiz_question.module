@@ -31,7 +31,7 @@ require_once dirname(__FILE__) . '/quiz_question.todo.php';
  *  An array of information about quiz question implementations.
  * @see quiz_question_quiz_question_info() for an example of a quiz question info hook.
  */
-function quiz_question_get_info($name = NULL, $reset = FALSE) {
+function quiz_question_get_plugin_info($name = NULL, $reset = FALSE) {
   $info = &drupal_static(__FUNCTION__, array());
   if (empty($info) || $reset) {
     foreach (module_invoke_all('quiz_question_info') as $type => $definition) {
@@ -121,7 +121,7 @@ function quiz_question_get_plugin(&$question, $cache = FALSE) {
   }
 
   // No cached instance of QuizQuestion has been returned. We construct a new instance
-  $info = quiz_question_get_info();
+  $info = quiz_question_get_plugin_info();
   if (!$constructor = $info[$question->type]['question provider']) {
     return FALSE;
   }

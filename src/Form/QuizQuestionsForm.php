@@ -43,7 +43,7 @@ class QuizQuestionsForm extends BaseForm {
     }
 
     // We add the questions to the form array
-    $types = quiz_question_get_info();
+    $types = quiz_question_get_plugin_info();
     $this->addQuestionsToForm($form, $questions, $quiz, $types);
 
     // Show the number of questions in the table header.
@@ -345,7 +345,7 @@ class QuizQuestionsForm extends BaseForm {
       return;
     }
 
-    $question_types = array_keys(quiz_question_get_info());
+    $question_types = array_keys(quiz_question_get_plugin_info());
 
     foreach ($weight_map as $id => $weight) {
       list($nid, $vid) = explode('-', $id, 2);

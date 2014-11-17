@@ -77,7 +77,7 @@ class Question extends Entity {
    */
   public function getPluginInfo() {
     if ($question_type = $this->getQuestionType()) {
-      return quiz_question_get_info($question_type->plugin);
+      return quiz_question_get_plugin_info($question_type->plugin);
     }
     throw new \RuntimeException('Question plugin not found.');
   }

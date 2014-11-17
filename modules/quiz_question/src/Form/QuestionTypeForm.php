@@ -11,7 +11,7 @@ class QuestionTypeForm {
     }
 
     $provider_options = array();
-    foreach (quiz_question_get_info() as $name => $info) {
+    foreach (quiz_question_get_plugin_info() as $name => $info) {
       $provider_options[$name] = $info['name'];
     }
 

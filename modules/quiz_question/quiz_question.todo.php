@@ -84,7 +84,7 @@ function quiz_question_access_callback($op, $question = NULL, $account = NULL, $
 function quiz_question_node_info() {
   $node_info = array();
 
-  foreach (quiz_question_get_info(NULL, TRUE) as $type => $definition) {
+  foreach (quiz_question_get_plugin_info(NULL, TRUE) as $type => $definition) {
     $node_info[$type] = array(
         'name'        => $definition['name'],
         'base'        => 'quiz_question',
@@ -110,7 +110,7 @@ function quiz_question_load($node) {
  * Implements hook_node_presave().
  */
 function quiz_question_node_presave($node) {
-  foreach (array_keys(quiz_question_get_info()) as $question_type) {
+  foreach (array_keys(quiz_question_get_plugin_info()) as $question_type) {
     if (($node->type === $question_type) && (!drupal_strlen($node->title) || !user_access('edit question titles'))) {
       $body = field_view_field('node', $node, 'body');
       $max_length = variable_get('quiz_autotitle_length', 50);
@@ -142,7 +142,7 @@ function quiz_question_node_prepare($node) {
  * Implements hook_node_revision_delete().
  */
 function quiz_question_node_revision_delete($node) {
-  foreach (array_keys(quiz_question_get_info()) as $question_type) {
+  foreach (array_keys(quiz_question_get_plugin_info()) as $question_type) {
     if ($node->type === $question_type) {
       _quiz_delete_question($node, TRUE); // true for only this version
     }
@@ -156,7 +156,7 @@ function quiz_question_node_access_records($node) {
   $grants = array();
 
   // Restricting view access to question nodes outside quizzes.
-  $question_types = array_keys(quiz_question_get_info());
+  $question_types = array_keys(quiz_question_get_plugin_info());
   if (in_array($node->type, $question_types)) {
     // This grant is for users having 'view quiz question outside of a quiz'
     // permission. We set a priority of 2 because OG has a 1 priority and we
