@@ -126,37 +126,30 @@ class QuestionIO {
    * @return array[] Array of nid/vid combos for quiz questions.
    */
   private function getRandomQuestions() {
-    $num_random = $this->quiz->number_of_random_questions;
-    $term_id = $this->quiz->tid;
-    $questions = array();
-    if ($num_random > 0) {
-      if ($term_id > 0) {
-        $questions = $this->quiz->getQuestionIO()->getRandomTaxonomyQuestionIds($term_id, $num_random);
-      }
-      else {
-        // Select random question from assigned pool.
-        $result = db_query_range(
-          "SELECT question_nid as nid, question_vid as vid, n.type
-          FROM {quiz_relationship} qnr
-          JOIN {node} n on qnr.question_nid = n.nid
-          WHERE qnr.quiz_vid = :quiz_vid
-          AND qnr.quiz_qid = :quiz_qid
-          AND qnr.question_status = :question_status
-          AND n.status = 1
-          ORDER BY RAND()", 0, $this->quiz->number_of_random_questions, array(
-            ':quiz_vid'        => $this->quiz->vid,
-            ':quiz_qid'        => $this->quiz->qid,
-            ':question_status' => QUESTION_RANDOM
-          )
-        );
-        while ($question_node = $result->fetchAssoc()) {
-          $question_node['random'] = TRUE;
-          $question_node['relative_max_score'] = $this->quiz->max_score_for_random;
-          $questions[] = $question_node;
-        }
-      }
+    $amount = $this->quiz->number_of_random_questions;
+    if ($this->quiz->tid > 0) {
+      return $this->getRandomTaxonomyQuestionIds($this->quiz->tid, $amount);
     }
-    return $questions;
+    return $this->doGetRandomQuestion($amount);
+  }
+
+  private function doGetRandomQuestion($amount) {
+    $select = db_select('quiz_relationship', 'relationship');
+    $select->join('node', 'question', 'relationship.question_nid = question.nid');
+    $select->addField('relationship.question_nid', 'nid');
+    $select->addField('relationship.question_vid', 'vid');
+    $select->addExpression(':true', 'random', array(':true' => TRUE));
+    $select->addExpression(':number', 'relative_max_score', array(':number' => $this->quiz->max_score_for_random));
+    return $select
+        ->fields('question', array('type'))
+        ->condition('relationship.quiz_vid', $this->quiz->vid)
+        ->condition('relationship.quiz_qid', $this->quiz->vid)
+        ->condition('relationship.question_status', QUESTION_RANDOM)
+        ->condition('question.status', 1)
+        ->orderRandom()
+        ->range(0, $amount)
+        ->execute()
+        ->fetchAssoc();
   }
 
   /**
