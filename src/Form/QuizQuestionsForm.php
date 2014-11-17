@@ -202,10 +202,10 @@ class QuizQuestionsForm extends BaseForm {
     }
 
     // @TODO: Replace entire form with usage of question instance
-    foreach ($questions as $question) {
-      $question = is_array($question) ? (object) $question : $question;
-      $question_node = node_load($question->nid);
-      $instance = quiz_question_get_provider($question_node);
+    foreach ($questions as $relationship) {
+      $relationship = is_array($relationship) ? (object) $relationship : $relationship;
+      $question = quiz_question_entity_load($relationship->qid);
+      $instance = quiz_question_get_provider($question);
 
       $fieldset = 'question_list';
       $id = $question->nid . '-' . $question->vid;
@@ -221,14 +221,14 @@ class QuizQuestionsForm extends BaseForm {
           '#type'          => 'textfield',
           '#size'          => 3,
           '#maxlength'     => 4,
-          '#default_value' => $question->qr_pid,
+          '#default_value' => $relationship->qr_pid,
       );
 
       $form[$fieldset]['qr_ids'][$id] = array(
           '#type'          => 'textfield',
           '#size'          => 3,
           '#maxlength'     => 4,
-          '#default_value' => $question->qr_id,
+          '#default_value' => $relationship->qr_id,
       );
 
       // Quiz directions don't have scoring…
@@ -268,22 +268,23 @@ class QuizQuestionsForm extends BaseForm {
         $link_options = array(
             'attributes' => array('class' => array('handle-changes')),
         );
-        $question_titles = l($question_node->title, 'node/' . $question_node->nid, $link_options);
+        $question_titles = l($question->title, 'node/' . $question->nid, $link_options);
       }
       else {
-        $question_titles = check_plain($question_node->title);
+        $question_titles = check_plain($question->title);
       }
 
-      $form[$fieldset]['titles'][$id] = array('#markup' => $question_titles);
 
+      $plugin_info = $question->getPluginInfo();
+      $form[$fieldset]['titles'][$id] = array('#markup' => $question_titles);
       $form[$fieldset]['types'][$id] = array(
-          '#markup'        => $question_types[$question->type]['name'],
+          '#markup'        => $plugin_info['name'],
           '#question_type' => $question->type,
       );
 
       $form[$fieldset]['view_links'][$id] = array(
           '#markup' => l(
-            t('Edit'), 'node/' . $question->nid . '/edit', array(
+            t('Edit'), 'quiz-question/' . $question->qid . '/edit', array(
               'query'      => drupal_get_destination(),
               'attributes' => array('class' => array('handle-changes')),
             )
@@ -297,7 +298,7 @@ class QuizQuestionsForm extends BaseForm {
       );
 
       // Add a checkbox to update to the latest revision of the question
-      if ($question->vid == $question_node->vid) {
+      if ($question->vid == $question->vid) {
         $update_cell = array('#markup' => t('<em>Up to date</em>'));
       }
       else {

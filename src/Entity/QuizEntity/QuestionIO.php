@@ -88,7 +88,7 @@ class QuestionIO {
     $cond_2 = 'relationship.qr_pid IS NULL AND relationship.qr_id = sub_relationship.qr_id';
     $select->leftJoin('quiz_relationship', 'sub_relationship', "($cond_1) OR ($cond_2)");
 
-    $select->addField('relationship', 'question_nid', 'nid');
+    $select->addField('relationship', 'question_nid', 'qid');
     $select->addField('relationship', 'question_vid', 'vid');
     $select->addField('question', 'type');
     $select->fields('relationship', array('qr_id', 'qr_pid', 'weight'));
