@@ -96,7 +96,7 @@ abstract class QuizTestCase extends DrupalWebTestCase {
     if (is_null($quiz)) {
       $quiz = $this->drupalCreateQuiz();
     }
-    quiz_question_get_plugin($question)->saveRelationships($quiz->qid, $quiz->vid);
+    quiz_question_get_provider($question)->saveRelationships($quiz->qid, $quiz->vid);
     return $quiz;
   }
 

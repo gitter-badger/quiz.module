@@ -205,7 +205,7 @@ class QuizQuestionsForm extends BaseForm {
     foreach ($questions as $question) {
       $question = is_array($question) ? (object) $question : $question;
       $question_node = node_load($question->nid);
-      $instance = quiz_question_get_plugin($question_node);
+      $instance = quiz_question_get_provider($question_node);
 
       $fieldset = 'question_list';
       $id = $question->nid . '-' . $question->vid;

@@ -60,7 +60,7 @@ class AnswerController extends EntityAPIController {
     // If the question node isn't set we fetch it from the QuizQuestion instance
     // this responce belongs to
     if (!isset($question) && ($question_node = node_load($question_nid, $question_vid))) {
-      $question = quiz_question_get_plugin($question_node, TRUE)->question;
+      $question = quiz_question_get_provider($question_node, TRUE)->question;
     }
 
     // Cache the responce instance

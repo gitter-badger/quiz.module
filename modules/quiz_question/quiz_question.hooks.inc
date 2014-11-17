@@ -224,7 +224,7 @@ function quiz_question_quiz_question_score($quiz, $question_nid, $question_vid =
   $dummy_node->nid = $question_nid;
   $dummy_node->vid = $question_vid;
 
-  if (!$question = quiz_question_get_plugin($dummy_node, TRUE)) {
+  if (!$question = quiz_question_get_provider($dummy_node, TRUE)) {
     return FALSE;
   }
 
@@ -284,7 +284,7 @@ function quiz_question_modules_enabled($modules) {
  */
 function _quiz_delete_question(&$node, $only_this_version) {
   // let each question class delete its own stuff
-  quiz_question_get_plugin($node, TRUE)->delete($only_this_version);
+  quiz_question_get_provider($node, TRUE)->delete($only_this_version);
 
   // FIXME QuizQuestion class makes these relationships, so it should handle their 'deletion' too
   // FIXME alternately, move the relationship handling out of QuizQuestion class

@@ -106,8 +106,7 @@ function quiz_question_access_to_score($vid, $result_id) {
  * @return \Drupal\quiz_question\QuestionPlugin
  *  The appropriate QuizQuestion extension instance
  */
-function quiz_question_get_plugin(&$question, $cache = FALSE) {
-  // We use static caching to improve performance
+function quiz_question_get_provider(&$question, $cache = FALSE) {
   $plugins = &drupal_static(__FUNCTION__, array());
 
   $question_vid = isset($question->vid) ? $question->vid : 0;
@@ -115,41 +114,17 @@ function quiz_question_get_plugin(&$question, $cache = FALSE) {
     return $plugins[$question_vid];
   }
 
-  if (is_object($question) && !isset($question->type)) { # If $question don't have a type it is a dummy node
-    // To substanitally improve performance(especially on the result page) we avoid node_load()…
-    // @todo why is this? consider getting rid of this as nodes are better
-    // cached/retrieved in d7. adding the UID here to get rid of a notice.
-    $question = db_query('
-          SELECT n.type, r.nid, r.vid, r.title, p.max_score, n.uid
-          FROM {node_revision} r
-            JOIN {node} n ON r.nid = n.nid
-            JOIN {quiz_question_properties} p ON r.vid = p.vid
-          WHERE r.vid = :vid', array(
-        ':vid' => $question->vid))->fetch();
-    $is_dummy = TRUE;
+  if (!isset($question->type)) {
+    $question = quiz_question_entity_load(NULL, $question->vid);
   }
 
   // No cached instance of QuizQuestion has been returned. We construct a new instance
-  $info = quiz_question_get_plugin_info();
-  if (!$constructor = $info[$question->type]['question provider']) {
+  $plugin_info = $question->getPluginInfo();
+  if (!$constructor = $plugin_info['question provider']) {
     return FALSE;
   }
 
-  // We must create a new instance of QuizQuestion
-  if (($plugin = new $constructor($question)) && !($plugin instanceof QuestionPlugin)) {
-    drupal_set_message(t("The question-type %name isn't a QuizQuestion. It needs to extend the QuizQuestion class.", array(
-        '%name' => $question->type
-      )), 'error', FALSE);
-  }
-
-  // If we're using a dummy node we have to run getNodeProperties, and populate the node with those properties
-  if (!empty($is_dummy) && ($properties = $plugin->getNodeProperties())) {
-    foreach ($properties as $key => $value) {
-      $plugin->question->{$key} = $value;
-    }
-  }
-
-  return $plugins[$question_vid] = $plugin;
+  return $plugins[$question_vid] = new $constructor($question);
 }
 
 /**

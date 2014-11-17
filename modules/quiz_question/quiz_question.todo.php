@@ -100,7 +100,7 @@ function quiz_question_node_info() {
  */
 function quiz_question_load($node) {
   foreach ($node as &$question) {
-    foreach (quiz_question_get_plugin($question, TRUE)->getNodeProperties() as $property => $value) {
+    foreach (quiz_question_get_provider($question, TRUE)->getNodeProperties() as $property => $value) {
       $question->$property = $value;
     }
   }
@@ -120,7 +120,7 @@ function quiz_question_node_presave($node) {
 
   if (isset($node->is_quiz_question) && variable_get('quiz_auto_revisioning', 1)) {
     $node->revision = 0;
-    if (($plugin = quiz_question_get_plugin($node, TRUE)) && $plugin->hasBeenAnswered()) {
+    if (($plugin = quiz_question_get_provider($node, TRUE)) && $plugin->hasBeenAnswered()) {
       $node->revision = 1;
     }
   }
@@ -132,7 +132,7 @@ function quiz_question_node_presave($node) {
 function quiz_question_node_prepare($node) {
   if (isset($node->is_quiz_question) && variable_get('quiz_auto_revisioning', 1)) {
     $node->revision = 0;
-    if (($plugin = quiz_question_get_plugin($node, TRUE)) && $plugin->hasBeenAnswered()) {
+    if (($plugin = quiz_question_get_provider($node, TRUE)) && $plugin->hasBeenAnswered()) {
       $node->revision = 1;
     }
   }
@@ -207,7 +207,7 @@ function quiz_question_view($node, $view_mode) {
   }
   else {
     // normal node view
-    $node->content += quiz_question_get_plugin($node, TRUE)->getEntityView();
+    $node->content += quiz_question_get_provider($node, TRUE)->getEntityView();
   }
 
   return $node;
@@ -217,7 +217,7 @@ function quiz_question_view($node, $view_mode) {
  * Implements hook_update().
  */
 function quiz_question_update($question) {
-  quiz_question_get_plugin($question)->save();
+  quiz_question_get_provider($question)->save();
 }
 
 /**
@@ -235,14 +235,14 @@ function quiz_question_validate($question, &$form) {
   if (empty($question->body)) {
     form_set_error('body', TableSort('Question text is empty.'));
   }
-  quiz_question_get_plugin($question)->validateNode($form);
+  quiz_question_get_provider($question)->validateNode($form);
 }
 
 /**
  * Implements hook_insert().
  */
 function quiz_question_insert(stdClass $question) {
-  quiz_question_get_plugin($question)->save(TRUE);
+  quiz_question_get_provider($question)->save(TRUE);
 }
 
 if ('quiz-question' !== arg(0)) {
@@ -251,7 +251,7 @@ if ('quiz-question' !== arg(0)) {
    * Implements hook_form().
    */
   function quiz_question_form(&$node, &$form_state) {
-    return quiz_question_get_plugin($node)->getEntityForm($form_state);
+    return quiz_question_get_provider($node)->getEntityForm($form_state);
   }
 
 }
