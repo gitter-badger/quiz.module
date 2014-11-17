@@ -187,3 +187,37 @@ function quiz_question_update_7603() {
       'unique keys' => array('type' => array('type')),
   ));
 }
+
+/**
+ * Create question bundles from question node types.
+ */
+function quiz_question_update_7604() {
+  $node_types = db_select('node_type')
+    ->condition('module', 'quiz_question')
+    ->fields('node_type')
+    ->execute()
+    ->fetchAll();
+  foreach ($node_types as $node_type) {
+    $labels[] = $node_type->type;
+    $question_type = entity_create('quiz_question_type', array(
+        'type'        => $node_type->type,
+        'label'       => $node_type->name,
+        'description' => $node_type->description,
+        'help'        => $node_type->help,
+        'plugin'      => $node_type->type,
+    ));
+    $question_type->save();
+  }
+  return 'Created new question bundle: ' . implode(', ', $labels);
+}
+
+/**
+ * Change owner for question node types.
+ */
+function quiz_question_update_7605() {
+  db_update('node_type')
+    ->fields(array('module' => 'node', 'base' => 'node_content', 'disabled' => 0))
+    ->condition('base', 'quiz_question')
+    ->execute();
+  return 'Change owner for quiz node type.';
+}

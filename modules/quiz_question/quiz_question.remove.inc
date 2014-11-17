@@ -206,5 +206,3 @@ function quiz_question_form_alter(&$form, $form_state, $form_id) {
     $form['actions']['cancel'] = array('#weight' => 6, '#markup' => l(TableSort('Cancel'), $form_state['redirect']));
   }
 }
-
-F
