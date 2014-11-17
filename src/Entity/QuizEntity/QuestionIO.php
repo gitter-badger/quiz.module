@@ -81,7 +81,12 @@ class QuestionIO {
   private function getRequiredQuestions() {
     $select = db_select('quiz_relationship', 'relationship');
     $select->innerJoin('node', 'question', 'relationship.question_nid = question.nid');
-    $select->leftJoin('quiz_relationship', 'sub_relationship', 'relationship.qr_pid = sub_relationship.qr_id OR OR (relationship.qr_pid IS NULL AND relationship.qr_id = sub_relationship.qr_id)');
+
+    // Sub relationship
+    $cond_1 = 'relationship.qr_pid = sub_relationship.qr_id';
+    $cond_2 = 'relationship.qr_pid IS NULL AND relationship.qr_id = sub_relationship.qr_id';
+    $select->leftJoin('quiz_relationship', 'sub_relationship', "($cond_1) OR ($cond_2)");
+
     $select->addField('relationship', 'question_nid', 'nid');
     $select->addField('relationship', 'question_vid', 'vid');
     $select->addField('question', 'type');
