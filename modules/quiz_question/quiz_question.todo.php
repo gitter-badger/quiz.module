@@ -29,6 +29,14 @@ function quiz_question_get_types() {
   return entity_load_multiple_by_name('quiz_question_type');
 }
 
+/**
+ * Load question entity.
+ *
+ * @param int $id
+ * @param int $vid
+ * @param bool $reset
+ * @return \Drupal\quiz_question\Entity\Question
+ */
 function quiz_question_entity_load($id = NULL, $vid = NULL, $reset = FALSE) {
   if (NULL === $vid) {
     return entity_load_single('quiz_question', $id);
