@@ -5,7 +5,7 @@
  */
 class LongAnswerTestCase extends QuizQuestionTestCase {
 
-  var $question_node_type = 'long_answer';
+  protected $question_plugin = 'long_answer';
 
   public static function getInfo() {
     return array(
@@ -81,7 +81,7 @@ class LongAnswerTestCase extends QuizQuestionTestCase {
     }
 
     return $this->drupalCreateNode(array(
-          'type'  => $this->question_node_type,
+          'type'  => $this->question_plugin,
           'title' => 'LA 1 title',
           'body'  => array(LANGUAGE_NONE => array(array('value' => 'LA 1 body text.'))),
         ) + $settings);

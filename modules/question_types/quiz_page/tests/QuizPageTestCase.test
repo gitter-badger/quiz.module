@@ -2,7 +2,7 @@
 
 class QuizPageTestCase extends QuizQuestionTestCase {
 
-  var $question_node_type = 'quiz_page';
+  protected $question_plugin = 'quiz_page';
 
   public static function getInfo() {
     return array(

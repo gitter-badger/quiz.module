@@ -28,6 +28,7 @@ class QuizEntityTestCase extends QuizTestCase {
   public function testQuizEntityWrapper() {
     $this->checkInitQuizEntityType();
     $this->checkQuizEntity();
+    $this->checkQuizMethods();
     $this->checkQuizDefaults();
     $this->checkQuizCreation();
   }
@@ -41,6 +42,10 @@ class QuizEntityTestCase extends QuizTestCase {
     $quiz_type = entity_create('quiz_type', array('type' => 'new_quiz'));
     $this->assertTrue($quiz_type instanceof QuizEntityType, 'Quiz type entity is created correctly using entity_create().');
     entity_save('quiz_type', $quiz_type);
+  }
+
+  private function checkQuizMethods() {
+    // …
   }
 
   private function checkQuizEntity() {
