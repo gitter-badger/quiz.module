@@ -22,7 +22,7 @@ class Question extends Entity {
   private $plugin;
 
   /** @var bool */
-  public $status;
+  public $status = 1;
 
   /** @var string */
   public $title;
