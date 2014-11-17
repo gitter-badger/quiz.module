@@ -81,7 +81,7 @@ class LongAnswerTestCase extends QuizQuestionTestCase {
     }
 
     return $this->drupalCreateNode(array(
-          'type'  => $this->question_plugin,
+          'type'  => $this->questionPlugin,
           'title' => 'LA 1 title',
           'body'  => array(LANGUAGE_NONE => array(array('value' => 'LA 1 body text.'))),
         ) + $settings);

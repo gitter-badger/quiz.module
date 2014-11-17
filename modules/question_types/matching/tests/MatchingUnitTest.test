@@ -33,7 +33,7 @@ class MatchingTestCase extends QuizQuestionTestCase {
 
     // array of node attributes to create a test node
     $settings = array(
-        'type'           => $this->question_plugin,
+        'type'           => $this->questionPlugin,
         'title'          => $this->title,
         'body'           => array(LANGUAGE_NONE => array(array('value' => $this->body))),
         'revisions'      => TRUE,

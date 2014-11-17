@@ -5,8 +5,6 @@
  */
 abstract class QuizQuestionTestCase extends QuizTestCase {
 
-  protected $question_plugin = 'quiz_question';
-
   /**
    * Set up a question test case.
    *
@@ -19,8 +17,6 @@ abstract class QuizQuestionTestCase extends QuizTestCase {
    */
   function setUp($modules = array(), $admin_permissions = array(), $user_permissions = array()) {
     $modules[] = 'quiz_question';
-    $admin_permissions[] = "create {$this->question_plugin} content";
-    $admin_permissions[] = "edit any {$this->question_plugin} content";
     $user_permissions[] = 'access quiz';
     parent::setUp($modules, $admin_permissions, $user_permissions);
   }
@@ -30,7 +26,7 @@ abstract class QuizQuestionTestCase extends QuizTestCase {
    */
   public function testQuizQuestionImplementation() {
     $question_info = quiz_question_get_plugin_info();
-    $this->assertTrue(isset($question_info[$this->question_plugin]), t('Check that the question implementation is correct.'));
+    $this->assertTrue(isset($question_info[$this->questionPlugin]), t('Check that the question implementation is correct.'));
   }
 
 }

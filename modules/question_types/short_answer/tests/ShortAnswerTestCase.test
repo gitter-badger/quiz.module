@@ -178,7 +178,7 @@ class ShortAnswerTestCase extends QuizQuestionTestCase {
     }
 
     $question_node = $this->drupalCreateNode(array(
-        'type'  => $this->question_plugin,
+        'type'  => $this->questionPlugin,
         'title' => 'SA 1 title',
         'body'  => array(LANGUAGE_NONE => array(array('value' => 'SA 1 body text.'))),
       ) + $settings);
