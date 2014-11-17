@@ -59,6 +59,9 @@ class QuizEntity extends Entity {
    */
   public $keep_results = QUIZ_KEEP_ALL;
 
+  /** @var int */
+  public $randomization;
+
   /** @var QuestionIO */
   private $question_io;
 
