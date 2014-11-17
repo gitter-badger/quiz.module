@@ -25,8 +25,26 @@ abstract class QuizQuestionTestCase extends QuizTestCase {
    * Test the subclass's quiz question implementation.
    */
   public function testQuizQuestionImplementation() {
-    $question_info = quiz_question_get_plugin_info();
-    $this->assertTrue(isset($question_info[$this->questionPlugin]), t('Check that the question implementation is correct.'));
+    $info = quiz_question_get_plugin_info();
+    $this->assertTrue(isset($info[$this->questionPlugin]), t('Check that the question implementation is correct.'));
+  }
+
+  /**
+   * Create question entity.
+   *
+   * @param array $values
+   * @return \Drupal\quiz_question\Entity\Question
+   */
+  protected function createQuestion(array $values) {
+    $values['type'] = 'default_' . $values['type'];
+
+    // Fix legacy
+    if (isset($values['body'])) {
+      $values['quiz_question_body'] = $values['body'];
+      unset($values['body']);
+    }
+
+    return entity_create('quiz_question', $values);
   }
 
 }
