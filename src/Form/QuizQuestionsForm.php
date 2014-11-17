@@ -241,7 +241,7 @@ class QuizQuestionsForm extends BaseForm {
               'attributes' => array('class' => array('handle-changes')),
             )
           ),
-          '#access' => entity_access('update', 'quiz_entity', $entity),
+          '#access' => entity_access('update', 'quiz_entity', $question),
       );
 
       // For js enabled browsers questions are removed by pressing a remove link
