@@ -20,18 +20,13 @@ class ScoreIO {
    *   Contains three elements: question_count, num_correct and percentage_score.
    */
   public function calculate(QuizEntity $quiz, $result_id) {
-    // 1. Fetch all questions and their max scores
-    $questions = db_query('SELECT a.question_nid, a.question_vid, n.type, r.max_score
-      FROM {quiz_results_answers} a
-      LEFT JOIN {node} n ON (a.question_nid = n.nid)
-      LEFT OUTER JOIN {quiz_relationship} r ON (r.question_vid = a.question_vid) AND r.quiz_vid = :vid
-      WHERE result_id = :rid', array(':vid' => $quiz->vid, ':rid' => $result_id));
-
     // 2. Callback into the modules and let them do the scoring. @todo after 4.0: Why isn't the scores already saved? They should be
     // Fetched from the db, not calculated…
     $scores = array();
     $count = 0;
-    foreach ($questions as $question) {
+    foreach ($quiz->getQuestionIO()->getQuestionList() as $question) {
+      $question = (object) $question;
+
       // Questions picked from term id's won't be found in the quiz_relationship table
       if ($question->max_score === NULL && isset($quiz->tid) && $quiz->tid > 0) {
         $question->max_score = $quiz->max_score_for_random;

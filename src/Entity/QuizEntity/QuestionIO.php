@@ -91,7 +91,7 @@ class QuestionIO {
     $select->addField('relationship', 'question_nid', 'qid');
     $select->addField('relationship', 'question_vid', 'vid');
     $select->addField('question', 'type');
-    $select->fields('relationship', array('qr_id', 'qr_pid', 'weight'));
+    $select->fields('relationship', array('qr_id', 'qr_pid', 'weight', 'max_score'));
     $query = $select
       ->condition('relationship.quiz_vid', $this->quiz->vid)
       ->condition('relationship.question_status', QUESTION_ALWAYS)

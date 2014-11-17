@@ -238,19 +238,4 @@ class QuizHelper {
     return $query->execute()->rowCount() > 0;
   }
 
-  /**
-   * @param string $question_type
-   * @return string
-   *   Name of module matching the question type, as given by quiz_question_info()
-   *   hook.
-   */
-  public function getQuestionModuleFromType($question_type) {
-    $types = quiz_question_get_plugin_info();
-    if (!isset($types[$question_type])) {
-      drupal_set_message(t('The module for the questiontype %type is not enabled', array('%type' => $question_type)), 'warning');
-      return FALSE;
-    }
-    return $types[$question_type]['module'];
-  }
-
 }
