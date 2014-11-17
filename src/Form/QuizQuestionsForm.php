@@ -64,54 +64,6 @@ class QuizQuestionsForm extends BaseForm {
   }
 
   /**
-   * Fields for creating new questions are added to the quiz_questions_form
-   *
-   * @param $form
-   *   FAPI form(array)
-   * @param $types
-   *   All the question types(array)
-   * @param $quiz
-   *   The quiz entity
-   */
-  private function addFieldsForCreatingQuestions(&$form, &$types, &$quiz) {
-    // Display links to create other questions.
-    $form['additional_questions'] = array(
-        '#type'        => 'fieldset',
-        '#title'       => t('Create new question'),
-        '#collapsible' => TRUE,
-        '#collapsed'   => TRUE,
-    );
-
-    $url_query = drupal_get_destination();
-    $url_query['quiz_qid'] = $quiz->qid;
-    $url_query['quiz_vid'] = $quiz->vid;
-    $create_question = FALSE;
-    foreach ($types as $type => $info) {
-      $url_type = str_replace('_', '-', $type);
-      $options = array(
-          'attributes' => array('title' => t('Create @name', array('@name' => $info['name']))),
-          'query'      => $url_query,
-      );
-      $access = node_access('create', $type);
-      if ($access) {
-        $create_question = TRUE;
-      }
-      $form['additional_questions'][$type] = array(
-          '#markup' => '<div class="add-questions">' . l($info['name'], "node/add/$url_type", $options) . '</div>',
-          '#access' => $access,
-      );
-    }
-
-    if (!$create_question) {
-      $form['additional_questions']['create'] = array(
-          '#type'   => 'markup',
-          '#markup' => t('You have not enabled any question type module or no has permission been given to create any question.'),
-        // @todo revisit UI text
-      );
-    }
-  }
-
-  /**
    * Add fields for random quiz to the quiz_questions_form
    *
    * @param array $form
