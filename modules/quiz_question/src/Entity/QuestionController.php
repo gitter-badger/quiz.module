@@ -69,7 +69,7 @@ class QuestionController extends EntityAPIController {
    * @param Question $question
    */
   private function legacyFixQuestionId(Question $question) {
-    $question->nid = $question->qid;
+    $question->qid = $question->qid;
   }
 
   /**

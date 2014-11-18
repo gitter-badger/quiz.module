@@ -197,7 +197,7 @@ function quiz_question_report_form($question) {
          JOIN {quiz_terms} qt ON (qt.vid = qnr.quiz_vid AND qt.tid = qnra.tid)
          WHERE qnr.result_id = :rid AND qnra.question_nid = :qnid AND qnra.question_vid = :qvid', array(
           ':rid'  => $answer['result_id'],
-          ':qnid' => $question->nid,
+          ':qnid' => $question->qid,
           ':qvid' => $question->vid
         ))->fetchField();
     }

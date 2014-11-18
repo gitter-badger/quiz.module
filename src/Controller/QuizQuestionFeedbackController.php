@@ -34,7 +34,7 @@ class QuizQuestionFeedbackController {
     $module = $types[$question->type]['module'];
 
     // Invoke hook_get_report().
-    if ($report = module_invoke($module, 'get_report', $question->nid, $question->vid, $this->result->result_id)) {
+    if ($report = module_invoke($module, 'get_report', $question->qid, $question->vid, $this->result->result_id)) {
       return drupal_get_form('quiz_report_form', array($report));
     }
   }

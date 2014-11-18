@@ -48,7 +48,7 @@ abstract class QuizQuestionResponse {
       . '   AND question_nid = :question_nid '
       . '   AND question_vid = :question_vid', array(
         ':result_id'    => $result_id,
-        ':question_nid' => $question->nid,
+        ':question_nid' => $question->qid,
         ':question_vid' => $question->vid
       ))->fetch();
     if (is_object($result)) {

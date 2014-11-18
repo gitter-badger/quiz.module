@@ -450,7 +450,7 @@ class MatchingResponse extends QuizQuestionResponse {
     if (!isset($answer)) {
       $res = db_query('SELECT ua.answer, score, ua.match_id FROM {quiz_matching_user_answers} ua
               JOIN {quiz_matching_node} n ON n.match_id = ua.match_id
-              WHERE n.nid = :nid AND n.vid = :vid AND ua.result_id = :result_id', array(':nid' => $question->nid, ':vid' => $question->vid, ':result_id' => $result_id));
+              WHERE n.nid = :nid AND n.vid = :vid AND ua.result_id = :result_id', array(':nid' => $question->qid, ':vid' => $question->vid, ':result_id' => $result_id));
       $this->answer = array();
       while ($obj = $res->fetch()) {
         $this->answer[$obj->match_id] = $obj->answer;

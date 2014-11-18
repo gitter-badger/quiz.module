@@ -279,7 +279,7 @@ function long_answer_questions_list() {
   $questions = array();
   $query = db_query('SELECT nid, title FROM {node} WHERE type = :type', array(':type' => 'long_answer'));
   foreach ($query as $question) {
-    $questions[$question->nid] = check_plain($question->title);
+    $questions[$question->qid] = check_plain($question->title);
   }
   return $questions;
 }

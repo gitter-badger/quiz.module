@@ -42,7 +42,7 @@ function long_answer_edit_score($vid, $result_id) {
     return;
   }
 
-  $answer = (object) long_answer_get_answer($question->nid, $question->vid, $result_id);
+  $answer = (object) long_answer_get_answer($question->qid, $question->vid, $result_id);
   if (!$answer) {
     drupal_not_found();
     return;

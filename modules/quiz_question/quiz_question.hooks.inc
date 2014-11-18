@@ -225,7 +225,7 @@ function quiz_question_quiz_question_score($quiz, \Drupal\quiz_question\Entity\Q
 
   $score = new stdClass();
   $score->possible = $plugin->getMaximumScore();
-  $score->question_nid = $question->nid;
+  $score->question_nid = $question->qid;
   $score->question_vid = $question->vid;
 
   if (isset($result_id)) {

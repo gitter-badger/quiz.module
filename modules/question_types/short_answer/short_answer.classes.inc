@@ -347,7 +347,7 @@ class ShortAnswerResponse extends QuizQuestionResponse {
     if (!isset($answer)) {
       $r = db_query('SELECT answer_id, answer, is_evaluated, score, question_vid, question_nid, result_id, answer_feedback, answer_feedback_format
         FROM {quiz_short_answer_user_answers}
-        WHERE question_nid = :qnid AND question_vid = :qvid AND result_id = :rid', array(':qnid' => $question->nid, ':qvid' => $question->vid, ':rid' => $result_id)
+        WHERE question_nid = :qnid AND question_vid = :qvid AND result_id = :rid', array(':qnid' => $question->qid, ':qvid' => $question->vid, ':rid' => $result_id)
         )->fetch();
 
       if (!empty($r)) {
