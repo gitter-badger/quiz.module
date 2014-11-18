@@ -22,17 +22,17 @@ class QuizTakingTestCase extends QuizTestCase {
         'review_options'       => array('question' => array('answer_feedback' => 'answer_feedback')),
     ));
 
-    $question_node = $this->drupalCreateNode(array('type' => 'truefalse', 'correct_answer' => 1));
-    $this->linkQuestionToQuiz($question_node, $quiz);
+    $question = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $this->linkQuestionToQuiz($question, $quiz);
 
     $this->drupalLogin($this->user);
     $this->drupalGet("quiz/{$quiz->qid}/take");
-    $this->drupalPost(NULL, array("question[$question_node->nid]" => 0), t('Finish'));
+    $this->drupalPost(NULL, array("question[$question->qid]" => 0), t('Finish'));
     $this->assertText('The answer was incorrect. Please try again.');
 
     // Check that we are still on the question.
     $this->assertUrl("quiz/{$quiz->qid}/take/1");
-    $this->drupalPost(NULL, array("question[$question_node->nid]" => 1), t('Finish'));
+    $this->drupalPost(NULL, array("question[$question->qid]" => 1), t('Finish'));
     $this->assertNoText('The answer was incorrect. Please try again.');
   }
 
@@ -44,10 +44,10 @@ class QuizTakingTestCase extends QuizTestCase {
     $quiz = $this->drupalCreateQuiz(array('allow_resume' => 1));
 
     // 2 questions.
-    $question_node1 = $this->drupalCreateNode(array('type' => 'truefalse', 'correct_answer' => 1));
-    $this->linkQuestionToQuiz($question_node1, $quiz);
-    $question_node2 = $this->drupalCreateNode(array('type' => 'truefalse', 'correct_answer' => 1));
-    $this->linkQuestionToQuiz($question_node2, $quiz);
+    $question_1 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_2 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $this->linkQuestionToQuiz($question_1, $quiz);
+    $this->linkQuestionToQuiz($question_2, $quiz);
 
     // Answer a question. Ensure the question navigation restrictions are
     // maintained.
@@ -56,7 +56,7 @@ class QuizTakingTestCase extends QuizTestCase {
     $this->drupalGet("quiz/{$quiz->qid}/take/2");
     $this->assertResponse(403);
     $this->drupalGet("quiz/{$quiz->qid}/take/1");
-    $this->drupalPost(NULL, array("question[$question_node1->nid]" => 1), t('Next'));
+    $this->drupalPost(NULL, array("question[$question_1->qid]" => 1), t('Next'));
 
     // Login again.
     $this->drupalLogin($this->user);
@@ -105,18 +105,16 @@ class QuizTakingTestCase extends QuizTestCase {
     // Resuming is default behavior.
     $quiz = $this->drupalCreateQuiz();
 
-    $question_node1 = $this->drupalCreateNode(array('type' => 'truefalse', 'correct_answer' => 1));
-    $this->linkQuestionToQuiz($question_node1, $quiz);
-
-    node_access_rebuild(FALSE);
+    $question_1 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $this->linkQuestionToQuiz($question_1, $quiz);
 
     $this->drupalLogin($this->user);
-    $this->drupalGet("node/{$question_node1->nid}");
+    $this->drupalGet("quiz-question/{$question_1->qid}");
     $this->assertResponse(403);
 
     $user_with_privs = $this->drupalCreateUser(array('view quiz question outside of a quiz', 'access quiz'));
     $this->drupalLogin($user_with_privs);
-    $this->drupalGet("node/{$question_node1->nid}");
+    $this->drupalGet("quiz-question/{$question_1->qid}");
     $this->assertResponse(200);
   }
 
@@ -128,22 +126,22 @@ class QuizTakingTestCase extends QuizTestCase {
         'review_options' => array('question' => array('score' => 'score')),
     ));
 
-    $question_node1 = $this->drupalCreateNode(array('type' => 'truefalse', 'correct_answer' => 1));
-    $this->linkQuestionToQuiz($question_node1, $quiz);
-    $question_node2 = $this->drupalCreateNode(array('type' => 'truefalse', 'correct_answer' => 1));
-    $this->linkQuestionToQuiz($question_node2, $quiz);
-    $question_node3 = $this->drupalCreateNode(array('type' => 'truefalse', 'correct_answer' => 1));
-    $this->linkQuestionToQuiz($question_node3, $quiz);
+    $question_1 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_2 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_3 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $this->linkQuestionToQuiz($question_1, $quiz);
+    $this->linkQuestionToQuiz($question_2, $quiz);
+    $this->linkQuestionToQuiz($question_3, $quiz);
 
     $this->drupalLogin($this->user);
     $this->drupalGet("quiz/{$quiz->qid}/take");
     $this->drupalGet("quiz/{$quiz->qid}/take/1");
-    $this->drupalPost(NULL, array("question[$question_node1->nid]" => 0), t('Next'));
+    $this->drupalPost(NULL, array("question[$question_1->qid]" => 0), t('Next'));
     $this->assertText('Score: 0 of 1');
 
     // Go back and correct the answer.
     $this->drupalGet("quiz/{$quiz->qid}/take/1");
-    $this->drupalPost(NULL, array("question[$question_node1->nid]" => 1), t('Next'));
+    $this->drupalPost(NULL, array("question[$question_1->qid]" => 1), t('Next'));
     $this->assertText('Score: 1 of 1');
 
     // Restrict change after answer.
