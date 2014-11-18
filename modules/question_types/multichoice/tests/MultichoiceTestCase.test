@@ -23,7 +23,7 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
   /**
    * Create a default MCQ with default settings.
    */
-  public function testCreateQuizQuestion($settings = array()) {
+  private function createQuizQuestion($settings = array()) {
     $settings += array(
         'title'          => 'MCQ 1 Title',
         'type'           => 'multichoice',
@@ -42,7 +42,6 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
     $settings['alternatives'][0]['feedback_if_not_chosen']['format'] = 'filtered_html';
     $settings['alternatives'][0]['score_if_chosen'] = 1;
     $settings['alternatives'][0]['score_if_not_chosen'] = 0;
-
     $settings['alternatives'][1]['answer']['value'] = 'B';
     $settings['alternatives'][1]['answer']['format'] = 'filtered_html';
     $settings['alternatives'][1]['feedback_if_chosen']['value'] = 'You chose B';
@@ -51,7 +50,6 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
     $settings['alternatives'][1]['feedback_if_not_chosen']['format'] = 'filtered_html';
     $settings['alternatives'][1]['score_if_chosen'] = 0;
     $settings['alternatives'][1]['score_if_not_chosen'] = 0;
-
     $settings['alternatives'][2]['answer']['value'] = 'C';
     $settings['alternatives'][2]['answer']['format'] = 'filtered_html';
     $settings['alternatives'][2]['feedback_if_chosen']['value'] = 'You chose C';
@@ -61,16 +59,14 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
     $settings['alternatives'][2]['score_if_chosen'] = 0;
     $settings['alternatives'][2]['score_if_not_chosen'] = 0;
 
-    $question = quiz_question_entity_load($this->drupalCreateNode($settings)->nid);
+    $question = quiz_question_entity_load($this->createQuestion($settings)->qid);
 
     $this->assertNotNull($question->alternatives[0]['id'], 'Alternative A was created as part of question save.');
     $this->assertNotNull($question->alternatives[1]['id'], 'Alternative B was created as part of question save.');
     $this->assertNotNull($question->alternatives[2]['id'], 'Alternative C was created as part of question save.');
-
     $this->assertEqual($question->alternatives[0]['answer']['value'], 'A', 'Alternative text A was saved and loaded correctly.');
     $this->assertEqual($question->alternatives[1]['answer']['value'], 'B', 'Alternative text B was saved and loaded correctly.');
     $this->assertEqual($question->alternatives[2]['answer']['value'], 'C', 'Alternative text C was saved and loaded correctly.');
-
     $this->assertEqual($question->alternatives[0]['answer']['format'], 'filtered_html', 'Alternative format A was saved and loaded correctly.');
     $this->assertEqual($question->alternatives[1]['answer']['format'], 'filtered_html', 'Alternative format B was saved and loaded correctly.');
     $this->assertEqual($question->alternatives[1]['answer']['format'], 'filtered_html', 'Alternative format C was saved and loaded correctly.');
@@ -79,7 +75,7 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
   }
 
   public function testQuestionFeedback() {
-    $question = $this->testCreateQuizQuestion();
+    $question = $this->createQuizQuestion();
     $quiz = $this->linkQuestionToQuiz($question);
 
     // Login as non-admin.
@@ -100,7 +96,7 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
    * Test multiple answers.
    */
   function testMultipleAnswers() {
-    $question = $this->testCreateQuizQuestion(array('choice_multi' => 1));
+    $question = $this->createQuizQuestion(array('choice_multi' => 1));
     $quiz = $this->linkQuestionToQuiz($question);
 
     $this->drupalLogin($this->user);
@@ -125,15 +121,13 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
    * @todo I don't know how we would test random questions.
    */
   function testRandomOrder() {
-    $question = $this->testCreateQuizQuestion(array('choice_random' => 1));
+    $question = $this->createQuizQuestion(array('choice_random' => 1));
     $quiz = $this->linkQuestionToQuiz($question);
 
     $this->drupalLogin($this->user);
 
     $this->drupalGet("quiz/$quiz->qid/take");
-    $this->drupalPost(NULL, array(
-        "question[$question->qid][user_answer]" => $question->alternatives[0]['id'],
-      ), t('Finish'));
+    $this->drupalPost(NULL, array("question[$question->qid][user_answer]" => $question->alternatives[0]['id']), t('Finish'));
   }
 
   /**
@@ -146,7 +140,7 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
     $settings['choice_multi'] = 1;
     $settings['choice_boolean'] = 1;
 
-    $question = $this->testCreateQuizQuestion($settings);
+    $question = $this->createQuizQuestion($settings);
     $quiz = $this->linkQuestionToQuiz($question);
 
     $this->drupalLogin($this->user);
@@ -170,10 +164,11 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
    */
   function testReorderingUI() {
     $this->drupalLogin($this->admin);
-    $this->drupalGet('node/add/multichoice');
-    $question = $this->testCreateQuizQuestion();
+    $this->drupalGet('quiz-question/add');
+    $this->drupalGet('quiz-question/add/multichoice');
+    $question = $this->createQuizQuestion();
     $quiz = $this->linkQuestionToQuiz($question);
-    $this->drupalGet("node/$question->qid/edit");
+    $this->drupalGet("quiz-question/$question->qid/edit");
     $this->drupalPost(NULL, array(
         'alternatives[0][answer][value]' => 'Correct answer 1',
         'alternatives[0][weight]'        => 1,
@@ -195,7 +190,7 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
     $this->assertText('Your score: 100%');
 
     // Now screw them up.
-    $this->drupalGet("node/$question->qid/edit");
+    $this->drupalGet("quiz-question/$question->qid/edit");
     $this->drupalPost(NULL, array(
         'alternatives[0][weight]' => 3,
         'alternatives[1][weight]' => 2,
