@@ -26,24 +26,22 @@ class TrueFalseTestCase extends QuizQuestionTestCase {
    * @TODO: This is helper (internal) method, not a test case.
    */
   function testCreateQuizQuestion() {
-    $question_node = $this->drupalCreateNode(array(
-        'type'           => 'truefalse',
-        'title'          => 'TF 1 title',
-        'correct_answer' => 1,
-        'body'           => array(LANGUAGE_NONE => array(array('value' => 'TF 1 body text'))),
+    return $this->createQuestion(array(
+          'type'           => 'truefalse',
+          'title'          => 'TF 1 title',
+          'correct_answer' => 1,
+          'body'           => array(LANGUAGE_NONE => array(array('value' => 'TF 1 body text'))),
     ));
-
-    return $question_node;
   }
 
   function testTakeQuestion() {
-    $question_node = $this->testCreateQuizQuestion();
+    $question = $this->testCreateQuizQuestion();
 
     // Create the quiz and question.
     $quiz = $this->drupalCreateQuiz();
 
     // Link the question.
-    quiz_question_get_provider($question_node)->saveRelationships($quiz->qid, $quiz->vid);
+    quiz_question_get_provider($question)->saveRelationships($quiz->qid, $quiz->vid);
 
     // Test that question appears in lists.
     $this->drupalLogin($this->admin);
@@ -66,34 +64,34 @@ class TrueFalseTestCase extends QuizQuestionTestCase {
 
     // Test correct question.
     $this->drupalGet("quiz/$quiz->qid/take");
-    $this->drupalPost(NULL, array("question[$question_node->nid]" => 1), t('Finish'));
+    $this->drupalPost(NULL, array("question[$question->qid]" => 1), t('Finish'));
     $this->assertText('You got 1 of 1 possible points.');
 
     // Test incorrect question.
     $this->drupalGet("quiz/$quiz->qid/take");
-    $this->drupalPost(NULL, array("question[$question_node->nid]" => 0), t('Finish'));
+    $this->drupalPost(NULL, array("question[$question->qid]" => 0), t('Finish'));
     $this->assertText('You got 0 of 1 possible points.');
   }
 
   function testQuestionFeedback() {
     // Create the quiz and question.
-    $question_node = $this->testCreateQuizQuestion();
+    $question = $this->testCreateQuizQuestion();
 
     // Link the question.
-    $quiz = $this->linkQuestionToQuiz($question_node);
+    $quiz = $this->linkQuestionToQuiz($question);
 
     // Login as non-admin.
     $this->drupalLogin($this->user);
 
     // Test incorrect question with all feedbacks on.
     $this->drupalGet("quiz/$quiz->qid/take");
-    $this->drupalPost(NULL, array("question[$question_node->nid]" => 1), t('Finish'));
+    $this->drupalPost(NULL, array("question[$question->qid]" => 1), t('Finish'));
     $this->assertRaw('quiz-score-icon correct');
     $this->assertRaw('quiz-score-icon should');
 
     // Take the quiz.
     $this->drupalGet("quiz/$quiz->qid/take");
-    $this->drupalPost(NULL, array("question[$question_node->nid]" => 0), t('Finish'));
+    $this->drupalPost(NULL, array("question[$question->qid]" => 0), t('Finish'));
     $this->assertRaw('quiz-score-icon incorrect');
     $this->assertRaw('quiz-score-icon should');
   }

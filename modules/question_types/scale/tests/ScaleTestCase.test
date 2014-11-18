@@ -38,25 +38,23 @@ class ScaleTestCase extends QuizQuestionTestCase {
     $settings = array();
     $settings['type'] = 'scale';
 
-    $question_node = $this->drupalCreateNode(array(
-        'type'         => 'scale',
-        'title'        => 'Scale 1 title',
-        'alternative0' => 'This is alternative 1',
-        'alternative1' => 'This is alternative 2',
-        'alternative2' => 'This is alternative 3',
-        'alternative3' => 'This is alternative 4',
-        'alternative4' => 'This is alternative 5',
-        'body'         => array(LANGUAGE_NONE => array(array('value' => 'Scale 1 body text'))),
+    return $this->createQuestion(array(
+          'type'         => 'scale',
+          'title'        => 'Scale 1 title',
+          'alternative0' => 'This is alternative 1',
+          'alternative1' => 'This is alternative 2',
+          'alternative2' => 'This is alternative 3',
+          'alternative3' => 'This is alternative 4',
+          'alternative4' => 'This is alternative 5',
+          'body'         => array(LANGUAGE_NONE => array(array('value' => 'Scale 1 body text'))),
     ));
-
-    return $question_node;
   }
 
   function testTakeQuestion() {
-    $question_node = $this->testCreateQuizQuestion();
+    $question = $this->testCreateQuizQuestion();
 
     // Link the question.
-    $quiz = $this->linkQuestionToQuiz($question_node);
+    $quiz = $this->linkQuestionToQuiz($question);
 
     // Test that question appears in lists.
     $this->drupalGet("quiz/$quiz->qid/questions");
@@ -79,7 +77,7 @@ class ScaleTestCase extends QuizQuestionTestCase {
     // Test any question.
     $this->drupalGet("quiz/$quiz->qid/take");
     // Alternative #2 is actually 24 (because of the presets).
-    $this->drupalPost(NULL, array("question[$question_node->nid]" => 24), t('Finish'));
+    $this->drupalPost(NULL, array("question[$question->qid]" => 24), t('Finish'));
     $this->assertText('You got 1 of 1 possible points.');
   }
 

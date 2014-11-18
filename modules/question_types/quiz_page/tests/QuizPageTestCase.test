@@ -6,9 +6,9 @@ class QuizPageTestCase extends QuizQuestionTestCase {
 
   public static function getInfo() {
     return array(
-      'name'        => t('Quiz page'),
-      'description' => t('Unit test for quiz pages'),
-      'group'       => t('Quiz'),
+        'name'        => t('Quiz page'),
+        'description' => t('Unit test for quiz pages'),
+        'group'       => t('Quiz'),
     );
   }
 
@@ -22,38 +22,35 @@ class QuizPageTestCase extends QuizQuestionTestCase {
    * Test that question parentage saves.
    */
   function testQuizPageParentage() {
-    $this->drupalLogin($this->admin);
-
     // Create Quiz with review of score.
     $quiz = $this->drupalCreateQuiz();
 
-    // Create the questions.
-    $question_node1 = $this->drupalCreateNode(array('type' => 'truefalse', 'correct_answer' => 1, 'body' => array(LANGUAGE_NONE => array(array('value' => 'TF 1 body text')))));
-    $this->linkQuestionToQuiz($question_node1, $quiz);
-    $question_node2 = $this->drupalCreateNode(array('type' => 'truefalse', 'correct_answer' => 1, 'body' => array(LANGUAGE_NONE => array(array('value' => 'TF 2 body text')))));
-    $this->linkQuestionToQuiz($question_node2, $quiz);
-    $question_node3 = $this->drupalCreateNode(array('type' => 'truefalse', 'correct_answer' => 1, 'body' => array(LANGUAGE_NONE => array(array('value' => 'TF 3 body text')))));
-    $this->linkQuestionToQuiz($question_node3, $quiz);
-
-    // Create the pages.
-    $page_node1 = $this->drupalCreateNode(array('type' => 'quiz_page'));
-    $this->linkQuestionToQuiz($page_node1, $quiz);
-    $page_node2 = $this->drupalCreateNode(array('type' => 'quiz_page'));
-    $this->linkQuestionToQuiz($page_node2, $quiz);
+    // Create the questions & pages
+    $question_1 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1, 'body' => array(LANGUAGE_NONE => array(array('value' => 'TF 1 body text')))));
+    $question_2 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1, 'body' => array(LANGUAGE_NONE => array(array('value' => 'TF 2 body text')))));
+    $question_3 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1, 'body' => array(LANGUAGE_NONE => array(array('value' => 'TF 3 body text')))));
+    $page_1 = $this->createQuestion(array('type' => 'quiz_page'));
+    $page_2 = $this->createQuestion(array('type' => 'quiz_page'));
+    $this->linkQuestionToQuiz($question_1, $quiz);
+    $this->linkQuestionToQuiz($question_2, $quiz);
+    $this->linkQuestionToQuiz($question_3, $quiz);
+    $this->linkQuestionToQuiz($page_1, $quiz);
+    $this->linkQuestionToQuiz($page_2, $quiz);
 
     // Go to the manage questions form.
+    $this->drupalLogin($this->admin);
     $this->drupalGet("quiz/$quiz->qid/questions");
     $post = array(
-      // Make the questions have parents.
-      "qr_pids[{$question_node1->nid}-{$question_node1->vid}]" => 4,
-      "qr_pids[{$question_node2->nid}-{$question_node2->vid}]" => 4,
-      "qr_pids[{$question_node3->nid}-{$question_node3->vid}]" => 5,
-      // Mirror what JS would have done by adjusting the weights.
-      "weights[{$page_node1->nid}-{$page_node1->vid}]"         => 2,
-      "weights[{$question_node1->nid}-{$question_node1->vid}]" => 3,
-      "weights[{$question_node2->nid}-{$question_node2->vid}]" => 4,
-      "weights[{$page_node2->nid}-{$page_node2->vid}]"         => 3,
-      "weights[{$question_node3->nid}-{$question_node3->vid}]" => 4,
+        // Make the questions have parents.
+        "qr_pids[{$question_1->qid}-{$question_1->vid}]" => 4,
+        "qr_pids[{$question_2->qid}-{$question_2->vid}]" => 4,
+        "qr_pids[{$question_3->qid}-{$question_3->vid}]" => 5,
+        // Mirror what JS would have done by adjusting the weights.
+        "weights[{$page_1->qid}-{$page_1->vid}]"         => 2,
+        "weights[{$question_1->qid}-{$question_1->vid}]" => 3,
+        "weights[{$question_2->qid}-{$question_2->vid}]" => 4,
+        "weights[{$page_2->qid}-{$page_2->vid}]"         => 3,
+        "weights[{$question_3->qid}-{$question_3->vid}]" => 4,
     );
     $this->drupalPost(NULL, $post, t('Submit'));
 
@@ -80,17 +77,17 @@ class QuizPageTestCase extends QuizQuestionTestCase {
     $this->drupalLogin($this->user);
     $this->drupalGet("quiz/{$quiz->qid}/take");
     // Questions 1 and 2 are present. Question 3 is hidden.
-    $this->assertFieldByName("question[{$question_node1->nid}]");
-    $this->assertFieldByName("question[{$question_node2->nid}]");
-    $this->assertNoFieldByName("question[{$question_node3->nid}]");
+    $this->assertFieldByName("question[{$question_1->qid}]");
+    $this->assertFieldByName("question[{$question_2->qid}]");
+    $this->assertNoFieldByName("question[{$question_3->qid}]");
     $this->drupalPost(NULL, array(
-      "question[{$question_node1->nid}]" => 1,
-      "question[{$question_node2->nid}]" => 1), t('Next'));
+        "question[{$question_1->qid}]" => 1,
+        "question[{$question_2->qid}]" => 1), t('Next'));
     // Questions 1 and 2 are gone. Question 3 is present.
-    $this->assertNoFieldByName("question[{$question_node1->nid}]");
-    $this->assertNoFieldByName("question[{$question_node2->nid}]");
-    $this->assertFieldByName("question[{$question_node3->nid}]");
-    $this->drupalPost(NULL, array("question[{$question_node3->nid}]" => 1), t('Finish'));
+    $this->assertNoFieldByName("question[{$question_1->qid}]");
+    $this->assertNoFieldByName("question[{$question_2->qid}]");
+    $this->assertFieldByName("question[{$question_3->qid}]");
+    $this->drupalPost(NULL, array("question[{$question_3->qid}]" => 1), t('Finish'));
 
     // Check that the results page contains all the questions.
     $this->assertText('You got 3 of 3 possible points.');

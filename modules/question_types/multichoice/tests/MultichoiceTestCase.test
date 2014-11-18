@@ -125,7 +125,6 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
     $quiz = $this->linkQuestionToQuiz($question);
 
     $this->drupalLogin($this->user);
-
     $this->drupalGet("quiz/$quiz->qid/take");
     $this->drupalPost(NULL, array("question[$question->qid][user_answer]" => $question->alternatives[0]['id']), t('Finish'));
   }
