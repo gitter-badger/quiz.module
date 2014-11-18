@@ -196,30 +196,24 @@ abstract class QuizQuestionResponse {
   }
 
   /**
-   * Creates the report form for the admin pages, and for when a user gets feedback after answering questions.
+   * Creates the report form for the admin pages, and for when a user gets
+   * feedback after answering questions.
    *
-   * The report is a form to allow editing scores and the likes while viewing the report form
+   * The report is a form to allow editing scores and the likes while viewing
+   * the report form
    *
-   * @return $form
+   * @return array $form
    *  Drupal form array
    */
   public function getReportForm() {
     global $user;
 
-    // Add general data, and data from the question type implementation
     $form = array();
-    $form['nid'] = array(
-        '#type'  => 'value',
-        '#value' => $this->question->qid,
-    );
-    $form['vid'] = array(
-        '#type'  => 'value',
-        '#value' => $this->question->vid,
-    );
-    $form['result_id'] = array(
-        '#type'  => 'value',
-        '#value' => $this->result_id,
-    );
+
+    // Add general data, and data from the question type implementation
+    $form['qid'] = array('#type' => 'value', '#value' => $this->question->qid);
+    $form['vid'] = array('#type' => 'value', '#value' => $this->question->vid);
+    $form['result_id'] = array('#type' => 'value', '#value' => $this->result_id);
 
     if ($this->result->canAccessOwnScore($user) && ($submit = $this->getReportFormSubmit())) {
       $form['submit'] = array('#type' => 'value', '#value' => $submit);
@@ -235,8 +229,6 @@ abstract class QuizQuestionResponse {
         '#value' => ($this->canReview('score')) ? $this->getMaxScore() : '?',
     );
 
-    $rows = array();
-
     $labels = array(
         'attempt'         => t('Your answer'),
         'choice'          => t('Choice'),
@@ -247,6 +239,7 @@ abstract class QuizQuestionResponse {
     );
     drupal_alter('quiz_feedback_labels', $labels);
 
+    $rows = array();
     foreach ($this->getReportFormResponse() as $idx => $row) {
       foreach (array_keys($labels) as $reviewType) {
         if (('choice' === $reviewType) || (isset($row[$reviewType]) && $this->canReview($reviewType))) {

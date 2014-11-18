@@ -174,7 +174,7 @@ function quiz_question_get_max_score($nid, $vid) {
  * @return
  *  FAPI form array
  */
-function quiz_question_report_form($question) {
+function quiz_question_report_form(\Drupal\quiz_question\Entity\Question $question) {
   $answer = $question->answers[0];
   $response_instance = quiz_answer_controller()->getInstance($answer['result_id'], $question, $answer);
 

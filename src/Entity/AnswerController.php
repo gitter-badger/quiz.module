@@ -2,8 +2,10 @@
 
 namespace Drupal\quiz\Entity;
 
+use Drupal\quiz_question\Entity\Question;
 use Drupal\quiz_question\QuizQuestionResponse;
 use EntityAPIController;
+use RuntimeException;
 
 class AnswerController extends EntityAPIController {
 
@@ -29,21 +31,17 @@ class AnswerController extends EntityAPIController {
    * object of the appropriate type.
    *
    * @param int $result_id
-   *  Result id
-   * @param $question
-   *  The question node (not a QuizQuestion instance)
-   * @param $answer
+   * @param Question $question
+   *  The question enttiy
+   * @param array $answer
    *  Resonce to the answering form.
-   * @param int $question_nid
-   *  Question node id
+   * @param int $question_qid
    * @param int $question_vid
-   *  Question node version id
    * @return \Drupal\quiz_question\QuizQuestionResponse
    *  The appropriate QuizQuestionResponce extension instance
    */
-  public function getInstance($result_id, $question, $answer = NULL, $question_nid = NULL, $question_vid = NULL) {
-    // We cache responses to improve performance
-    static $responses = array();
+  public function getInstance($result_id, Question $question = NULL, array $answer = NULL, $question_qid = NULL, $question_vid = NULL) {
+    $responses = &drupal_static(__METHOD__, array());
 
     if (is_object($question) && isset($responses[$result_id][$question->vid])) {
       // We refresh the question node in case it has been changed since we cached the response
@@ -59,8 +57,8 @@ class AnswerController extends EntityAPIController {
 
     // If the question node isn't set we fetch it from the QuizQuestion instance
     // this responce belongs to
-    if (!isset($question) && ($question_node = quiz_question_entity_load($question_nid, $question_vid))) {
-      $question = quiz_question_get_provider($question_node, TRUE)->question;
+    if (!$question && ($_question = quiz_question_entity_load($question_qid, $question_vid))) {
+      $question = $_question->getPlugin()->question;
     }
 
     // Cache the responce instance
@@ -72,11 +70,11 @@ class AnswerController extends EntityAPIController {
     return FALSE;
   }
 
-  private function doGetInstance(\Drupal\quiz_question\Entity\Question $question, $result_id, $answer) {
+  private function doGetInstance(Question $question, $result_id, $answer) {
     $plugin_info = $question->getPluginInfo();
     $response_provider = new $plugin_info['response provider']($result_id, $question, $answer);
     if (!$response_provider instanceof QuizQuestionResponse) {
-      throw new \RuntimeException('The question-response isn\'t a QuizQuestionResponse. It needs to extend the QuizQuestionResponse interface, or extend the abstractQuizQuestionResponse class.');
+      throw new RuntimeException('The question-response isn\'t a QuizQuestionResponse. It needs to extend the QuizQuestionResponse interface, or extend the abstractQuizQuestionResponse class.');
     }
 
     return $response_provider;

@@ -41,9 +41,9 @@ abstract class QuizResultBaseController {
    *   Array of answers.
    */
   protected function getAnswers() {
-    $sql = "SELECT ra.question_nid, ra.question_vid, n.type, rs.max_score, qt.max_score as term_max_score "
+    $sql = "SELECT ra.question_nid, ra.question_vid, question.type, rs.max_score, qt.max_score as term_max_score"
       . " FROM {quiz_results_answers} ra "
-      . "   LEFT JOIN {node} n ON ra.question_nid = n.nid"
+      . "   LEFT JOIN {quiz_question} question ON ra.question_nid = question.qid"
       . "   LEFT JOIN {quiz_results} r ON ra.result_id = r.result_id"
       . "   LEFT OUTER JOIN {quiz_relationship} rs ON (ra.question_vid = rs.question_vid) AND rs.quiz_vid = r.quiz_vid"
       . "   LEFT OUTER JOIN {quiz_terms} qt ON (qt.vid = :vid AND qt.tid = ra.tid) "
@@ -52,10 +52,10 @@ abstract class QuizResultBaseController {
     $ids = db_query($sql, array(':vid' => $this->quiz_revision->vid, ':rid' => $this->result->result_id));
     while ($db_row = $ids->fetch()) {
       if ($report = $this->getAnswer($db_row)) {
-        $questions[] = $report;
+        $answers[] = $report;
       }
     }
-    return !empty($questions) ? $questions : array();
+    return !empty($answers) ? $answers : array();
   }
 
   private function getAnswer($db_row) {

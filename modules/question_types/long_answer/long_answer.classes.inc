@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\quiz_question\Entity\Question;
 use Drupal\quiz_question\QuestionPlugin;
 use Drupal\quiz_question\QuizQuestionResponse;
 
@@ -270,22 +271,26 @@ class LongAnswerResponse extends QuizQuestionResponse {
   /**
    * Constructor
    */
-  public function __construct($result_id, \Drupal\quiz_question\Entity\Question $question, $answer = NULL) {
+  public function __construct($result_id, Question $question, $answer = NULL) {
     parent::__construct($result_id, $question, $answer);
 
     if (!isset($answer)) {
-      // Question has been answered allready. We fetch the answer data from the database.
-      $r = db_query('SELECT answer_id, answer, is_evaluated, score, question_vid, question_nid, result_id, answer_feedback, answer_feedback_format
+      // Question has been answered allready. We fetch the answer data from
+      // the database.
+      $row = db_query(
+        'SELECT answer_id, answer, is_evaluated, score, question_vid, question_nid, result_id, answer_feedback, answer_feedback_format
         FROM {quiz_long_answer_user_answers}
-        WHERE question_nid = :qnid AND question_vid = :qvid AND result_id = :rid', array(':qnid' => $question->nid, ':qvid' => $question->vid, ':rid' => $result_id))->fetch();
-
-      if (!empty($r)) {
-        $this->answer = $r->answer;
-        $this->score = $r->score;
-        $this->evaluated = $r->is_evaluated;
-        $this->answer_id = $r->answer_id;
-        $this->answer_feedback = $r->answer_feedback;
-        $this->answer_feedback_format = $r->answer_feedback_format;
+        WHERE question_nid = :qnid AND question_vid = :qvid AND result_id = :rid', array(
+          ':qnid' => $question->qid,
+          ':qvid' => $question->vid,
+          ':rid'  => $result_id))->fetch();
+      if (!empty($row)) {
+        $this->answer = $row->answer;
+        $this->score = $row->score;
+        $this->evaluated = $row->is_evaluated;
+        $this->answer_id = $row->answer_id;
+        $this->answer_feedback = $row->answer_feedback;
+        $this->answer_feedback_format = $row->answer_feedback_format;
       }
     }
     else {
