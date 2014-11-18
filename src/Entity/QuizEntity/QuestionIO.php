@@ -195,4 +195,94 @@ class QuestionIO {
         ->execute()->fetchAll(PDO::FETCH_ASSOC);
   }
 
+  /**
+   * Sets the questions that are assigned to a quiz.
+   *
+   * @param \Drupal\quiz_question\Entity\Question[] $questions
+   *   An array of questions.
+   * @param bool $set_new_revision
+   *   If TRUE, a new revision will be generated. Note that saving
+   *   quiz questions unmodified will still generate a new revision of the quiz if
+   *   this is set to TRUE. Why? For a few reasons:
+   *   - All of the questions are updated to their latest VID. That is supposed to
+   *     be a feature.
+   *   - All weights are updated.
+   *   - All status flags are updated.
+   *
+   * @return
+   *   Boolean TRUE if update was successful, FALSE otherwise.
+   */
+  public function setQuestions(array $questions, $set_new_revision = FALSE) {
+    // Create a new Quiz VID, even if nothing changed.
+    if ($set_new_revision) {
+      $this->quiz->is_new_revision = 1;
+      $this->quiz->save();
+    }
+
+    // When node_save() calls all of the node API hooks, old quiz info is
+    // automatically inserted into quiz_relationship. We could get clever and
+    // try to do strategic updates/inserts/deletes, but that method has already
+    // proven error prone as the module has gained complexity (See 5.x-2.0-RC2).
+    // So we go with the brute force method:
+    db_delete('quiz_relationship')
+      ->condition('quiz_qid', $this->quiz->qid)
+      ->condition('quiz_vid', $this->quiz->vid)
+      ->execute();
+
+    // This is not an error condition.
+    if (empty($questions)) {
+      return TRUE;
+    }
+
+    $this->doSetQuestions($questions, $set_new_revision);
+    $this->quiz->getController()->getMaxScoreWriter()->update(array($this->quiz->vid));
+
+    return TRUE;
+  }
+
+  private function doSetQuestions($questions, $set_new_revision) {
+    foreach ($questions as $question) {
+      if ($question->state == QUESTION_NEVER) {
+        continue;
+      }
+
+      // Update to latest OR use the version given.
+      $question_vid = $question->vid;
+      if ($question->refresh) {
+        $sql = 'SELECT vid FROM {quiz_question} WHERE qid = :qid';
+        $question_vid = db_query($sql, array(':qid' => $question->qid))->fetchField();
+      }
+
+      $relationships[$question->qr_id] = entity_create('quiz_question_relationship', array(
+          'quiz_qid'              => $this->quiz->qid,
+          'quiz_vid'              => $this->quiz->vid,
+          'question_nid'          => $question->qid,
+          'question_vid'          => $question_vid,
+          'question_status'       => $question->state,
+          'weight'                => $question->weight,
+          'max_score'             => (int) $question->max_score,
+          'auto_update_max_score' => (int) $question->auto_update_max_score,
+          'qr_pid'                => $question->qr_pid,
+          'qr_id'                 => !$set_new_revision ? $question->qr_id : NULL,
+          'old_qr_id'             => $question->qr_id,
+      ));
+      $relationships[$question->qr_id]->save();
+    }
+
+    // Update the parentage when a new revision is created.
+    // @todo this is copy pasta from quiz_update_quiz_question_relationship
+    foreach ($relationships as $relationship) {
+      $_relationships = entity_load('quiz_question_relationship', FALSE, array(
+          'qr_pid'   => $relationship->old_qr_id,
+          'quiz_vid' => $this->quiz->vid,
+          'quiz_qid' => $this->quiz->qid,
+        ), TRUE);
+
+      foreach ($_relationships as $_relationship) {
+        $_relationship->qr_pid = $relationship->qr_id;
+        $_relationship->save();
+      }
+    }
+  }
+
 }

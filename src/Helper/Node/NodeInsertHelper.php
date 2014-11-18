@@ -4,6 +4,9 @@ namespace Drupal\quiz\Helper\Node;
 
 class NodeInsertHelper extends NodeHelper {
 
+  /**
+   * @param \Drupal\quiz\Entity\QuizEntity $quiz
+   */
   public function execute($quiz) {
     // Need to set max_score if this is a cloned node
     $max_score = 0;
@@ -27,7 +30,7 @@ class NodeInsertHelper extends NodeHelper {
         $questions[$nid]->refresh = 0;
       }
 
-      quiz()->getQuizHelper()->setQuestions($quiz, $questions);
+      $quiz->getQuestionIO()->setQuestions($questions);
     }
 
     $this->presaveActions($quiz);

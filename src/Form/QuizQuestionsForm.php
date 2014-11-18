@@ -4,7 +4,6 @@ namespace Drupal\quiz\Form;
 
 use Drupal\quiz\Entity\QuizEntity;
 use Drupal\quiz\Helper\Quiz\BaseForm;
-use stdClass;
 
 class QuizQuestionsForm extends BaseForm {
 
@@ -21,7 +20,7 @@ class QuizQuestionsForm extends BaseForm {
    * @return
    *  HTML output to create page.
    */
-  public function formGet($form, $form_state, $quiz) {
+  public function formGet($form, $form_state, QuizEntity $quiz) {
     // Display questions in this quiz.
     $form['question_list'] = array(
         '#type'           => 'fieldset',
@@ -36,7 +35,7 @@ class QuizQuestionsForm extends BaseForm {
     $this->addFieldsForRandomQuiz($form, $quiz);
 
     // @todo deal with $include_random
-    if (!$questions = $quiz->getQuestionIO()->getQuestionList()) {
+    if (!$relationships = $quiz->getQuestionIO()->getQuestionList()) {
       $form['question_list']['no_questions'] = array(
           '#markup' => '<div id = "no-questions">' . t('There are currently no questions in this @quiz. Assign existing questions by using the question browser below. You can also use the links above to create new questions.', array('@quiz' => QUIZ_NAME)) . '</div>',
       );
@@ -44,7 +43,7 @@ class QuizQuestionsForm extends BaseForm {
 
     // We add the questions to the form array
     $types = quiz_question_get_plugin_info();
-    $this->addQuestionsToForm($form, $questions, $quiz, $types);
+    $this->addQuestionsToForm($form, $relationships, $quiz, $types);
 
     // Show the number of questions in the table header.
     $always_count = isset($form['question_list']['titles']) ? count($form['question_list']['titles']) : 0;
@@ -134,14 +133,14 @@ class QuizQuestionsForm extends BaseForm {
    *
    * @param $form
    *   FAPI form(array)
-   * @param $questions
+   * @param $relationships
    *   The questions to be added to the question list(array)
    * @param QuizEntity $quiz
    *   The quiz entity
    * @param $question_types
    *   array of all available question types
    */
-  private function addQuestionsToForm(&$form, $questions, &$quiz, &$question_types) {
+  private function addQuestionsToForm(&$form, $relationships, &$quiz, &$question_types) {
     $form['question_list']['weights'] = array('#tree' => TRUE);
     $form['question_list']['qr_ids'] = array('#tree' => TRUE);
     $form['question_list']['qr_pids'] = array('#tree' => TRUE);
@@ -154,7 +153,7 @@ class QuizQuestionsForm extends BaseForm {
     }
 
     // @TODO: Replace entire form with usage of question instance
-    foreach ($questions as $relationship) {
+    foreach ($relationships as $relationship) {
       $relationship = is_array($relationship) ? (object) $relationship : $relationship;
       $question = quiz_question_entity_load($relationship->qid);
       $instance = quiz_question_get_provider($question);
@@ -189,7 +188,7 @@ class QuizQuestionsForm extends BaseForm {
           '#size'          => 2,
           '#maxlength'     => 2,
           '#disabled'      => isset($question->auto_update_max_score) ? $question->auto_update_max_score : FALSE,
-          '#default_value' => isset($question->max_score) ? $question->max_score : 0,
+          '#default_value' => isset($relationship->max_score) ? $relationship->max_score : 0,
           '#states'        => array(
               'disabled' => array("#edit-auto-update-max-scores-$id" => array('checked' => TRUE))
           ),
@@ -332,11 +331,9 @@ class QuizQuestionsForm extends BaseForm {
 
   /**
    * Submit function for quiz_questions.
-   *
    * Updates from the "manage questions" tab.
    */
   public function formSubmit($form, &$form_state) {
-    /* @var $quiz QuizEntity */
     $quiz = quiz_load(quiz_get_id_from_url());
 
     // Update the refresh latest quizzes table so that we know what the users latest quizzes are
@@ -367,7 +364,6 @@ class QuizQuestionsForm extends BaseForm {
     // If using random questions and no term ID is specified, make sure we have enough.
     if (empty($term_id)) {
       $assigned_random = 0;
-
       foreach ($questions as $question) {
         if ($question->state == QUESTION_RANDOM) {
           ++$assigned_random;
@@ -461,41 +457,37 @@ class QuizQuestionsForm extends BaseForm {
    *   Array of boolean values determining if the question is compulsory or not.
    * @return array set of questions after updating
    */
-  private function updateItems($quiz, $weight_map, $max_scores, $auto_update_max_scores, $is_new_revision, $refreshes, $stayers, $qr_ids, $qr_pids, $compulsories = NULL) {
+  private function updateItems(QuizEntity $quiz, $weight_map, $max_scores, $auto_update_max_scores, $is_new_revision, $refreshes, $stayers, $qr_ids, $qr_pids, $compulsories = NULL) {
     $questions = array();
     foreach ($weight_map as $id => $weight) {
       if ($stayers[$id]) {
         continue;
       }
-      list($nid, $vid) = explode('-', $id, 2);
-      $question = new stdClass();
-      $question->qid = (int) $nid;
-      $question->vid = (int) $vid;
-      if (isset($compulsories)) {
-        if ($compulsories[$id] == 1) {
-          $question->state = QUESTION_ALWAYS;
-        }
-        else {
-          $question->state = QUESTION_RANDOM;
-          $max_scores[$id] = $quiz->max_score_for_random;
-        }
+
+      list($qid, $vid) = explode('-', $id, 2);
+      $question = entity_create('quiz_question', array(
+          'qid'                   => (int) $qid,
+          'vid'                   => (int) $vid,
+          'weight'                => $weight,
+          'auto_update_max_score' => $auto_update_max_scores[$id],
+          'qr_pid'                => $qr_pids[$id] > 0 ? $qr_pids[$id] : NULL,
+          'qr_id'                 => $qr_ids[$id] > 0 ? $qr_ids[$id] : NULL,
+          'refresh'               => (isset($refreshes[$id]) && $refreshes[$id] == 1),
+          'state'                 => QUESTION_ALWAYS,
+      ));
+
+      if (isset($compulsories) && $compulsories[$id] != 1) {
+        $question->state = QUESTION_RANDOM;
+        $max_scores[$id] = $quiz->max_score_for_random;
       }
-      else {
-        $question->state = QUESTION_ALWAYS;
-      }
-      $question->weight = $weight;
+
       $question->max_score = $max_scores[$id];
-      $question->auto_update_max_score = $auto_update_max_scores[$id];
-      $question->qr_pid = $qr_pids[$id] > 0 ? $qr_pids[$id] : NULL;
-      $question->qr_id = $qr_ids[$id] > 0 ? $qr_ids[$id] : NULL;
-      $question->refresh = (isset($refreshes[$id]) && $refreshes[$id] == 1);
 
       // Add item as an object in the questions array.
       $questions[] = $question;
     }
 
-    // Save questions.
-    quiz()->getQuizHelper()->setQuestions($quiz, $questions, $is_new_revision);
+    $quiz->getQuestionIO()->setQuestions($questions, $is_new_revision);
 
     return $questions;
   }

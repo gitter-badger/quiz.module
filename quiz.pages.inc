@@ -144,7 +144,10 @@ function quiz_question_admin_page(QuizEntity $quiz) {
   );
 }
 
-function quiz_questions_form($form, $form_state, $quiz) {
+/**
+ * Quiz's questions management form.
+ */
+function quiz_questions_form($form, $form_state, \Drupal\quiz\Entity\QuizEntity $quiz) {
   $obj = new QuizQuestionsForm();
   $array = $obj->formGet($form, $form_state, $quiz);
   $array['#validate'][] = 'quiz_questions_form_validate';
