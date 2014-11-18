@@ -214,27 +214,22 @@ function quiz_question_get_report($nid, $vid, $result_id) {
 /**
  * Implements hook_quiz_question_score().
  */
-function quiz_question_quiz_question_score($quiz, $question_nid, $question_vid = NULL, $result_id = NULL) {
+function quiz_question_quiz_question_score($quiz, \Drupal\quiz_question\Entity\Question $question, $result_id = NULL) {
   if (!isset($quiz) && !isset($result_id)) {
-    return quiz_question_get_max_score($question_nid, $question_vid);
+    return quiz_question_get_max_score($question->qid, $question->vid);
   }
 
-  // We avoid using node_load to increase performance…
-  $dummy_node = new stdClass();
-  $dummy_node->nid = $question_nid;
-  $dummy_node->vid = $question_vid;
-
-  if (!$question = quiz_question_get_provider($dummy_node, TRUE)) {
+  if (!$plugin = $question->getPlugin()) {
     return FALSE;
   }
 
   $score = new stdClass();
-  $score->possible = $question->getMaximumScore();
-  $score->question_nid = $question->question->nid;
-  $score->question_vid = $question->question->vid;
+  $score->possible = $plugin->getMaximumScore();
+  $score->question_nid = $question->nid;
+  $score->question_vid = $question->vid;
 
   if (isset($result_id)) {
-    $response = quiz_answer_controller()->getInstance($result_id, $question->question);
+    $response = quiz_answer_controller()->getInstance($result_id, $plugin->question);
     $score->attained = $score->possible > 0 ? $response->getScore() : 0;
     $score->possible = $response->getMaxScore();
     $score->is_evaluated = $response->isEvaluated();

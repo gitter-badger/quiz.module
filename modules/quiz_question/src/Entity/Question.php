@@ -79,7 +79,7 @@ class Question extends Entity {
     if ($question_type = $this->getQuestionType()) {
       return quiz_question_get_plugin_info($question_type->plugin);
     }
-    throw new \RuntimeException('Question plugin not found.');
+    throw new \RuntimeException('Question plugin not found for question #' . $this->qid . ' (type: ' . $this->type . ')');
   }
 
   /**
@@ -117,6 +117,15 @@ class Question extends Entity {
     }
 
     return parent::save();
+  }
+
+  /**
+   * Get module of question plugin.
+   * @return string
+   */
+  public function getModule() {
+    $info = $this->getPluginInfo();
+    return $info['module'];
   }
 
 }

@@ -25,7 +25,7 @@ class ScoreIO {
     $scores = array();
     $count = 0;
     foreach ($quiz->getQuestionIO()->getQuestionList() as $question) {
-      $question = (object) $question;
+      $question = quiz_question_entity_load($question['qid'], $question['vid']);
 
       // Questions picked from term id's won't be found in the quiz_relationship table
       if ($question->max_score === NULL && isset($quiz->tid) && $quiz->tid > 0) {
@@ -33,16 +33,16 @@ class ScoreIO {
       }
 
       // Invoke hook_quiz_question_score().
-      // We don't use module_invoke() because (1) we don't necessarily want to wed
-      // quiz type to module, and (2) this is more efficient (no NULL checks).
-      if (!$module = quiz_question_module_for_type($question->type)) {
+      // We don't use module_invoke() because
+      //  (1) we don't necessarily want to wed quiz type to module, and
+      //  (2) this is more efficient (no NULL checks).
+      if (!$module = $question->getModule()) {
         continue;
       }
 
-      $function = $module . '_quiz_question_score';
-      if (function_exists($function)) {
-        // Allow for max score to be considered.
-        $scores[] = $function($quiz, $question->question_nid, $question->question_vid, $result_id);
+      // Allow for max score to be considered.
+      if (($fn = $module . '_quiz_question_score') && function_exists($fn)) {
+        $scores[] = $fn($quiz, $question, $result_id);
       }
       else {
         drupal_set_message(t('A @quiz question could not be scored: No scoring info is available', array('@quiz' => QUIZ_NAME)), 'error');
