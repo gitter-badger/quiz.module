@@ -64,12 +64,8 @@ function quiz_question_get_types() {
  * @return \Drupal\quiz_question\Entity\Question
  */
 function quiz_question_entity_load($id = NULL, $vid = NULL, $reset = FALSE) {
-  if (NULL === $vid) {
-    return entity_load_single('quiz_question', $id);
-  }
-
-  $results = entity_load('quiz_question', array(), array('vid' => $vid), $reset);
-  if (!empty($results)) {
+  $conditions = NULL === $vid ? array('qid' => $id) : array('vid' => $vid);
+  if ($results = entity_load('quiz_question', FALSE, $conditions, $reset)) {
     return reset($results);
   }
 }
