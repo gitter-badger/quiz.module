@@ -30,24 +30,4 @@ abstract class QuizQuestionTestCase extends QuizTestCase {
     $this->assertTrue(isset($info[$this->questionPlugin]), t('Check that the question implementation is correct.'));
   }
 
-  /**
-   * Create question entity.
-   *
-   * @param array $values
-   * @return \Drupal\quiz_question\Entity\Question
-   */
-  protected function createQuestion(array $values) {
-    $values['type'] = 'default_' . $values['type'];
-
-    // Fix legacy
-    if (isset($values['body'])) {
-      $values['quiz_question_body'] = $values['body'];
-      unset($values['body']);
-    }
-
-    $question = entity_create('quiz_question', $values);
-    $question->save();
-    return $question;
-  }
-
 }
