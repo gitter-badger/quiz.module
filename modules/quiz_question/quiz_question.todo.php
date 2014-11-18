@@ -110,9 +110,8 @@ function quiz_question_access_callback($op, $question = NULL, $account = NULL, $
 
       return FALSE;
 
-
     case 'view':
-      return user_access('view any questions', $account);
+      return user_access('view quiz question outside of a quiz', $account) || user_access('view any questions', $account);
 
     case 'delete':
       if (user_access('delete any question content', $account)) {

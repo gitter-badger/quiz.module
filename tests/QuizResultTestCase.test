@@ -2,14 +2,17 @@
 
 class QuizResultTestCase extends QuizTestCase {
 
-  protected $extraModules = array('truefalse');
-
   public static function getInfo() {
     return array(
         'name'        => t('Quiz results'),
         'description' => t('Unit test for Quiz results.'),
         'group'       => t('Quiz'),
     );
+  }
+
+  public function setUp($modules = array(), $admin_permissions = array(), $user_permissions = array()) {
+    $modules[] = $this->questionPlugin = 'truefalse';
+    parent::setUp($modules, $admin_permissions, $user_permissions);
   }
 
   /**
