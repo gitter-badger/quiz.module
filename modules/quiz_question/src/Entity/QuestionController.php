@@ -20,8 +20,8 @@ class QuestionController extends EntityAPIController {
     }
 
     $question->max_score = $question->getPlugin()->getMaximumScore();
-    $question->feedback = !empty($question->feedback['value']) ? $question->feedback['value'] : '';
-    $question->feedback_format = !empty($question->feedback['format']) ? $question->feedback['format'] : filter_default_format();
+    $question->feedback = !empty($question->feedback) ? $question->feedback : '';
+    $question->feedback_format = !empty($question->feedback_format) ? $question->feedback_format : filter_default_format();
 
     return parent::save($question, $transaction);
   }

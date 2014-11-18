@@ -110,22 +110,11 @@ abstract class QuestionPlugin {
       );
     }
 
-    if (!empty($this->question->qid)) {
-      $properties = entity_load('quiz_question_properties', FALSE, array(
-          'nid' => $this->question->qid,
-          'vid' => $this->question->vid
-      ));
-
-      if ($properties) {
-        $quiz_question = reset($properties);
-      }
-    }
-
     $form['feedback'] = array(
         '#type'          => 'text_format',
         '#title'         => t('Question feedback'),
-        '#default_value' => !empty($quiz_question->feedback) ? $quiz_question->feedback : '',
-        '#format'        => !empty($quiz_question->feedback_format) ? $quiz_question->feedback_format : filter_default_format(),
+        '#default_value' => !empty($this->question->feedback) ? $this->question->feedback : '',
+        '#format'        => !empty($this->question->feedback_format) ? $this->question->feedback_format : filter_default_format(),
         '#description'   => t('This feedback will show when configured and the user answers a question, regardless of correctness.'),
     );
 
@@ -192,21 +181,13 @@ abstract class QuestionPlugin {
    *  Content array
    */
   public function getEntityView() {
-    $content['question_type'] = array(
+    $output['question_type'] = array(
         '#weight' => -2,
         '#prefix' => '<div class="question_type_name">',
         '#suffix' => '</div>',
     );
-
-    // @TODO Remove legacy code
-    if ($this->question instanceof Question) {
-      $content['#markup'] = $this->question->getQuestionType()->label;
-    }
-    else {
-      $content['#markup'] = node_type_get_type($this->question)->name;
-    }
-
-    return $content;
+    $output['#markup'] = $this->question->getQuestionType()->label;
+    return $output;
   }
 
   /**

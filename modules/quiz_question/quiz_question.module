@@ -1,7 +1,6 @@
 <?php
 
-use Drupal\quiz_question\QuestionPlugin;
-use Drupal\quiz_question\QuizQuestionResponse;
+use Drupal\quiz_question\Entity\Question;
 
 /**
  * Quiz Question module.
@@ -114,7 +113,7 @@ function quiz_question_access_to_score($vid, $result_id) {
  * Get information about the class and use it to construct a new
  * object of the appropriate type.
  *
- * @param \Drupal\quiz_question\Entity\Question $question
+ * @param Question $question
  *  Question entity
  * @param bool $cache
  *  Can we use a cached version of the node?
@@ -134,7 +133,7 @@ function quiz_question_get_provider(&$question, $cache = FALSE) {
   }
 
   // @TODO: Remove debugging code
-  if (!$question instanceof \Drupal\quiz_question\Entity\Question) {
+  if (!$question instanceof Question) {
     return;
   }
 
@@ -174,12 +173,12 @@ function quiz_question_get_max_score($nid, $vid) {
  * @return
  *  FAPI form array
  */
-function quiz_question_report_form(\Drupal\quiz_question\Entity\Question $question) {
+function quiz_question_report_form(Question $question) {
   $answer = $question->answers[0];
-  $response_instance = quiz_answer_controller()->getInstance($answer['result_id'], $question, $answer);
+  $handler = quiz_answer_controller()->getInstance($answer['result_id'], $question, $answer);
 
   // If need to specify the score weight if it isn't already specified.
-  if (!isset($response_instance->question->score_weight)) {
+  if (!isset($handler->question->score_weight)) {
     $vid = db_query('SELECT quiz_vid FROM {quiz_results} WHERE result_id = :rid', array(
         ':rid' => $answer['result_id']
       ))->fetchField();
@@ -192,7 +191,8 @@ function quiz_question_report_form(\Drupal\quiz_question\Entity\Question $questi
       ))->fetchField();
 
     if ($qr_max_score === FALSE) {
-      $qr_max_score = db_query('SELECT qt.max_score FROM {quiz_results} qnr
+      $qr_max_score = db_query('SELECT qt.max_score
+        FROM {quiz_results} qnr
          JOIN {quiz_results_answers} qnra ON (qnr.result_id = qnra.result_id)
          JOIN {quiz_terms} qt ON (qt.vid = qnr.quiz_vid AND qt.tid = qnra.tid)
          WHERE qnr.result_id = :rid AND qnra.question_nid = :qnid AND qnra.question_vid = :qvid', array(
@@ -202,13 +202,12 @@ function quiz_question_report_form(\Drupal\quiz_question\Entity\Question $questi
         ))->fetchField();
     }
 
-    $response_instance->question->score_weight = 0;
-    if (($qr_max_score != 0 && $response_instance->question->max_score != 0)) {
-      $response_instance->question->score_weight = $qr_max_score / $response_instance->question->max_score;
+    $handler->question->score_weight = 0;
+    if (($qr_max_score != 0 && $handler->question->max_score != 0)) {
+      $handler->question->score_weight = $qr_max_score / $handler->question->max_score;
     }
   }
-
-  return $response_instance->getReportForm();
+  return $handler->getReportForm();
 }
 
 /**

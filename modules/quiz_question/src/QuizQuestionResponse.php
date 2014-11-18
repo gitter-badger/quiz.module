@@ -277,13 +277,13 @@ abstract class QuizQuestionResponse {
     $form['response']['#markup'] = theme('quiz_question_feedback__' . $type, array('labels' => $headers, 'data' => $rows));
 
     if ($this->canReview('question_feedback')) {
-      if ($properties = entity_load('quiz_question_properties', FALSE, array('nid' => $this->quizQuestion->question->nid, 'vid' => $this->quizQuestion->question->vid))) {
-        $quiz_question = reset($properties);
-        $form['question_feedback']['#markup'] = check_markup($quiz_question->feedback, $quiz_question->feedback_format);
+      if (!empty($this->quizQuestion->question)) {
+        $form['question_feedback']['#markup'] = check_markup($this->quizQuestion->question->feedback, $this->quizQuestion->question->feedback_format);
       }
     }
 
     $form['#theme'] = $this->getReportFormTheme();
+
     return $form;
   }
 
@@ -294,10 +294,10 @@ abstract class QuizQuestionResponse {
    *  FAPI form array holding the question
    */
   public function getReportFormQuestion() {
-    $question = quiz_question_entity_load($this->question->qid);
+    $question = clone ($this->question);
     $question->no_answer_form = TRUE;
-    node_build_content($question, 'question');
-    return $question->content;
+    $output = entity_view('quiz_question', array($question), 'feedback');
+    return $output['quiz_question'][$this->question->qid];
   }
 
   /**

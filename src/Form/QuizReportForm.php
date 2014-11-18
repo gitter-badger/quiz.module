@@ -2,6 +2,8 @@
 
 namespace Drupal\quiz\Form;
 
+use Drupal\quiz_question\Entity\Question;
+
 class QuizReportForm {
 
   /**
@@ -9,20 +11,16 @@ class QuizReportForm {
    *
    * @param array $form_state
    *   FAPI form state(array)
-   * @param array $questions
+   * @param Question[] $questions
    *   array of questions to inclide in the report
    * @return array
    *   FAPI form array
    */
   public function getForm($form, $form_state, $questions) {
-    $form['#theme'] = 'quiz_report_form'; # @TODO: Remove me
     $form['#tree'] = TRUE;
 
     foreach ($questions as $question) {
-      if (!$module = quiz_question_module_for_type($question->type)) {
-        return array();
-      }
-      $function = $module . '_report_form';
+      $function = $question->getModule() . '_report_form';
       $form_to_add = $function($question);
       if (isset($form_to_add['submit'])) {
         $show_submit = TRUE;
@@ -79,7 +77,7 @@ class QuizReportForm {
     global $user;
 
     $quiz = $result = NULL;
-    
+
     foreach ($form_state['values'] as $key => $q_values) {
       // Questions has numeric keys in the report form. Or questions store the
       // name of the validation function with the key 'submit'. Or the submit

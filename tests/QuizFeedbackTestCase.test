@@ -7,7 +7,6 @@ use Drupal\quiz\Entity\QuizEntity;
  */
 class QuizFeedbackTestCase extends QuizTestCase {
 
-  protected $extraModules = array('truefalse');
   protected $extraUserPermissions = array('view any quiz question correct response');
 
   public static function getInfo() {
@@ -16,6 +15,11 @@ class QuizFeedbackTestCase extends QuizTestCase {
         'description' => t('Unit test for Quiz feedback.'),
         'group'       => t('Quiz'),
     );
+  }
+
+  public function setUp($modules = array(), $admin_permissions = array(), $user_permissions = array()) {
+    $modules[] = $this->questionPlugin = 'truefalse';
+    parent::setUp($modules, $admin_permissions, $user_permissions);
   }
 
   /**
@@ -27,10 +31,10 @@ class QuizFeedbackTestCase extends QuizTestCase {
     $quiz = $this->drupalCreateQuiz();
 
     // 3 questions.
-    $question_node1 = $this->drupalCreateNode(array('type' => 'truefalse', 'correct_answer' => 1));
-    $this->linkQuestionToQuiz($question_node1, $quiz);
-    $question_node2 = $this->drupalCreateNode(array('type' => 'truefalse', 'correct_answer' => 1));
-    $this->linkQuestionToQuiz($question_node2, $quiz);
+    $question_1 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $this->linkQuestionToQuiz($question_1, $quiz);
+    $question_2 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $this->linkQuestionToQuiz($question_2, $quiz);
 
     // This is a dynamic test that only tests the feedback columns showing up.
     variable_set('quiz_auto_revisioning', 0);
@@ -44,14 +48,14 @@ class QuizFeedbackTestCase extends QuizTestCase {
     );
 
     $this->drupalLogin($this->user);
-    $this->checkAfterQuestion($quiz, $question_node1, $review_options);
-    $this->checkAfterQuiz($quiz, $question_node2, $review_options);
+    $this->checkAfterQuestion($quiz, $question_1, $review_options);
+    $this->checkAfterQuiz($quiz, $question_2, $review_options);
   }
 
-  private function checkAfterQuestion(QuizEntity $quiz, $question_node1, $review_options) {
+  private function checkAfterQuestion(QuizEntity $quiz, $question, $review_options) {
     // Answer the first question.
     $this->drupalGet("quiz/{$quiz->qid}/take");
-    $this->drupalPost(NULL, array("question[$question_node1->nid]" => 1), t('Next'));
+    $this->drupalPost(NULL, array("question[$question->qid]" => 1), t('Next'));
 
     // Check feedback after the Question
     foreach ($review_options as $option => $text) {
@@ -69,11 +73,11 @@ class QuizFeedbackTestCase extends QuizTestCase {
     }
   }
 
-  private function checkAfterQuiz(QuizEntity $quiz, $question_node2, $review_options) {
+  private function checkAfterQuiz(QuizEntity $quiz, $question, $review_options) {
     // Feedback only after the quiz.
     $this->drupalGet("quiz/{$quiz->qid}/take/1/feedback");
     $this->drupalPost(NULL, array(), t('Next question'));
-    $this->drupalPost(NULL, array("question[$question_node2->nid]" => 1), t('Finish'));
+    $this->drupalPost(NULL, array("question[$question->qid]" => 1), t('Finish'));
 
     // Check feedback after the Quiz
     foreach ($review_options as $option => $text) {
@@ -95,37 +99,38 @@ class QuizFeedbackTestCase extends QuizTestCase {
    */
   public function testQuestionFeedback() {
     // Turn on question feedback at the end.
-    $quiz = $this->drupalCreateQuiz(
-      array(
-          'review_options' => array('end' => array('question_feedback' => 'question_feedback')),
+    $quiz = $this->drupalCreateQuiz(array(
+        'review_options' => array(
+            'end' => array(
+                'question_feedback' => 'question_feedback'
+            )
+        ),
       )
     );
 
     // Add 2 questions.
-    $question_node1 = $this->drupalCreateNode(array('type' => 'truefalse', 'correct_answer' => 1));
-    $this->linkQuestionToQuiz($question_node1, $quiz);
-    $question_node2 = $this->drupalCreateNode(array('type' => 'truefalse', 'correct_answer' => 1));
-    $this->linkQuestionToQuiz($question_node2, $quiz);
+    $question_1 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_2 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $this->linkQuestionToQuiz($question_1, $quiz);
+    $this->linkQuestionToQuiz($question_2, $quiz);
 
     // Set feedback.
-    $quiz_question = entity_load('quiz_question_properties', FALSE, array('nid' => $question_node1->nid, 'vid' => $question_node1->vid));
-    $quiz_question = reset($quiz_question);
+    $quiz_question = quiz_question_entity_load($question_1->qid, $question_1->vid);
     $quiz_question->feedback = 'Feedback for TF test.';
     $quiz_question->feedback_format = filter_default_format();
-    entity_save('quiz_question_properties', $quiz_question);
+    $quiz_question->save();
 
-    $quiz_question = entity_load('quiz_question_properties', FALSE, array('nid' => $question_node2->nid, 'vid' => $question_node2->vid));
-    $quiz_question = reset($quiz_question);
-    $quiz_question->feedback = 'Feedback for TF test.';
-    $quiz_question->feedback_format = filter_default_format();
-    entity_save('quiz_question_properties', $quiz_question);
+    $quiz_question_2 = quiz_question_entity_load($question_2->qid, $question_2->vid);
+    $quiz_question_2->feedback = 'Feedback for TF test.';
+    $quiz_question_2->feedback_format = filter_default_format();
+    $quiz_question_2->save();
 
     // Test
     $this->drupalLogin($this->user);
     $this->drupalGet("quiz/$quiz->qid/take");
-    $this->drupalPost(NULL, array("question[$question_node1->nid]" => 1), t('Next'));
+    $this->drupalPost(NULL, array("question[$question_1->qid]" => 1), t('Next'));
     $this->assertNoText('Feedback for TF test.');
-    $this->drupalPost(NULL, array("question[$question_node2->nid]" => 1), t('Finish'));
+    $this->drupalPost(NULL, array("question[$question_2->qid]" => 1), t('Finish'));
     $this->assertText('Feedback for TF test.');
   }
 
