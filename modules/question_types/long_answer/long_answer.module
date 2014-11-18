@@ -147,8 +147,7 @@ function long_answer_score_an_answer(Result $result, $values, $update_total = TR
   //
   // We update all three.
   // First, we update the long answer table
-  $question_max_score = db_query('SELECT max_score FROM {quiz_question_properties} WHERE nid = :nid AND vid = :vid', array(':nid' => $nid, ':vid' => $vid))->FetchField();
-
+  $question_max_score = db_query('SELECT max_score FROM {quiz_question_revision} WHERE qid = :qid AND vid = :vid', array(':qid' => $qid, ':vid' => $vid))->FetchField();
   $quiz_max_score = db_query('SELECT max_score FROM {quiz_relationship} WHERE quiz_vid = :pvid AND question_vid = :cvid', array(':pvid' => $quiz->vid, ':cvid' => $vid))->fetchField();
 
   $changed = db_update('quiz_long_answer_user_answers')
@@ -158,7 +157,7 @@ function long_answer_score_an_answer(Result $result, $values, $update_total = TR
         'answer_feedback'        => isset($answer_feedback['value']) ? $answer_feedback['value'] : '',
         'answer_feedback_format' => empty($answer_feedback['format']) ? '' : $answer_feedback['format'],
     ))
-    ->condition('question_nid', $nid)
+    ->condition('question_nid', $qid)
     ->condition('question_vid', $vid)
     ->condition('result_id', $result->result_id)
     ->execute();
