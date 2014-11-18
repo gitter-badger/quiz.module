@@ -134,10 +134,12 @@ function quiz_menu() {
  * Add action link to 'quiz/add' on 'admin/content/quiz' page.
  */
 function quiz_menu_local_tasks_alter(&$data, $router_item, $root_path) {
-  if ($root_path === 'admin/content/quiz') {
-    if (($item = menu_get_item('quiz/add')) && $item['access']) {
-      $data['actions']['output'][] = array('#theme' => 'menu_local_action', '#link' => $item);
-    }
+  switch ($root_path) {
+    case 'admin/content/quiz':
+      if (($item = menu_get_item('quiz/add')) && $item['access']) {
+        $data['actions']['output'][] = array('#theme' => 'menu_local_action', '#link' => $item);
+      }
+      break;
   }
 }
 

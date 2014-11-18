@@ -43,7 +43,8 @@ class QuizUIController extends EntityDefaultUIController {
     $items['quiz/%entity_object/edit'] = $items['admin/content/quiz/manage/%entity_object'];
     $items['quiz/%entity_object/edit']['title'] = 'Settings';
     unset($items['quiz/%entity_object/edit']['title callback'], $items['quiz/%entity_object/edit']['title arguments']);
-    $items['quiz/%entity_object/edit']['type'] = MENU_LOCAL_TASK;
+    $items['quiz/%entity_object/edit']['type'] = MENU_LOCAL_ACTION;
+    $items['quiz/%entity_object/edit']['weight'] = -20;
     $items['quiz/%entity_object/edit']['page arguments'][1] = 1;
     $items['quiz/%entity_object/edit']['access arguments'][2] = 1;
 
@@ -61,7 +62,7 @@ class QuizUIController extends EntityDefaultUIController {
     // Define menu structure for /quiz/%/revisions
     $items['quiz/%quiz/revisions'] = $base + array(
         'title'            => 'Revisions',
-        'type'             => MENU_LOCAL_TASK,
+        'type'             => MENU_LOCAL_ACTION,
         'access callback'  => 'entity_access',
         'access arguments' => array('update', 'quiz_entity', 1),
         'page callback'    => 'quiz_revisions_page',
@@ -70,8 +71,8 @@ class QuizUIController extends EntityDefaultUIController {
 
     // Define menu structure for /quiz/%/questions
     $items['quiz/%quiz/questions'] = $base + array(
-        'title'            => 'Questions',
-        'type'             => MENU_LOCAL_TASK,
+        'title'            => 'Manage questions',
+        'type'             => MENU_LOCAL_ACTION,
         'access callback'  => 'entity_access',
         'access arguments' => array('update', 'quiz_entity', 1),
         'page callback'    => 'quiz_question_admin_page',
