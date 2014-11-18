@@ -225,7 +225,6 @@ class QuizQuestionsForm extends BaseForm {
         $question_titles = check_plain($question->title);
       }
 
-
       $plugin_info = $question->getPluginInfo();
       $form[$fieldset]['titles'][$id] = array('#markup' => $question_titles);
       $form[$fieldset]['types'][$id] = array(
@@ -249,7 +248,7 @@ class QuizQuestionsForm extends BaseForm {
       );
 
       // Add a checkbox to update to the latest revision of the question
-      if ($question->vid == $question->vid) {
+      if ($relationship->vid == $question->vid) {
         $update_cell = array('#markup' => t('<em>Up to date</em>'));
       }
       else {

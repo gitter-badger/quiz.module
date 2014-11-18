@@ -499,7 +499,6 @@ class MultichoiceQuestion extends QuestionPlugin {
    */
   public function getCreationForm(array &$form_state = NULL) {
     $form = array();
-    $type = node_type_get_type($this->question);
     // We add #action to the form because of the use of ajax
     $options = array();
     $get = $_GET;
@@ -508,9 +507,9 @@ class MultichoiceQuestion extends QuestionPlugin {
       $options['query'] = $get;
     }
 
-    $action = url('node/add/' . $type->type, $options);
+    $action = url('quiz-question/add/' . str_replace('_', '-', $this->question->getQuestionType()->type), $options);
     if (isset($this->question->qid)) {
-      $action = url('node/' . $this->question->qid . '/edit', $options);
+      $action = url('quiz-question/' . $this->question->qid . '/edit', $options);
     }
     $form['#action'] = $action;
 

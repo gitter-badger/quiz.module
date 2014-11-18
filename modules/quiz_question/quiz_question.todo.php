@@ -19,6 +19,10 @@ function quiz_question_permission() {
       'restrict access' => TRUE,
   );
 
+  $perms['view any questions'] = array(
+      'title' => t('View any questions'),
+  );
+
   foreach (quiz_question_get_types() as $name => $info) {
     $perms += array(
         "create $name question"     => array(
@@ -88,6 +92,8 @@ function quiz_question_type_access() {
 /**
  * Access callback for question entity.
  *
+ * @TODO: Action on own
+ *
  * @param string $op
  * @param Question|null $question
  * @param stdClass $account
@@ -96,10 +102,33 @@ function quiz_question_access_callback($op, $question = NULL, $account = NULL, $
   switch ($op) {
     case 'create':
       return user_access('create question content', $account);
+
     case 'update':
-      return user_access('edit any question content', $account);
+      if (user_access('edit any question content', $account)) {
+        return TRUE;
+      }
+
+      if ($question) {
+        return user_access('edit any ' . $question->type . ' question', $account);
+      }
+
+      return FALSE;
+
+
     case 'view':
-      return user_access('access question', $account);
+      return user_access('view any questions', $account);
+
+    case 'delete':
+      if (user_access('delete any question content', $account)) {
+        return TRUE;
+      }
+
+      if ($question) {
+        return user_access('delete any ' . $question->type . ' question', $account);
+      }
+
+      return FALSE;
   }
+
   return TRUE;
 }

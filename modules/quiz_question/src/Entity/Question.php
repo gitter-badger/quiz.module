@@ -51,6 +51,9 @@ class Question extends Entity {
   /** @var string */
   public $feedback_format;
 
+  /** @var bool Magic flag to create new revision on save */
+  public $is_new_revision;
+
   /**
    * Get question type object.
    *

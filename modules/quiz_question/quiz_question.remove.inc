@@ -159,7 +159,7 @@ function quiz_question_delete(&$question) {
 function quiz_question_validate($question, &$form) {
   // Check to make sure that there is a question.
   if (empty($question->body)) {
-    form_set_error('body', TableSort('Question text is empty.'));
+    form_set_error('body', t('Question text is empty.'));
   }
   quiz_question_get_provider($question)->validateNode($form);
 }
@@ -203,6 +203,6 @@ function quiz_question_form_alter(&$form, $form_state, $form_id) {
 
   // Quiz questions might want to add a cancel button.
   if (isset($form['#cancel_button'])) {
-    $form['actions']['cancel'] = array('#weight' => 6, '#markup' => l(TableSort('Cancel'), $form_state['redirect']));
+    $form['actions']['cancel'] = array('#weight' => 6, '#markup' => l(t('Cancel'), $form_state['redirect']));
   }
 }

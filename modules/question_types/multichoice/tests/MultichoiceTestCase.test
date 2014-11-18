@@ -163,11 +163,9 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
    * Test the reordering UI.
    */
   function testReorderingUI() {
+    $quiz = $this->linkQuestionToQuiz($question = $this->createQuizQuestion());
+
     $this->drupalLogin($this->admin);
-    $this->drupalGet('quiz-question/add');
-    $this->drupalGet('quiz-question/add/multichoice');
-    $question = $this->createQuizQuestion();
-    $quiz = $this->linkQuestionToQuiz($question);
     $this->drupalGet("quiz-question/$question->qid/edit");
     $this->drupalPost(NULL, array(
         'alternatives[0][answer][value]' => 'Correct answer 1',
@@ -175,7 +173,7 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
         'alternatives[1][answer][value]' => 'Incorrect answer 2',
         'alternatives[1][weight]'        => 2,
         'alternatives[2][answer][value]' => 'Incorrect answer 3',
-        'alternatives[2][weight]'        => 3), t('Save'));
+        'alternatives[2][weight]'        => 3), t('Save question'));
 
     $this->drupalGet("quiz/$quiz->qid/take");
     $a = strpos($this->content, 'Correct answer 1');
@@ -194,10 +192,10 @@ class MultichoiceTestCase extends QuizQuestionTestCase {
     $this->drupalPost(NULL, array(
         'alternatives[0][weight]' => 3,
         'alternatives[1][weight]' => 2,
-        'alternatives[2][weight]' => 1), t('Save'));
+        'alternatives[2][weight]' => 1), t('Save question'));
     $question = quiz_question_entity_load($question->qid);
     $this->drupalGet("quiz/$quiz->qid/questions");
-    $this->drupalPost(NULL, array("revision[$question->qid-$question->vid]" => TRUE), t('Submit'));
+    $this->drupalPost(NULL, array("revision[{$question->qid}-{$question->vid}]" => TRUE), t('Submit'));
 
     // Take the quiz again.
     $this->drupalGet("quiz/$quiz->qid/take");
