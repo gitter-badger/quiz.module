@@ -49,6 +49,7 @@ function quiz_question_schema() {
           'vid'             => array('type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE, 'description' => 'The primary identifier for this version.'),
           'revision_uid'    => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'description' => 'Author of question revision.'),
           'log'             => array('type' => 'text', 'size' => 'big', 'description' => t('A log message associated with the revision.')),
+          'title'           => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => '', 'description' => 'The title of this question revision, always treated as non-markup plain text.'),
           'changed'         => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'description' => 'The Unix timestamp when the question was most recently saved.'),
           'max_score'       => array('type' => 'int', 'unsigned' => TRUE, 'default' => 0),
           'feedback'        => array('type' => 'text'),
