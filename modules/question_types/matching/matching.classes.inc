@@ -22,11 +22,11 @@ class MatchingQuestion extends QuestionPlugin {
   /**
    * Constructor
    *
-   * @param $node
+   * @param $question
    *  matching node
    */
-  public function __construct(stdClass $node) {
-    parent::__construct($node);
+  public function __construct(\Drupal\quiz_question\Entity\Question $question) {
+    parent::__construct($question);
     if (empty($this->question->match)) {
       $this->question->match = array();
     }

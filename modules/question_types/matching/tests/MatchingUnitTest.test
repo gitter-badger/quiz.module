@@ -41,9 +41,8 @@ class MatchingTestCase extends QuizQuestionTestCase {
     );
 
     $this->match = array();
-    $form_size = variable_get('quiz_matching_form_size', 5);
     // generate rand match question, answer and feedback
-    for ($i = 1; $i < $form_size; $i++) {
+    for ($i = 1; $i < variable_get('quiz_matching_form_size', 5); $i++) {
       $settings['match'][$i]['question'] = $this->match[$i]['question'] = $this->randomName();
       $settings['match'][$i]['answer'] = $this->match[$i]['answer'] = $this->randomName();
       $settings['match'][$i]['feedback'] = $this->match[$i]['feedback'] = $this->randomName();
@@ -51,7 +50,7 @@ class MatchingTestCase extends QuizQuestionTestCase {
 
     // create drupal node
     // @TODO verify save
-    $question = $this->drupalCreateNode($settings);
+    $question = $this->createQuestion($settings);
     return quiz_question_entity_load($question->qid);
   }
 
