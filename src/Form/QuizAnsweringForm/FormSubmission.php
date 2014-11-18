@@ -193,7 +193,7 @@ class FormSubmission extends TakingHelper {
       }
     }
 
-    $score = quiz_result_controller()->getScoreIO()->calculate($this->quiz, $this->result->result_id);
+    $score = quiz_result_controller()->getScoreIO()->calculate($this->result);
     if (!isset($score['percentage_score'])) {
       $score['percentage_score'] = 0;
     }

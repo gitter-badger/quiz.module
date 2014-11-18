@@ -2,7 +2,6 @@
 
 namespace Drupal\quiz\Entity\Result;
 
-use Drupal\quiz\Entity\QuizEntity;
 use Drupal\quiz\Entity\Result;
 use stdClass;
 
@@ -11,16 +10,16 @@ class ScoreIO {
   /**
    * Calculates the score user received on quiz.
    *
-   * @param $quiz
-   *   The quiz entity.
-   * @param $result_id
-   *   Quiz result ID.
+   * @param Result $result
    *
    * @return array
    *   Contains three elements: question_count, num_correct and percentage_score.
    */
-  public function calculate(QuizEntity $quiz, $result_id) {
-    // 2. Callback into the modules and let them do the scoring. @todo after 4.0: Why isn't the scores already saved? They should be
+  public function calculate(Result $result) {
+    $quiz = $result->getQuiz();
+
+    // 2. Callback into the modules and let them do the scoring.
+    // @todo after 4.0: Why isn't the scores already saved? They should be
     // Fetched from the db, not calculated…
     $scores = array();
     $count = 0;
@@ -42,7 +41,7 @@ class ScoreIO {
 
       // Allow for max score to be considered.
       if (($fn = $module . '_quiz_question_score') && function_exists($fn)) {
-        $scores[] = $fn($quiz, $question, $result_id);
+        $scores[] = $fn($quiz, $question, $result->result_id);
       }
       else {
         drupal_set_message(t('A @quiz question could not be scored: No scoring info is available', array('@quiz' => QUIZ_NAME)), 'error');
@@ -61,8 +60,8 @@ class ScoreIO {
     foreach ($scores as $score) {
       $possible_score += $score->possible;
       $total_score += $score->attained;
+      // Flag the entire quiz if one question has not been evaluated.
       if (isset($score->is_evaluated)) {
-        // Flag the entire quiz if one question has not been evaluated.
         $is_evaluated &= $score->is_evaluated;
       }
     }
@@ -98,8 +97,7 @@ class ScoreIO {
   public function updateTotalScore(Result $result) {
     global $user;
 
-    $quiz = $result->getQuiz();
-    $score = $this->calculate($quiz, $result->result_id);
+    $score = $this->calculate($result);
 
     db_update('quiz_results')
       ->fields(array('score' => $score['percentage_score']))
@@ -107,6 +105,7 @@ class ScoreIO {
       ->execute();
 
     if ($score['is_evaluated']) {
+      $quiz = $result->getQuiz();
       module_invoke_all('quiz_scored', $quiz, $score, $result->result_id);
 
       $result->maintenance($user->uid);

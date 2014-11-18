@@ -456,13 +456,13 @@ function quiz_result_page(Result $result) {
 /**
  * Theme the result page.
  *
- * @param $quiz
+ * @param \Drupal\quiz\Entity\QuizEntity $quiz
  *  The quiz entity object.
- * @param $questions
+ * @param array $questions
  *  The questions array as defined by _quiz_get_answers.
- * @param $score
+ * @param int $score
  *  Array of score information as returned by quiz_calculate_score().
- * @param $summary
+ * @param string $summary
  *  Filtered text of the summary.
  * @return
  *  Themed html.
@@ -495,8 +495,9 @@ function theme_quiz_result($variables) {
   );
 
   $output = '';
+
+  // Show score.
   if (quiz()->getQuizHelper()->getFeedbackHelper()->canReview('score', $result)) {
-    // Show score.
     $output .= '<div id="quiz_score_possible">' . t('!username got %num_correct of %question_count possible points.', $params) . '</div>' . "\n";
     $output .= '<div id="quiz_score_percent">' . t('!yourtotal score: @score%', $params) . '</div>' . "\n";
   }

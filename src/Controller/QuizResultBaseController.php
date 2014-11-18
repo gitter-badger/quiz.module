@@ -29,7 +29,7 @@ abstract class QuizResultBaseController {
     $this->quiz_revision = $quiz_revision;
     $this->result = $result;
     $this->quiz_id = $this->result->quiz_qid;
-    $this->score = quiz_result_controller()->getScoreIO()->calculate($this->quiz_revision, $this->result->result_id);
+    $this->score = quiz_result_controller()->getScoreIO()->calculate($this->result);
   }
 
   /**
