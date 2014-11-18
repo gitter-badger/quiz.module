@@ -264,13 +264,10 @@ abstract class QuestionPlugin {
   public function delete($only_this_version = FALSE) {
     // Delete answeres & properties
     $remove_answer = db_delete('quiz_results_answers')->condition('question_nid', $this->question->qid);
-    $remove_properties = db_delete('quiz_question_properties')->condition('nid', $this->question->qid);
     if ($only_this_version) {
       $remove_answer->condition('question_vid', $this->question->vid);
-      $remove_properties->condition('vid', $this->question->vid);
     }
     $remove_answer->execute();
-    $remove_properties->execute();
   }
 
   /**

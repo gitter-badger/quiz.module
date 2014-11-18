@@ -149,17 +149,18 @@ function quiz_question_get_provider(&$question, $cache = FALSE) {
 /**
  * Get the max score for a question
  *
- * @param $nid
+ * @param $question_qid
  *  Question node id
- * @param $vid
+ * @param $question_vid
  *  Question node version id
  * @return
  *  Max score(int)
  */
-function quiz_question_get_max_score($nid, $vid) {
-  return db_query('SELECT max_score
-          FROM {quiz_question_properties}
-          WHERE nid = :nid AND vid = :vid', array(':nid' => $nid, ':vid' => $vid))->fetchField();
+function quiz_question_get_max_score($question_qid, $question_vid) {
+  return db_query('SELECT max_score FROM {quiz_question_revision} WHERE qid = :qid AND vid = :vid', array(
+        ':qid' => $question_qid,
+        ':vid' => $question_vid
+    ))->fetchField();
 }
 
 /**

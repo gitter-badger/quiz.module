@@ -156,7 +156,7 @@ function short_answer_score_an_answer(Result $result, $values, $update_total = T
   // When we set the score we make sure that the max score in the quiz the question belongs to is considered
   $question_max_score = db_query(
     'SELECT max_score '
-    . ' FROM {quiz_question_properties} '
+    . ' FROM {quiz_question_revision} '
     . ' WHERE vid = :vid', array(':vid' => $vid))->FetchField();
 
   $quiz_max_score = db_query(
@@ -179,9 +179,8 @@ function short_answer_score_an_answer(Result $result, $values, $update_total = T
   // Now the short answer user data has been updated. We also need to update the data in the quiz tables
   if ($changed > 0) {
     $max = db_query('SELECT max_score'
-      . ' FROM {quiz_question_properties} '
-      . ' WHERE vid = :vid', array(
-        ':vid' => $vid))->fetchField();
+      . ' FROM {quiz_question_revision} '
+      . ' WHERE vid = :vid', array(':vid' => $vid))->fetchField();
     if ($max <= 0) {
       $is_correct = 0;
       $points_awarded = 0;

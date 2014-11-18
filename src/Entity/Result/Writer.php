@@ -64,7 +64,7 @@ class Writer {
    * @return type
    */
   private function findScale(QuizEntity $quiz, stdClass $response, $options) {
-    $ssql = '(SELECT max_score FROM {quiz_question_properties} WHERE nid = :question_nid AND vid = :question_vid)';
+    $ssql = '(SELECT max_score FROM {quiz_question_revision} WHERE qid = :question_nid AND vid = :question_vid)';
 
     if ($quiz->randomization < 2) {
       return db_query("

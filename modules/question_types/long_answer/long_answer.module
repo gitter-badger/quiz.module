@@ -165,7 +165,7 @@ function long_answer_score_an_answer(Result $result, $values, $update_total = TR
     // Second, we update the main quiz answers table
     // What do we do about the quiz_results_answers table? It assumes strict
     // bivalence (is_correct). I guess we consider any essay with over 50% to be correct?
-    $max = db_query('SELECT max_score FROM {quiz_question_properties} WHERE vid = :vid', array(':vid' => $vid))->fetchField();
+    $max = db_query('SELECT max_score FROM {quiz_question_revision} WHERE vid = :vid', array(':vid' => $vid))->fetchField();
     if ($max <= 0) {
       $is_correct = 0;
       $points_awarded = 0;
