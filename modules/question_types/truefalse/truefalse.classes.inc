@@ -258,8 +258,8 @@ class TrueFalseResponse extends QuizQuestionResponse {
    * @see QuizQuestionResponse#score()
    */
   public function score() {
-    $tfQuestion = new TrueFalseQuestion($this->question);
-    return ($this->getResponse() == $tfQuestion->getCorrectAnswer()) ? 1 : 0;
+    $plugin = new TrueFalseQuestion($this->question);
+    return ($this->getResponse() == $plugin->getCorrectAnswer()) ? 1 : 0;
   }
 
   /**
@@ -275,8 +275,8 @@ class TrueFalseResponse extends QuizQuestionResponse {
    * Implementation of getCorrectAnswer
    */
   public function getUserAnswer() {
-    return db_query('SELECT answer, score '
-        . ' FROM {quiz_truefalse_user_answers} '
+    return db_query('SELECT answer, score'
+        . ' FROM {quiz_truefalse_user_answers}'
         . ' WHERE question_vid = :qvid AND result_id = :rid', array(
           ':qvid' => $this->question->vid,
           ':rid'  => $this->result_id

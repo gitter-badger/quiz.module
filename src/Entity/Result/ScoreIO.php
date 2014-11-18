@@ -23,8 +23,11 @@ class ScoreIO {
     // Fetched from the db, not calculated…
     $scores = array();
     $count = 0;
-    foreach ($quiz->getQuestionIO()->getQuestionList() as $question) {
-      $question = quiz_question_entity_load($question['qid'], $question['vid']);
+
+    foreach ($result->layout as $layout_item) {
+      if (!$question = quiz_question_entity_load($layout_item['nid'], $layout_item['vid'])) {
+        continue;
+      }
 
       // Questions picked from term id's won't be found in the quiz_relationship table
       if ($question->max_score === NULL && isset($quiz->tid) && $quiz->tid > 0) {

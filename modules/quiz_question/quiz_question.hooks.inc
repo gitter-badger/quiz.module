@@ -181,7 +181,7 @@ if ('quiz-question' === arg(0)) {
   }
 
   function quiz_question_form_submit($form, &$form_state) {
-    /* @var $question \Drupal\quiz_question\Entity\Question */
+    /* @var $question Question */
     $question = entity_ui_controller('quiz_question')->entityFormSubmitBuildEntity($form, $form_state);
     $question->save();
     $form_state['redirect'] = 'quiz-question/' . $question->qid;
@@ -214,7 +214,7 @@ function quiz_question_get_report($nid, $vid, $result_id) {
 /**
  * Implements hook_quiz_question_score().
  */
-function quiz_question_quiz_question_score($quiz, \Drupal\quiz_question\Entity\Question $question, $result_id = NULL) {
+function quiz_question_quiz_question_score($quiz, Question $question, $result_id = NULL) {
   if (!isset($quiz) && !isset($result_id)) {
     return quiz_question_get_max_score($question->qid, $question->vid);
   }
@@ -229,10 +229,10 @@ function quiz_question_quiz_question_score($quiz, \Drupal\quiz_question\Entity\Q
   $score->question_vid = $question->vid;
 
   if (isset($result_id)) {
-    $response = quiz_answer_controller()->getInstance($result_id, $plugin->question);
-    $score->attained = $score->possible > 0 ? $response->getScore() : 0;
-    $score->possible = $response->getMaxScore();
-    $score->is_evaluated = $response->isEvaluated();
+    $handler = quiz_answer_controller()->getInstance($result_id, $plugin->question);
+    $score->attained = $score->possible > 0 ? $handler->getScore() : 0;
+    $score->possible = $handler->getMaxScore();
+    $score->is_evaluated = $handler->isEvaluated();
   }
   return $score;
 }

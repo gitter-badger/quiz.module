@@ -105,9 +105,11 @@ abstract class QuizQuestionResponse {
     if ($this->is_skipped) {
       return 0;
     }
+
     if (!isset($this->score)) {
       $this->score = $this->score();
     }
+
     if (isset($this->question->score_weight) && $weight_adjusted) {
       return round($this->score * $this->question->score_weight);
     }

@@ -192,25 +192,25 @@ class QuizEntityTestCase extends QuizTestCase {
   function testQuizRevisioning() {
     $quiz = $this->linkQuestionToQuiz($question = $this->createQuestion(array(
         'type'           => 'truefalse',
-        'title'          => 'Revision 1',
-        'body'           => array(LANGUAGE_NONE => array(array('value' => 'Revision 1'))),
+        'title'          => 'Revision TRUE',
+        'body'           => array(LANGUAGE_NONE => array(array('value' => 'Revision TRUE'))),
         'correct_answer' => 1,
     )));
 
     // Check for first revision.
     $this->drupalLogin($this->user);
     $this->drupalGet("quiz/$quiz->qid/take");
-    $this->assertText('Revision 1');
+    $this->assertText('Revision TRUE');
 
     // Update question. There are already attempts now so we expect a new revision.
     $this->drupalLogin($this->admin);
     $this->drupalGet("quiz-question/{$question->qid}/edit");
     $this->drupalPost(NULL, array(
-        'title'                             => 'Revision 2',
-        'quiz_question_body[und][0][value]' => 'Revision 2',
+        'title'                             => 'Revision FALSE',
+        'quiz_question_body[und][0][value]' => 'Revision FALSE',
         'correct_answer'                    => 0,
         'revision'                          => 1,
-        'log'                               => 'Revision 2'), t('Save question'));
+        'log'                               => 'Revision FALSE'), t('Save question'));
 
     // Reload to have latest revision
     $question = quiz_question_entity_load($question->qid, NULL, TRUE);
@@ -218,13 +218,13 @@ class QuizEntityTestCase extends QuizTestCase {
     // Finish on same revision.
     $this->drupalLogin($this->user);
     $this->drupalGet("quiz/$quiz->qid/take");
-    $this->assertText('Revision 1');
+    $this->assertText('Revision TRUE');
     $this->drupalPost(NULL, array("question[$question->qid]" => 1), t('Finish'));
     $this->assertText('You got 1 of 1 possible points.');
 
     // Take quiz again. Should be on SAME revision. We have not yet updated the Quiz.
     $this->drupalGet("quiz/$quiz->qid/take");
-    $this->assertText('Revision 1');
+    $this->assertText('Revision TRUE');
 
     // Update the quiz to use the latest revision.
     $this->drupalLogin($this->admin);
@@ -234,16 +234,13 @@ class QuizEntityTestCase extends QuizTestCase {
     // Take quiz again. Should be on SAME revision. We have not yet finished this attempt.
     $this->drupalLogin($this->user);
     $this->drupalGet("quiz/$quiz->qid/take");
-    $this->assertText('Revision 1');
-
-    // Finish the attempt.
+    $this->assertText('Revision TRUE');
     $this->drupalPost(NULL, array("question[$question->qid]" => 1), t('Finish'));
     $this->assertText('You got 1 of 1 possible points.');
 
     // Take quiz again we should be on the new result, finally.
     $this->drupalGet("quiz/$quiz->qid/take");
-    $this->assertText('Revision 2');
-    // Finish the attempt.
+    $this->assertText('Revision FALSE');
     $this->drupalPost(NULL, array("question[$question->qid]" => 1), t('Finish'));
     $this->assertText('You got 0 of 1 possible points.');
   }
