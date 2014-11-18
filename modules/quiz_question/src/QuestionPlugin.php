@@ -221,12 +221,6 @@ abstract class QuestionPlugin {
       return $this->entityProperties;
     }
 
-    $props['max_score'] = db_query(
-      'SELECT max_score
-            FROM {quiz_question_properties}
-            WHERE nid = :nid AND vid = :vid', array(
-        ':nid' => $this->question->qid,
-        ':vid' => $this->question->vid))->fetchField();
     $props['is_quiz_question'] = TRUE;
     $this->entityProperties = $props;
 
@@ -255,20 +249,6 @@ abstract class QuestionPlugin {
   public function save($is_new = FALSE) {
     // We call the abstract function saveEntityProperties to save type specific data
     $this->saveEntityProperties($is_new);
-
-    db_merge('quiz_question_properties')
-      ->key(array(
-          'nid' => $this->question->qid,
-          'vid' => $this->question->vid,
-      ))
-      ->fields(array(
-          'nid'             => $this->question->qid,
-          'vid'             => $this->question->vid,
-          'max_score'       => $this->getMaximumScore(),
-          'feedback'        => !empty($this->question->feedback['value']) ? $this->question->feedback['value'] : '',
-          'feedback_format' => !empty($this->question->feedback['format']) ? $this->question->feedback['format'] : filter_default_format(),
-      ))
-      ->execute();
 
     // Save what quizzes this question belongs to.
     $quizzes_kept = $this->saveRelationships();

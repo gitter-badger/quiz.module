@@ -62,11 +62,11 @@ class LongAnswerTestCase extends QuizQuestionTestCase {
     $this->assertText('This answer has not yet been scored.');
     $this->assertNoFieldByName('0[score]');
     $this->assertNoFieldByName('1[score]');
-    $url_of_result = $this->getUrl();
+    $result_url = $this->getUrl();
 
     // Test grading the question.
     $this->drupalLogin($this->admin);
-    $this->drupalGet($url_of_result);
+    $this->drupalGet($result_url);
     $this->drupalPost(NULL, array(
         "0[score]"                   => 3,
         "1[score]"                   => 7,
@@ -78,7 +78,7 @@ class LongAnswerTestCase extends QuizQuestionTestCase {
 
     // Test the score and feedback are visible to the user.
     $this->drupalLogin($this->user);
-    $this->drupalGet($url_of_result);
+    $this->drupalGet($result_url);
     $this->assertText('You got 10 of 20 possible points.');
     $this->assertText('Your score: 50%');
 

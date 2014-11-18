@@ -516,19 +516,22 @@ function theme_quiz_result($variables) {
   return $output . drupal_render($report_form);
 }
 
+/**
+ * Feedback form.
+ */
 function quiz_report_form($form, $form_state, $questions) {
   $obj = new QuizReportForm();
-  $array = $obj->getForm($form, $form_state, $questions);
+  $form += $obj->getForm($form, $form_state, $questions);
 
-  if (isset($array['next'])) {
-    $array['next']['#submit'] = array('quiz_report_form_submit_next');
+  if (isset($form['next'])) {
+    $form['next']['#submit'] = array('quiz_report_form_submit_next');
   }
 
-  if (isset($array['finish'])) {
-    $array['finish']['#submit'] = array('quiz_report_form_submit_finish');
+  if (isset($form['finish'])) {
+    $form['finish']['#submit'] = array('quiz_report_form_submit_finish');
   }
 
-  return $array;
+  return $form;
 }
 
 function quiz_report_form_submit_next($form, &$form_state) {

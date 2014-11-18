@@ -79,7 +79,7 @@ class QuizReportForm {
     global $user;
 
     $quiz = $result = NULL;
-
+    
     foreach ($form_state['values'] as $key => $q_values) {
       // Questions has numeric keys in the report form. Or questions store the
       // name of the validation function with the key 'submit'. Or the submit

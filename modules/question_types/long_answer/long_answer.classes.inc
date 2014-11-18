@@ -88,17 +88,20 @@ class LongAnswerQuestion extends QuestionPlugin {
     if (isset($this->entityProperties)) {
       return $this->entityProperties;
     }
-    $props = parent::load();
+    $properties = parent::load();
 
-    $res_a = db_query('SELECT rubric FROM {quiz_long_answer_node_properties}
-      WHERE nid = :nid AND vid = :vid', array(':nid' => $this->question->qid, ':vid' => $this->question->vid))->fetchAssoc();
+    $res_a = db_query(
+      'SELECT rubric
+       FROM {quiz_long_answer_node_properties}
+       WHERE nid = :nid AND vid = :vid', array(
+        ':nid' => $this->question->qid,
+        ':vid' => $this->question->vid))->fetchAssoc();
 
     if (is_array($res_a)) {
-      $props = array_merge($props, $res_a);
+      $properties = array_merge($properties, $res_a);
     }
 
-    $this->entityProperties = $props;
-    return $props;
+    return $this->entityProperties = $properties;
   }
 
   /**
