@@ -29,9 +29,9 @@ class QuestionIO {
    */
   public function getQuestionList() {
     if (QUESTION_CATEGORIZED_RANDOM == $this->quiz->randomization) {
-      $questions = $this->buildCategoziedQuestionList();
+      return $this->buildCategoziedQuestionList();
     }
-    return $questions = $this->getRequiredQuestions();
+    return $this->getRequiredQuestions();
   }
 
   /**
