@@ -95,7 +95,7 @@ abstract class QuizTestCase extends DrupalWebTestCase {
   /**
    * Link a question to a new or provided quiz.
    *
-   * @param stdClass $question
+   * @param \Drupal\quiz_question\Entity\Question $question
    * @param QuizEntity|null $quiz
    * @return QuizEntity
    */
@@ -103,7 +103,7 @@ abstract class QuizTestCase extends DrupalWebTestCase {
     if (is_null($quiz)) {
       $quiz = $this->drupalCreateQuiz();
     }
-    quiz_question_get_provider($question)->saveRelationships($quiz->qid, $quiz->vid);
+    $question->getPlugin()->saveRelationships($quiz->qid, $quiz->vid);
     return $quiz;
   }
 

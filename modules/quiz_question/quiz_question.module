@@ -98,45 +98,6 @@ function quiz_question_access_to_score($question_vid, $result_id) {
 }
 
 /**
- * Get an instance of a quiz question.
- *
- * Get information about the class and use it to construct a new
- * object of the appropriate type.
- *
- * @param Question $question
- *  Question entity
- * @param bool $cache
- *  Can we use a cached version of the node?
- * @return \Drupal\quiz_question\QuestionPlugin
- *  The appropriate QuizQuestion extension instance
- */
-function quiz_question_get_provider(&$question, $cache = FALSE) {
-  $plugins = &drupal_static(__FUNCTION__, array());
-
-  $question_vid = isset($question->vid) ? $question->vid : 0;
-  if ($cache && isset($plugins[$question_vid])) {
-    return $plugins[$question_vid];
-  }
-
-  if (!isset($question->type)) {
-    $question = quiz_question_entity_load(NULL, $question->vid);
-  }
-
-  // @TODO: Remove debugging code
-  if (!$question instanceof Question) {
-    return;
-  }
-
-  // No cached instance of QuizQuestion has been returned. We construct a new instance
-  $plugin_info = $question->getPluginInfo();
-  if (!$constructor = $plugin_info['question provider']) {
-    return FALSE;
-  }
-
-  return $plugins[$question_vid] = new $constructor($question);
-}
-
-/**
  * Get the max score for a question
  *
  * @param $question_qid

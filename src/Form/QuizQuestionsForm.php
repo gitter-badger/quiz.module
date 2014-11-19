@@ -156,7 +156,7 @@ class QuizQuestionsForm extends BaseForm {
     foreach ($relationships as $relationship) {
       $relationship = is_array($relationship) ? (object) $relationship : $relationship;
       $question = quiz_question_entity_load($relationship->qid);
-      $instance = quiz_question_get_provider($question);
+      $instance = $question->getPlugin();
 
       $fieldset = 'question_list';
       $id = $question->qid . '-' . $question->vid;

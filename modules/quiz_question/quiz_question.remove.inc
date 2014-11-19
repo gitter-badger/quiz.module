@@ -22,17 +22,6 @@ function quiz_question_node_info() {
 }
 
 /**
- * Implements hook_load().
- */
-function quiz_question_load($node) {
-  foreach ($node as &$question) {
-    foreach (quiz_question_get_provider($question, TRUE)->load() as $property => $value) {
-      $question->$property = $value;
-    }
-  }
-}
-
-/**
  * Implements hook_node_presave().
  */
 function quiz_question_node_presave($node) {
@@ -140,20 +129,6 @@ function quiz_question_view($node, $view_mode) {
 }
 
 /**
- * Implements hook_update().
- */
-function quiz_question_update($question) {
-  quiz_question_get_provider($question)->save();
-}
-
-/**
- * Implements hook_delete().
- */
-function quiz_question_delete(&$question) {
-  _quiz_delete_question($question, FALSE);
-}
-
-/**
  * Implements hook_validate().
  */
 function quiz_question_validate($question, &$form) {
@@ -162,24 +137,6 @@ function quiz_question_validate($question, &$form) {
     form_set_error('body', t('Question text is empty.'));
   }
   quiz_question_get_provider($question)->validateNode($form);
-}
-
-/**
- * Implements hook_insert().
- */
-function quiz_question_insert(stdClass $question) {
-  quiz_question_get_provider($question)->save(TRUE);
-}
-
-if ('quiz-question' !== arg(0)) {
-
-  /**
-   * Implements hook_form().
-   */
-  function quiz_question_form(&$node, &$form_state) {
-    return quiz_question_get_provider($node)->getEntityForm($form_state);
-  }
-
 }
 
 /**

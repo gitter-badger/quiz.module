@@ -74,8 +74,7 @@ class QuizAnsweringForm {
     $form['#result'] = $this->result;
 
     foreach ($questions as $question) {
-      $provider = quiz_question_get_provider($question);
-      $this->buildQuestionItem($provider, $form, $form_state);
+      $this->buildQuestionItem($question->getPlugin(), $form, $form_state);
     }
 
     // Build buttons
@@ -195,9 +194,9 @@ class QuizAnsweringForm {
     }
 
     foreach (array_keys($form_state['values']['question']) as $question_id) {
+      // There was an answer submitted.
       if ($current_question = quiz_question_entity_load($question_id)) {
-        // There was an answer submitted.
-        quiz_question_get_provider($current_question)->getAnsweringFormValidate($form, $form_state);
+        $current_question->getPlugin()->getAnsweringFormValidate($form, $form_state);
       }
     }
   }

@@ -304,7 +304,7 @@ function quiz_question_modules_disabled($modules) {
  */
 function _quiz_delete_question(&$question, $only_this_version) {
   // let each question class delete its own stuff
-  quiz_question_get_provider($question, TRUE)->delete($only_this_version);
+  $question->getPlugin()->delete($only_this_version);
 
   // FIXME QuizQuestion class makes these relationships, so it should handle their 'deletion' too
   // FIXME alternately, move the relationship handling out of QuizQuestion class

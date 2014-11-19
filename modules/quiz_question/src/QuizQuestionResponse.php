@@ -41,7 +41,7 @@ abstract class QuizQuestionResponse {
     $this->result_id = $result_id;
     $this->result = quiz_result_load($result_id);
     $this->question = $question;
-    $this->quizQuestion = quiz_question_get_provider($question);
+    $this->quizQuestion = $question->getPlugin();
     $this->answer = $answer;
     $result = db_query('SELECT is_skipped, is_doubtful '
       . ' FROM {quiz_results_answers} '
