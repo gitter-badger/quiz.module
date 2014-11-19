@@ -43,11 +43,9 @@ function quiz_stats_get_basic_stats($uid = 0) {
 /**
  * Computes quiz attempt count
  *
- * @param int $vid
- *   quiz id
+ * @param int $quiz_id
  * @param int $uid
- *   user id for filtering
- * @return
+ * @return int
  *   Integer containing number of times that a quiz has
  *   been attended, can be filtered by uid.
  */
