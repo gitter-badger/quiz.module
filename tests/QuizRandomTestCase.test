@@ -65,17 +65,17 @@ class QuizRandomTestCase extends QuizTestCase {
     $this->linkQuestionToQuiz($question_5, $quiz);
 
     // Set up one required question.
-    $this->drupalGet("quiz/{$quiz->qid}/questions");
-    $this->drupalPost(NULL, array(
-        "compulsories[{$question_1->qid}-{$question_1->vid}]" => TRUE,
-      ), t('Submit'));
+    $result = entity_load('quiz_question_relationship', FALSE, array('question_vid' => $question_1->qid));
+    $relationship = reset($result);
+    $relationship->question_status = 1;
+    entity_save('quiz_question_relationship', $relationship);
 
     for ($i = 1; $i <= 5; $i++) {
       $questions = $quiz->getQuestionIO()->getQuestionList();
       $this->assertEqual(count($questions), 3, t('Quiz has 2 questions.'));
       $out[$i] = '';
       foreach ($questions as $question) {
-        $out[$i] .= $question['nid'];
+        $out[$i] .= $question['qid'];
       }
       $this->assert(strpos($out[$i], $question_1->qid) !== FALSE, t('Quiz always contains required question 1'));
     }

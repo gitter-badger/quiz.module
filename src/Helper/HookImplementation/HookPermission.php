@@ -22,7 +22,7 @@ class HookPermission {
 
   private function getQuizEntityPermissions() {
     $items = array();
-    $items['access quiz']['title'] = array(
+    $items['access quiz'] = array(
         'title'       => t('Take quiz'),
         'description' => t('Can access (take) all quizzes.'),
     );
