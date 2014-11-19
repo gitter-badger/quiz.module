@@ -17,10 +17,10 @@ class QuizQuestionsForm extends BaseForm {
    * @param $form_state
    *  The form state variable
    * @param QuizEntity $quiz
-   * @return
+   * @return string
    *  HTML output to create page.
    */
-  public function formGet($form, $form_state, QuizEntity $quiz) {
+  public function formGet(&$form, $form_state, QuizEntity $quiz) {
     // Display questions in this quiz.
     $form['question_list'] = array(
         '#type'           => 'fieldset',
@@ -160,6 +160,8 @@ class QuizQuestionsForm extends BaseForm {
 
       $fieldset = 'question_list';
       $id = $question->qid . '-' . $question->vid;
+
+      $form['question_list']['#question_handlers'][$id] = $question->getQuestionType()->plugin;
 
       $form[$fieldset]['weights'][$id] = array(
           '#type'          => 'textfield',

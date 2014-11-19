@@ -589,13 +589,12 @@ function theme_question_selection_table($variables) {
   $headers[] = array('data' => t('ID'), 'class' => array('tabledrag-hide'));
 
   // Building table body
-  $rows = array();
   if (!empty($form['titles'])) {
     foreach (element_children($form['titles']) as $id) {
       $form['weights'][$id]['#attributes']['class'] = array('question-list-weight');
-      $form['qr_ids'][$id]['#attributes']['class'] = array('qnr-id');
-      $form['qr_pids'][$id]['#attributes']['class'] = array('qnr-pid');
-      $rows[] = _quiz_get_question_row($form, $id);
+      $form['qr_ids'][$id]['#attributes']['class'] = array('relationship-id');
+      $form['qr_pids'][$id]['#attributes']['class'] = array('relationship-pid');
+      $rows[] = _quiz_get_question_row($form, $id, 'quiz_page' === $form['#question_handlers'][$id] ? 'tabledrag-root' : 'tabledrag-leaf');
     }
     // Make sure the same fields aren't rendered twice
     unset($form['types'], $form['view_links'], $form['remove_links'], $form['stayers']);
@@ -609,13 +608,14 @@ function theme_question_selection_table($variables) {
     $html_attr['style'] = "display:none;";
   }
 
-  drupal_add_tabledrag('question-list', 'match', 'parent', 'qnr-pid', 'qnr-pid', 'qnr-id', TRUE, 1);
+  drupal_add_tabledrag('question-list', 'match', 'parent', 'relationship-pid', 'relationship-pid', 'relationship-id', TRUE);
   drupal_add_tabledrag('question-list', 'order', 'sibling', 'question-list-weight');
 
   return drupal_render($form['random_settings'])
     . theme('table', array(
         'header'     => $headers,
-        'rows'       => $rows,
+        'rows'       => !empty($rows) ? $rows : array(),
+        'empty'      => t('No question'),
         'attributes' => array('id' => 'question-list') + $html_attr))
     . drupal_render_children($form);
 }
@@ -635,7 +635,7 @@ function theme_question_selection_table($variables) {
  * @return table row
  *   Array defining a table row
  */
-function _quiz_get_question_row($sub_form, $id) {
+function _quiz_get_question_row($sub_form, $id, $item_type) {
   $type = $sub_form['types'][$id]['#markup'];
 
   $action = theme('item_list', array(
@@ -668,10 +668,8 @@ function _quiz_get_question_row($sub_form, $id) {
       'data'  => drupal_render($sub_form['qr_ids'][$id]),
   );
 
-  $leaf_class = $sub_form['types'][$id]['#question_type'] != 'quiz_page' ? 'tabledrag-leaf' : '';
-
   return array(
-      'class' => array('q-row', 'draggable', $leaf_class),
+      'class' => array('q-row', 'draggable', $item_type),
       'id'    => 'q-' . $id,
       'data'  => $data_array
   );
