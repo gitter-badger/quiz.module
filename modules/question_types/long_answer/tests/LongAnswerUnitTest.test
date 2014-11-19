@@ -29,7 +29,7 @@ class LongAnswerTestCase extends QuizQuestionTestCase {
       $settings = array('rubric' => 'LA 1 rubric.');
     }
 
-    return $this->createQuestion(array(
+    return $this->drupalCreateQuestion(array(
           'type'  => $this->questionPlugin,
           'title' => 'LA 1 title',
           'body'  => array(LANGUAGE_NONE => array(array('value' => 'LA 1 body text.'))),

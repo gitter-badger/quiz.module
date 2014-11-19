@@ -129,7 +129,7 @@ abstract class QuizTestCase extends DrupalWebTestCase {
    * @param array $values
    * @return \Drupal\quiz_question\Entity\Question
    */
-  protected function createQuestion(array $values) {
+  protected function drupalCreateQuestion(array $values) {
     $values['type'] = 'default_' . $values['type'];
 
     // Fix legacy

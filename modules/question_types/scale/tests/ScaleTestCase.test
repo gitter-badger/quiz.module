@@ -32,7 +32,7 @@ class ScaleTestCase extends QuizQuestionTestCase {
    * Create a new question with default settings.
    */
   private function createQuizQuestion() {
-    return $this->createQuestion(array(
+    return $this->drupalCreateQuestion(array(
           'type'         => 'scale',
           'title'        => 'Scale 1 title',
           'alternative0' => 'This is alternative 1',

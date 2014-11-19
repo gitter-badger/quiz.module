@@ -25,9 +25,9 @@ class QuizTimerTestCase extends QuizTestCase {
         'time_limit'     => 30,
     ));
 
-    $question_1 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
-    $question_2 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
-    $question_3 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_1 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_2 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_3 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
     $this->linkQuestionToQuiz($question_1, $quiz);
     $this->linkQuestionToQuiz($question_2, $quiz);
     $this->linkQuestionToQuiz($question_3, $quiz);

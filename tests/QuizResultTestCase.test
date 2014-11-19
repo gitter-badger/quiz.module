@@ -52,9 +52,9 @@ class QuizResultTestCase extends QuizTestCase {
     ));
 
     // 3 questions.
-    $question_1 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1, 'feedback' => 'Q1Feedback'));
-    $question_2 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1, 'feedback' => 'Q2Feedback'));
-    $question_3 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1, 'feedback' => 'Q3Feedback'));
+    $question_1 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1, 'feedback' => 'Q1Feedback'));
+    $question_2 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1, 'feedback' => 'Q2Feedback'));
+    $question_3 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1, 'feedback' => 'Q3Feedback'));
     $this->linkQuestionToQuiz($question_1, $quiz);
     $this->linkQuestionToQuiz($question_2, $quiz);
     $this->linkQuestionToQuiz($question_3, $quiz);
@@ -92,7 +92,7 @@ class QuizResultTestCase extends QuizTestCase {
    * Test access to results.
    */
   function testQuizResultAccess() {
-    $question = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
     $quiz = $this->linkQuestionToQuiz($question);
 
     // Submit an answer.
@@ -113,10 +113,10 @@ class QuizResultTestCase extends QuizTestCase {
    * Test the all, best, and last quiz result pruning.
    */
   public function testResultPruning() {
-    $question_1 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
-    $question_2 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
-    $question_3 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
-    $question_4 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_1 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_2 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_3 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_4 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
 
     $quiz = $this->drupalCreateQuiz();
     $this->linkQuestionToQuiz($question_1, $quiz);

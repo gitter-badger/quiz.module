@@ -31,9 +31,9 @@ class QuizFeedbackTestCase extends QuizTestCase {
     $quiz = $this->drupalCreateQuiz();
 
     // 3 questions.
-    $question_1 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_1 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
     $this->linkQuestionToQuiz($question_1, $quiz);
-    $question_2 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_2 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
     $this->linkQuestionToQuiz($question_2, $quiz);
 
     // This is a dynamic test that only tests the feedback columns showing up.
@@ -109,8 +109,8 @@ class QuizFeedbackTestCase extends QuizTestCase {
     );
 
     // Add 2 questions.
-    $question_1 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
-    $question_2 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_1 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_2 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
     $this->linkQuestionToQuiz($question_1, $quiz);
     $this->linkQuestionToQuiz($question_2, $quiz);
 

@@ -5,10 +5,7 @@
  */
 class MatchingTestCase extends QuizQuestionTestCase {
 
-  // initializing attributes
   protected $questionPlugin = 'matching';
-  var $title = '';
-  var $body = '';
 
   public static function getInfo() {
     return array(
@@ -27,15 +24,10 @@ class MatchingTestCase extends QuizQuestionTestCase {
    * function to create true false type question node for testing.
    */
   public function testCreateQuizQuestion() {
-    // matching question node attributes
-    $this->title = $this->randomName();
-    $this->body = $this->randomName();
-
-    // array of node attributes to create a test node
     $settings = array(
         'type'           => $this->questionPlugin,
-        'title'          => $this->title,
-        'body'           => array(LANGUAGE_NONE => array(array('value' => $this->body))),
+        'title'          => $this->randomName(),
+        'body'           => $this->randomString(),
         'revisions'      => TRUE,
         'choice_penalty' => 0,
     );
@@ -50,7 +42,7 @@ class MatchingTestCase extends QuizQuestionTestCase {
 
     // create drupal node
     // @TODO verify save
-    $question = $this->createQuestion($settings);
+    $question = $this->drupalCreateQuestion($settings);
     return quiz_question_entity_load($question->qid);
   }
 

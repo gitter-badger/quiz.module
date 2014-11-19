@@ -24,9 +24,9 @@ class QuizNavigationTestCase extends QuizTestCase {
   public function testQuestionNavigationBasic() {
     $quiz = $this->drupalCreateQuiz();
 
-    $question_1 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
-    $question_2 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
-    $question_3 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_1 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_2 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_3 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
     $this->linkQuestionToQuiz($question_1, $quiz);
     $this->linkQuestionToQuiz($question_2, $quiz);
     $this->linkQuestionToQuiz($question_3, $quiz);
@@ -57,11 +57,11 @@ class QuizNavigationTestCase extends QuizTestCase {
     $quiz = $this->drupalCreateQuiz(array('allow_jumping' => 1));
 
     // 5 questions.
-    $question_1 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
-    $question_2 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
-    $question_3 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
-    $question_4 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
-    $question_5 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_1 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_2 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_3 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_4 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_5 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
     $this->linkQuestionToQuiz($question_1, $quiz);
     $this->linkQuestionToQuiz($question_2, $quiz);
     $this->linkQuestionToQuiz($question_3, $quiz);
@@ -105,9 +105,9 @@ class QuizNavigationTestCase extends QuizTestCase {
     $quiz = $this->drupalCreateQuiz(array('allow_skipping' => 1));
 
     // 3 questions.
-    $question_1 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
-    $question_2 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
-    $question_3 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_1 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_2 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_3 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
     $this->linkQuestionToQuiz($question_1, $quiz);
     $this->linkQuestionToQuiz($question_2, $quiz);
     $this->linkQuestionToQuiz($question_3, $quiz);
@@ -143,9 +143,9 @@ class QuizNavigationTestCase extends QuizTestCase {
     ));
 
     // 3 questions.
-    $question_1 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
-    $question_2 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
-    $question_3 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_1 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_2 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_3 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
     $this->linkQuestionToQuiz($question_1, $quiz);
     $this->linkQuestionToQuiz($question_2, $quiz);
     $this->linkQuestionToQuiz($question_3, $quiz);

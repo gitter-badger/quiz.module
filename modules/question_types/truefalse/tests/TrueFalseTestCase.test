@@ -25,8 +25,8 @@ class TrueFalseTestCase extends QuizQuestionTestCase {
    *
    * @TODO: This is helper (internal) method, not a test case.
    */
-  function testCreateQuizQuestion() {
-    return $this->createQuestion(array(
+  private function createQuizQuestion() {
+    return $this->drupalCreateQuestion(array(
           'type'           => 'truefalse',
           'title'          => 'TF 1 title',
           'correct_answer' => 1,
@@ -35,7 +35,7 @@ class TrueFalseTestCase extends QuizQuestionTestCase {
   }
 
   function testTakeQuestion() {
-    $question = $this->testCreateQuizQuestion();
+    $question = $this->createQuizQuestion();
 
     // Create the quiz and question.
     $quiz = $this->drupalCreateQuiz();
@@ -76,7 +76,7 @@ class TrueFalseTestCase extends QuizQuestionTestCase {
 
   function testQuestionFeedback() {
     // Create the quiz and question.
-    $question = $this->testCreateQuizQuestion();
+    $question = $this->createQuizQuestion();
 
     // Link the question.
     $quiz = $this->linkQuestionToQuiz($question);

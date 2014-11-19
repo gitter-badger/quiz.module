@@ -190,7 +190,7 @@ class QuizEntityTestCase extends QuizTestCase {
    * Test quiz revisioning.
    */
   function testQuizRevisioning() {
-    $quiz = $this->linkQuestionToQuiz($question = $this->createQuestion(array(
+    $quiz = $this->linkQuestionToQuiz($question = $this->drupalCreateQuestion(array(
         'type'           => 'truefalse',
         'title'          => 'Revision TRUE',
         'body'           => array(LANGUAGE_NONE => array(array('value' => 'Revision TRUE'))),
