@@ -24,8 +24,11 @@ class QuestionType extends Entity {
   /** @var int */
   public $weight = 0;
 
-  /** @var bool */
+  /** @var bool The exportable status of question type. */
   public $status = 1;
+
+  /** @var bool Set to 0 if admin would like disable dis question type. */
+  public $disabled = 0;
 
   public function __construct(array $values = array()) {
     parent::__construct($values, 'quiz_question_type');

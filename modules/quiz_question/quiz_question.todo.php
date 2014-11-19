@@ -52,7 +52,7 @@ function quiz_question_permission() {
  * @return \Drupal\quiz_question\Entity\QuestionType[]
  */
 function quiz_question_get_types() {
-  return entity_load_multiple_by_name('quiz_question_type');
+  return entity_load_multiple_by_name('quiz_question_type', FALSE, array('disabled' => 0));
 }
 
 /**

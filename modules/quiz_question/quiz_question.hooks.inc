@@ -267,6 +267,29 @@ function quiz_question_modules_enabled($modules) {
   }
 }
 
+/**
+ * Implements hook_modules_disabled().
+ *
+ * @param string[] $modules
+ */
+function quiz_question_modules_disabled($modules) {
+  $plugin_names = array();
+
+  foreach ($modules as $module) {
+    if ($info = module_invoke($module, 'quiz_question_info')) {
+      $plugin_names[] = $module;
+    }
+  }
+
+  if (!empty($plugin_names)) {
+    db_update('quiz_question_type')
+      ->fields(array('disabled' => 1))
+      ->condition('plugin', $plugin_names)
+      ->execute()
+    ;
+  }
+}
+
 # ---------------------------------------------------------------
 # To be removed
 # ---------------------------------------------------------------
