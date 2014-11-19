@@ -70,8 +70,6 @@ class Generator {
   private function doGenerateQuestions(QuizEntity $quiz, $question_type) {
     $question_array = array(
         'type'      => $question_type,
-        'quiz_qid'  => $quiz->qid,
-        'quiz_vid'  => $quiz->vid,
         'comment'   => 2,
         'changed'   => REQUEST_TIME,
         'moderate'  => 0,

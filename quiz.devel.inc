@@ -14,8 +14,8 @@ function quiz_generate_form($form, $form_state) {
   );
 
   $question_options = array();
-  foreach (quiz_question_get_plugin_info() as $name => $question_type) {
-    $question_options[$name] = $question_type['name'];
+  foreach (quiz_question_get_types() as $name => $question_type) {
+    $question_options[$name] = $question_type->label;
   }
 
   $form['quiz_question_types'] = array(
