@@ -15,6 +15,15 @@ require_once dirname(__FILE__) . '/quiz_question.hooks.inc';
 require_once dirname(__FILE__) . '/quiz_question.todo.php';
 
 /**
+ * Get controller for question entity.
+ * 
+ * @return \Drupal\quiz_question\Entity\QuestionController
+ */
+function quiz_question_controller() {
+  return entity_get_controler('quiz_question');
+}
+
+/**
  * Get the information about various implementations of quiz questions.
  *
  * @param string $name

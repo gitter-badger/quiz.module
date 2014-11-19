@@ -2,7 +2,10 @@
 
 namespace Drupal\quiz_question\Entity;
 
+use Drupal\quiz_question\QuestionPlugin;
 use Entity;
+use RuntimeException;
+use stdClass;
 
 class Question extends Entity {
 
@@ -18,7 +21,7 @@ class Question extends Entity {
   /** @var string */
   public $type;
 
-  /** @var \Drupal\quiz_question\QuestionPlugin */
+  /** @var QuestionPlugin */
   private $plugin;
 
   /** @var bool */
@@ -55,16 +58,23 @@ class Question extends Entity {
   public $is_new_revision;
 
   /**
+   * @return QuestionController
+   */
+  public function getController() {
+    return quiz_question_controller();
+  }
+
+  /**
    * Get question type object.
    *
-   * @return \Drupal\quiz_question\Entity\QuestionType
+   * @return QuestionType
    */
   public function getQuestionType() {
     return quiz_question_type_load($this->type);
   }
 
   /**
-   * @return \Drupal\quiz_question\QuestionPlugin
+   * @return QuestionPlugin
    */
   public function getPlugin() {
     if (NULL === $this->plugin) {
@@ -76,17 +86,17 @@ class Question extends Entity {
   /**
    * Get plugin info.
    * @return array
-   * @throws \RuntimeException
+   * @throws RuntimeException
    */
   public function getPluginInfo() {
     if ($question_type = $this->getQuestionType()) {
       return quiz_question_get_plugin_info($question_type->plugin);
     }
-    throw new \RuntimeException('Question plugin not found for question #' . $this->qid . ' (type: ' . $this->type . ')');
+    throw new RuntimeException('Question plugin not found for question #' . $this->qid . ' (type: ' . $this->type . ')');
   }
 
   /**
-   * @return \Drupal\quiz_question\QuestionPlugin
+   * @return QuestionPlugin
    */
   private function doGetPlugin() {
     $plugin_info = $this->getPluginInfo();
@@ -106,7 +116,7 @@ class Question extends Entity {
    *
    * Update created/updated/uid when needed.
    *
-   * @global \stdClass $user
+   * @global stdClass $user
    */
   public function save() {
     global $user;
