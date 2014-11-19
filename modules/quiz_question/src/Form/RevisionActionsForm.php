@@ -26,7 +26,7 @@ class RevisionActionsForm {
       drupal_goto('quiz-question/' . $question_qid);
     }
 
-    $form['q_nid'] = array('#type' => 'value', '#value' => (int) $question_qid);
+    $form['q_qid'] = array('#type' => 'value', '#value' => (int) $question_qid);
     $form['q_vid'] = array('#type' => 'value', '#value' => (int) $question_vid);
 
     // Fetch data for all the quizzes that was kept
@@ -206,7 +206,7 @@ class RevisionActionsForm {
             WHERE quiz_vid = :quiz_vid
               AND question_nid = :question_nid', array(
           ':quiz_vid'     => $quiz_vid,
-          ':question_nid' => $form_state['values']['q_nid'],
+          ':question_nid' => $form_state['values']['q_qid'],
         ))->fetch();
 
       $auto_update_max_score = 0;
@@ -232,7 +232,7 @@ class RevisionActionsForm {
                 AND question_nid = :question_nid', array(
           ':quiz_qid'     => $quiz_qid,
           ':quiz_vid'     => $quiz_vid,
-          ':question_nid' => $form_state['values']['q_nid'],
+          ':question_nid' => $form_state['values']['q_qid'],
       ));
 
       if ($res_o = $res->fetch()) {
@@ -240,7 +240,7 @@ class RevisionActionsForm {
         db_delete('quiz_relationship')
           ->condition('quiz_qid', $quiz_qid)
           ->condition('quiz_vid', $quiz_vid)
-          ->condition('question_nid', $form_state['values']['q_nid'])
+          ->condition('question_nid', $form_state['values']['q_qid'])
           ->execute();
         $weight = $res_o->weight;
         $question_status = $res_o->question_status;
@@ -259,7 +259,7 @@ class RevisionActionsForm {
       $relationship = (object) array(
             'quiz_qid'              => $quiz_qid,
             'quiz_vid'              => $quiz_vid,
-            'question_nid'          => $form_state['values']['q_nid'],
+            'question_nid'          => $form_state['values']['q_qid'],
             'question_vid'          => $form_state['values']['q_vid'],
             'max_score'             => $max_score,
             'weight'                => $weight,
