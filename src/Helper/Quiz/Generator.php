@@ -84,7 +84,10 @@ class Generator {
         'body'      => array(LANGUAGE_NONE => array(array('value' => devel_create_para(rand(20, 50), 1)))),
     );
 
-    switch ($question_type) {
+    #kpr(quiz_question_type_load($question_type)->plugin);
+    #exit;
+
+    switch (quiz_question_type_load($question_type)->plugin) {
       case 'truefalse':
         $question_array += $this->dummyTrueFalseQuestion();
         break;
@@ -92,21 +95,23 @@ class Generator {
         $question_array +=$this->dummyShortAnswerQuestion();
         break;
       case 'long_answer':
-        $question_array +=$this->dummyLongAnswerQuestion();
+        $question_array += $this->dummyLongAnswerQuestion();
         break;
       case 'multichoice':
-        $question_array +=$this->dummyMultichoiceQuestion();
+        $question_array += $this->dummyMultichoiceQuestion();
         break;
       case 'quiz_directions':
+      case 'quiz_page':
         break;
       default:
-        throw new RuntimeException('Unsupported question: ' . $question_type);
+        throw new RuntimeException('Unsupported question: ' . quiz_question_type_load($question_type)->plugin);
     }
 
-    // Create question
-    $question = (object) $question_array;
-    node_save($question);
-    devel_generate_fields($question, 'node', $question_type);
+    /* @var $question \Drupal\quiz_question\Entity\Question */
+    $question = entity_create('quiz_question', $question_array);
+    $question->save();
+    $question->getPlugin()->saveRelationships($quiz->qid, $quiz->vid);
+    devel_generate_fields($question, 'quiz_question', $question->type);
   }
 
   private function dummyTrueFalseQuestion() {
