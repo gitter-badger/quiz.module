@@ -114,7 +114,9 @@ abstract class QuizTestCase extends DrupalWebTestCase {
     $quiz = entity_create('quiz_entity', $settings + array(
         'type'           => 'quiz',
         'review_options' => array(
-            'end' => drupal_map_assoc(array_keys(quiz()->getQuizHelper()->getFeedbackHelper()->getOptions()))
+            'end' => drupal_map_assoc(array_keys(
+                quiz()->getQuizHelper()->getFeedbackHelper()->getOptions()
+            ))
         ),
     ));
     $quiz->save();
@@ -132,6 +134,10 @@ abstract class QuizTestCase extends DrupalWebTestCase {
 
     // Fix legacy
     if (isset($values['body'])) {
+      if (is_string($values['body'])) {
+        $values['body'] = array(LANGUAGE_NONE => array(array('value' => $values['body'])));
+      }
+
       $values['quiz_question_body'] = $values['body'];
       unset($values['body']);
     }

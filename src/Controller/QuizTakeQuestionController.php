@@ -37,14 +37,13 @@ class QuizTakeQuestionController extends TakingHelper {
   }
 
   public function render() {
-    $content = array();
-    $questions = array();
-    $i = 0;
+    $content = $questions = array();
 
     // Mark this as the current question.
     $this->redirect($this->quiz, $this->page_number);
 
     // Added the progress info to the view.
+    $i = 0;
     foreach ($this->result->layout as $idx => $question) {
       if (empty($question['qr_pid'])) {
         $questions[$idx] = ++$i; // Question has no parent. Show it in the jumper.

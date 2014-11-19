@@ -5,6 +5,7 @@ namespace Drupal\quiz\Form;
 use Drupal\quiz\Entity\QuizEntity;
 use Drupal\quiz\Entity\Result;
 use Drupal\quiz\Form\QuizAnsweringForm\FormSubmission;
+use Drupal\quiz_question\Entity\Question;
 use stdClass;
 
 class QuizAnsweringForm {
@@ -33,12 +34,12 @@ class QuizAnsweringForm {
 
   /**
    * Build question list in page.
-   * @param stdClass $result
+   * @param Result $result
    * @param stdClass $page
    */
-  public static function findPageQuestions($result, $page) {
+  public static function findPageQuestions(Result $result, Question $page) {
     $page_id = NULL;
-    $questions = array(quiz_question_entity_load($page->nid));
+    $questions = array(quiz_question_entity_load($page->qid));
 
     foreach ($result->layout as $item) {
       if ($item['vid'] == $page->vid) {

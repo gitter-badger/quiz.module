@@ -22,6 +22,7 @@ use Drupal\quiz\Form\QuizEntityForm;
 use Drupal\quiz\Form\QuizQuestionsForm;
 use Drupal\quiz\Form\QuizReportForm;
 use Drupal\quiz\Form\QuizTypeForm;
+use Drupal\quiz_question\Entity\Question;
 use Drupal\quiz_question\QuestionPlugin;
 
 /**
@@ -147,7 +148,7 @@ function quiz_question_admin_page(QuizEntity $quiz) {
 /**
  * Quiz's questions management form.
  */
-function quiz_questions_form($form, $form_state, \Drupal\quiz\Entity\QuizEntity $quiz) {
+function quiz_questions_form($form, $form_state, QuizEntity $quiz) {
   $obj = new QuizQuestionsForm();
   $array = $obj->formGet($form, $form_state, $quiz);
   $array['#validate'][] = 'quiz_questions_form_validate';
@@ -257,15 +258,27 @@ function quiz_jumper_form_submit($form, &$form_state) {
   $form_state['redirect'] = "quiz/" . $quiz->qid . "/take/" . $form_state['values']['question_number'];
 }
 
-function quiz_answer_form($form, $form_state, $quiz, $question, $page_number, $result) {
+/**
+ * Question answering form.
+ *
+ * @param array $form
+ * @param array $form_state
+ * @param QuizEntity $quiz
+ * @param Question $question
+ * @param int $page_number
+ * @param Result $result
+ * @return array
+ */
+function quiz_answer_form($form, $form_state, QuizEntity $quiz, Question $question, $page_number, Result $result) {
   $obj = new QuizAnsweringForm($quiz, $question, $page_number, $result);
-  if (is_array($question) || ($question->type !== 'quiz_page')) {
-    $f_array = $obj->getForm($form, $form_state, is_array($question) ? $question : array($question));
+
+  if (is_array($question) || ('quiz_page' !== $question->getQuestionType()->plugin)) {
+    $form += $obj->getForm($form, $form_state, is_array($question) ? $question : array($question));
   }
   else {
-    $f_array = $obj->getForm($form, $form_state, QuizAnsweringForm::findPageQuestions($result, $question));
+    $form += $obj->getForm($form, $form_state, QuizAnsweringForm::findPageQuestions($result, $question));
   }
-  return $f_array;
+  return $form;
 }
 
 function quiz_answer_form_validate($form, &$form_state) {
@@ -456,7 +469,7 @@ function quiz_result_page(Result $result) {
 /**
  * Theme the result page.
  *
- * @param \Drupal\quiz\Entity\QuizEntity $quiz
+ * @param QuizEntity $quiz
  *  The quiz entity object.
  * @param array $questions
  *  The questions array as defined by _quiz_get_answers.

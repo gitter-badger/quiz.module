@@ -26,9 +26,9 @@ class QuizPageTestCase extends QuizQuestionTestCase {
     $quiz = $this->drupalCreateQuiz();
 
     // Create the questions & pages
-    $question_1 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1, 'body' => array(LANGUAGE_NONE => array(array('value' => 'TF 1 body text')))));
-    $question_2 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1, 'body' => array(LANGUAGE_NONE => array(array('value' => 'TF 2 body text')))));
-    $question_3 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1, 'body' => array(LANGUAGE_NONE => array(array('value' => 'TF 3 body text')))));
+    $question_1 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1, 'body' => 'TF 1 body text'));
+    $question_2 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1, 'body' => 'TF 2 body text'));
+    $question_3 = $this->createQuestion(array('type' => 'truefalse', 'correct_answer' => 1, 'body' => 'TF 3 body text'));
     $page_1 = $this->createQuestion(array('type' => 'quiz_page'));
     $page_2 = $this->createQuestion(array('type' => 'quiz_page'));
     $this->linkQuestionToQuiz($question_1, $quiz);
