@@ -96,9 +96,6 @@ function quiz_question_type_access() {
  */
 function quiz_question_access_callback($op, $question = NULL, $account = NULL, $entity_type = '') {
   switch ($op) {
-    case 'create':
-      return user_access('create question content', $account);
-
     case 'update':
       if (user_access('edit any question content', $account)) {
         return TRUE;

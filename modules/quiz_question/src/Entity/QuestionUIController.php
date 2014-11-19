@@ -57,8 +57,8 @@ class QuestionUIController extends EntityDefaultUIController {
       $items['quiz-question/add/' . str_replace('_', '-', $name)] = array(
           'title callback'   => 'entity_ui_get_action_title',
           'title arguments'  => array('add', 'quiz_question'),
-          'access callback'  => 'entity_access',
-          'access arguments' => array('create', 'quiz_question'),
+          'access callback'  => 'user_access',
+          'access arguments' => array('create '. $name .' question'),
           'page callback'    => 'quiz_question_adding_page',
           'page arguments'   => array($name),
           'file path'        => drupal_get_path('module', 'quiz_question'),
