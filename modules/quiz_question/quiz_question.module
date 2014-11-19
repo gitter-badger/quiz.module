@@ -212,35 +212,6 @@ function quiz_question_report_form(Question $question) {
 }
 
 /**
- * Add body field to quiz_question nodes.
- */
-function quiz_question_add_body_field($type) {
-  node_types_rebuild();
-  $node_type = node_type_get_type($type);
-  if (!$node_type) {
-    watchdog('quiz', 'Attempt to add body field was failed as question content type %type is not defined.', array('%type' => $type), WATCHDOG_ERROR);
-    watchdog('quiz', '<pre>' . print_r(node_type_get_types(), 1), array(), WATCHDOG_ERROR);
-    return;
-  }
-  node_add_body_field($node_type, 'Question');
-  // Override default weight to make body field appear first
-  $instance = field_read_instance('node', 'body', $type);
-  $instance['widget']['weight'] = -10;
-  $instance['widget']['settings']['rows'] = 6;
-
-  // Make the question body visible by default for the question view mode
-  $instance['display']['question'] = array(
-      'label'    => 'hidden',
-      'type'     => 'text_default',
-      'weight'   => 1,
-      'settings' => array(),
-      'module'   => 'text',
-  );
-
-  field_update_instance($instance);
-}
-
-/**
  * Theme the feedback for any question type.
  */
 function theme_quiz_question_feedback($variables) {

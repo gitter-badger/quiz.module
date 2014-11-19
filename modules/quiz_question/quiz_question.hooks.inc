@@ -251,8 +251,9 @@ function quiz_question_modules_enabled($modules) {
       continue;
     }
 
+    // Do not create if already have one
     $sql = 'SELECT 1 FROM {quiz_question_type} WHERE plugin = :module';
-    if ($has_question_type = db_query($sql, array(':module' => $module))->fetchColumn()) {
+    if (db_query($sql, array(':module' => $module))->fetchColumn()) {
       continue;
     }
 
