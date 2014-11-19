@@ -48,15 +48,8 @@ class QuizDirectionsQuestion extends QuestionPlugin {
    */
   public function getAnsweringForm(array $form_state = NULL, $result_id) {
     $form = parent::getAnsweringForm($form_state, $result_id);
-
-    $form['tries'] = array(
-        '#type'  => 'hidden',
-        '#value' => 0,
-    );
-    $form['empty_space'] = array(
-        '#type'  => 'markup',
-        '#value' => '<br/>',
-    );
+    $form['tries'] = array('#type' => 'hidden', '#value' => 0);
+    $form['empty_space'] = array('#type' => 'markup', '#value' => '<br/>');
     return $form;
   }
 
@@ -127,21 +120,15 @@ class QuizDirectionsResponse extends QuizQuestionResponse {
     $quiz_qid = arg(1);
     $quiz_key = 'quiz_' . $quiz_qid;
     if (isset($_SESSION[$quiz_key]['previous_quiz_questions']) && count($_SESSION[$quiz_key]['previous_quiz_questions']) === 1) {
-      // reset the timer.
-      $sql = 'UPDATE {quiz_results} SET time_start=%d WHERE result_id = %d';
-      // TODO Please review the conversion of this statement to the D7 database API syntax.
-      /* db_query($sql, REQUEST_TIME, $this->result_id) */
+      // Reset the timer.
       db_update('quiz_results')
-        ->fields(array(
-            'time_start' => REQUEST_TIME,
-        ))
+        ->fields(array('time_start' => REQUEST_TIME))
         ->condition('result_id', $this->result_id)
         ->execute();
     }
 
     // Set the score
-    $this->score = 0;
-    return 0;
+    return $this->score = 0;
   }
 
   /**
@@ -168,9 +155,7 @@ class QuizDirectionsResponse extends QuizQuestionResponse {
    * @see QuizQuestionResponse#getReportForm()
    */
   public function getReportForm() {
-    return array(
-        '#no_report' => TRUE,
-    );
+    return array('#no_report' => TRUE);
   }
 
 }

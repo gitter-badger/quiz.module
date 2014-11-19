@@ -82,7 +82,7 @@ class MultichoiceQuestion extends QuestionPlugin {
       if (isset($_GET['destination'])) {
         $link_options['query'] = array('destination' => $_GET['destination']);
       }
-      $go_back = l(t('go back'), 'node/' . $this->question->qid . '/edit', $link_options);
+      $go_back = l(t('go back'), 'quiz-question/' . $this->question->qid . '/edit', $link_options);
       if ($num_corrects == 1) {
         $msg = t('Your question allows multiple answers. Only one of the alternatives have been marked as correct. If this wasn\'t intended please !go_back and correct it.', array('!go_back' => $go_back));
         drupal_set_message($msg, 'warning');

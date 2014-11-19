@@ -42,56 +42,56 @@ $handler->display->display_options['fields']['views_bulk_operations']['vbo_setti
 $handler->display->display_options['fields']['views_bulk_operations']['vbo_settings']['entity_load_capacity'] = '10';
 $handler->display->display_options['fields']['views_bulk_operations']['vbo_settings']['skip_batching'] = 1;
 $handler->display->display_options['fields']['views_bulk_operations']['vbo_operations'] = array(
-  'action::views_bulk_operations_delete_item' => array(
-    'selected' => 1,
-    'postpone_processing' => 0,
-    'skip_confirmation' => 0,
-    'override_label' => 0,
-    'label' => '',
-  ),
-  'action::views_bulk_operations_delete_revision' => array(
-    'selected' => 0,
-    'postpone_processing' => 0,
-    'skip_confirmation' => 0,
-    'override_label' => 0,
-    'label' => '',
-  ),
-  'action::views_bulk_operations_script_action' => array(
-    'selected' => 0,
-    'postpone_processing' => 0,
-    'skip_confirmation' => 0,
-    'override_label' => 0,
-    'label' => '',
-  ),
-  'action::views_bulk_operations_modify_action' => array(
-    'selected' => 0,
-    'postpone_processing' => 0,
-    'skip_confirmation' => 0,
-    'override_label' => 0,
-    'label' => '',
-    'settings' => array(
-      'show_all_tokens' => 1,
-      'display_values' => array(
-        '_all_' => '_all_',
-      ),
+    'action::views_bulk_operations_delete_item'              => array(
+        'selected'            => 1,
+        'postpone_processing' => 0,
+        'skip_confirmation'   => 0,
+        'override_label'      => 0,
+        'label'               => '',
     ),
-  ),
-  'action::views_bulk_operations_argument_selector_action' => array(
-    'selected' => 0,
-    'skip_confirmation' => 0,
-    'override_label' => 0,
-    'label' => '',
-    'settings' => array(
-      'url' => '',
+    'action::views_bulk_operations_delete_revision'          => array(
+        'selected'            => 0,
+        'postpone_processing' => 0,
+        'skip_confirmation'   => 0,
+        'override_label'      => 0,
+        'label'               => '',
     ),
-  ),
-  'action::system_send_email_action' => array(
-    'selected' => 0,
-    'postpone_processing' => 0,
-    'skip_confirmation' => 0,
-    'override_label' => 0,
-    'label' => '',
-  ),
+    'action::views_bulk_operations_script_action'            => array(
+        'selected'            => 0,
+        'postpone_processing' => 0,
+        'skip_confirmation'   => 0,
+        'override_label'      => 0,
+        'label'               => '',
+    ),
+    'action::views_bulk_operations_modify_action'            => array(
+        'selected'            => 0,
+        'postpone_processing' => 0,
+        'skip_confirmation'   => 0,
+        'override_label'      => 0,
+        'label'               => '',
+        'settings'            => array(
+            'show_all_tokens' => 1,
+            'display_values'  => array(
+                '_all_' => '_all_',
+            ),
+        ),
+    ),
+    'action::views_bulk_operations_argument_selector_action' => array(
+        'selected'          => 0,
+        'skip_confirmation' => 0,
+        'override_label'    => 0,
+        'label'             => '',
+        'settings'          => array(
+            'url' => '',
+        ),
+    ),
+    'action::system_send_email_action'                       => array(
+        'selected'            => 0,
+        'postpone_processing' => 0,
+        'skip_confirmation'   => 0,
+        'override_label'      => 0,
+        'label'               => '',
+    ),
 );
 /* Field: User: Name */
 $handler->display->display_options['fields']['name']['id'] = 'name';
@@ -150,14 +150,14 @@ $handler->display->display_options['arguments']['nid']['summary_options']['items
 $handler->display->display_options['arguments']['nid']['specify_validation'] = TRUE;
 $handler->display->display_options['arguments']['nid']['validate']['type'] = 'node';
 $handler->display->display_options['arguments']['nid']['validate_options']['types'] = array(
-  'quiz' => 'quiz',
+    'quiz' => 'quiz',
 );
 $handler->display->display_options['arguments']['nid']['validate_options']['access'] = TRUE;
 $handler->display->display_options['arguments']['nid']['validate_options']['access_op'] = 'update';
 
 /* Display: Page */
 $handler = $view->new_display('page', 'Page', 'page');
-$handler->display->display_options['path'] = 'node/%/quiz/results';
+$handler->display->display_options['path'] = 'quiz/%/results';
 $handler->display->display_options['menu']['type'] = 'default tab';
 $handler->display->display_options['menu']['title'] = 'Results';
 $handler->display->display_options['menu']['weight'] = '0';

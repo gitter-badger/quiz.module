@@ -13,20 +13,20 @@ class RevisionActionsForm {
    * Form for deciding what to do with the quizzes a question is member of when the
    * question is revised
    *
-   * @param int $question_nid
+   * @param int $question_qid
    *  Question node id
    * @param int $question_vid
    *  Question node version id
    * @return
    *  FAPI form array
    */
-  public function get($form, $form_state, $question_nid, $question_vid) {
+  public function get($form, $form_state, $question_qid, $question_vid) {
     // If no questions were kept we shouldn't get here…
     if (!isset($_SESSION['quiz_question_kept'])) {
-      drupal_goto('node/' . $question_nid);
+      drupal_goto('quiz-question/' . $question_qid);
     }
 
-    $form['q_nid'] = array('#type' => 'value', '#value' => (int) $question_nid);
+    $form['q_nid'] = array('#type' => 'value', '#value' => (int) $question_qid);
     $form['q_vid'] = array('#type' => 'value', '#value' => (int) $question_vid);
 
     // Fetch data for all the quizzes that was kept
