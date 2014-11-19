@@ -337,7 +337,7 @@ function quiz_question_feedback_page(QuizEntity $quiz, $page_number) {
 }
 
 function quiz_results_page(QuizEntity $quiz) {
-  return views_embed_view('quiz_results', 'page', $quiz->qid);
+  return views_embed_view('quiz_results', 'default', $quiz->qid);
 }
 
 function quiz_results_user_page(QuizEntity $quiz) {

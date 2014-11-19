@@ -78,23 +78,23 @@ class QuizTakingTestCase extends QuizTestCase {
     $past = REQUEST_TIME - 86400;
 
     // Within range.
-    $quiz = $this->drupalCreateQuiz(array('quiz_always' => 0, 'quiz_open' => $past, 'quiz_close' => $future));
-    $this->drupalGet("quiz/{$quiz->qid}");
+    $quiz_1 = $this->drupalCreateQuiz(array('quiz_always' => 0, 'quiz_open' => $past, 'quiz_close' => $future));
+    $this->drupalGet("quiz/{$quiz_1->qid}");
     $this->assertNoText(t('This @quiz is closed.', array('@quiz' => QUIZ_NAME)));
 
     // Starts in the future.
-    $quiz = $this->drupalCreateQuiz(array('quiz_always' => 0, 'quiz_open' => $future, 'quiz_close' => $future + 1));
-    $this->drupalGet("quiz/{$quiz->qid}");
+    $quiz_2 = $this->drupalCreateQuiz(array('quiz_always' => 0, 'quiz_open' => $future, 'quiz_close' => $future + 1));
+    $this->drupalGet("quiz/{$quiz_2->qid}");
     $this->assertText(t('This @quiz is closed.', array('@quiz' => QUIZ_NAME)));
 
     // Ends in the past.
-    $quiz = $this->drupalCreateQuiz(array('quiz_always' => 0, 'quiz_open' => $past, 'quiz_close' => $past + 1));
-    $this->drupalGet("quiz/{$quiz->qid}");
+    $quiz_3 = $this->drupalCreateQuiz(array('quiz_always' => 0, 'quiz_open' => $past, 'quiz_close' => $past + 1));
+    $this->drupalGet("quiz/{$quiz_3->qid}");
     $this->assertText(t('This @quiz is closed.', array('@quiz' => QUIZ_NAME)));
 
     // Always available.
-    $quiz = $this->drupalCreateQuiz(array('quiz_always' => 1, 'quiz_open' => $future, 'quiz_close' => $past));
-    $this->drupalGet("quiz/{$quiz->qid}");
+    $quiz_4 = $this->drupalCreateQuiz(array('quiz_always' => 1, 'quiz_open' => $future, 'quiz_close' => $past));
+    $this->drupalGet("quiz/{$quiz_4->qid}");
     $this->assertNoText(t('This @quiz is closed.', array('@quiz' => QUIZ_NAME)));
   }
 
@@ -122,9 +122,7 @@ class QuizTakingTestCase extends QuizTestCase {
    * Test allow/restrict changing of answers.
    */
   function testChangeAnswer() {
-    $quiz = $this->drupalCreateQuiz(array(
-        'review_options' => array('question' => array('score' => 'score')),
-    ));
+    $quiz = $this->drupalCreateQuiz(array('review_options' => array('question' => array('score' => 'score'))));
 
     $question_1 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
     $question_2 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));

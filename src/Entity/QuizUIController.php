@@ -81,7 +81,7 @@ class QuizUIController extends EntityDefaultUIController {
     );
 
     // Define menu structure for /quiz/%/results
-    $items['quiz/%quiz/results'] = array(
+    $items['quiz/%quiz/results'] = $base + array(
         'title'            => 'Results',
         'type'             => MENU_LOCAL_TASK,
         'access callback'  => 'entity_access',
