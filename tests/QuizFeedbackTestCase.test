@@ -80,7 +80,7 @@ class QuizFeedbackTestCase extends QuizTestCase {
 
     // Check feedback after the Quiz
     foreach ($review_options as $option => $text) {
-      $quiz->review_options = array('end' => array($option => $option));
+      $quiz->review_options['end'] = array($option => $option);
       $quiz->save();
 
       $this->drupalGet("quiz-result/1");

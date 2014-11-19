@@ -11,15 +11,16 @@ class QuizReportForm {
    *
    * @param array $form
    * @param array $form_state
+   * @param \Drupal\quiz\Entity\Result $result
    * @param Question[] $questions
    * @return array
    */
-  public function getForm($form, $form_state, $questions) {
+  public function getForm($form, $form_state, \Drupal\quiz\Entity\Result $result, $questions) {
     $form['#tree'] = TRUE;
 
     foreach ($questions as $question) {
       $function = $question->getModule() . '_report_form';
-      $form_to_add = $function($question);
+      $form_to_add = $function($result, $question);
       if (isset($form_to_add['submit'])) {
         $show_submit = TRUE;
       }

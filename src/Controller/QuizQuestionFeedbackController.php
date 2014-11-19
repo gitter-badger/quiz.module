@@ -33,7 +33,7 @@ class QuizQuestionFeedbackController {
 
     // Invoke hook_get_report().
     if ($report = module_invoke($question->getModule(), 'get_report', $question->qid, $question->vid, $this->result->result_id)) {
-      return drupal_get_form('quiz_report_form', array($report));
+      return drupal_get_form('quiz_report_form', $this->result, array($report));
     }
   }
 

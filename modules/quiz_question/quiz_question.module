@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\quiz\Entity\Result;
 use Drupal\quiz_question\Entity\Question;
 
 /**
@@ -106,21 +107,17 @@ function quiz_question_access_to_score($question_vid, $result_id) {
  * @param Question $question
  * @return array
  */
-function quiz_question_report_form(Question $question) {
+function quiz_question_report_form(Result $result, Question $question) {
   $answer = $question->answers[0];
   $handler = quiz_answer_controller()->getInstance($answer['result_id'], $question, $answer);
 
   // If need to specify the score weight if it isn't already specified.
   if (!isset($handler->question->score_weight)) {
-    $quiz_vid = db_query('SELECT quiz_vid FROM {quiz_results} WHERE result_id = :rid', array(
-        ':rid' => $answer['result_id']
-      ))->fetchField();
-
     $qr_max_score = db_query('SELECT qnr.max_score
       FROM {quiz_relationship} qnr
       WHERE qnr.question_vid = :question_vid AND qnr.quiz_vid = :quiz_vid', array(
         ':question_vid' => $question->vid,
-        ':quiz_vid'     => $quiz_vid
+        ':quiz_vid'     => $result->quiz_vid
       ))->fetchField();
 
     if ($qr_max_score === FALSE) {

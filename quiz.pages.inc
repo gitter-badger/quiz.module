@@ -525,18 +525,20 @@ function theme_quiz_result($variables) {
     }
   }
 
+  $form = drupal_get_form('quiz_report_form', $result, $questions);
+
   return array(
-      '#markup'     => $output,
-      'report_form' => drupal_get_form('quiz_report_form', $questions),
+      '#markup' => $output,
+      '#suffix' => drupal_render($form),
   );
 }
 
 /**
  * Feedback form.
  */
-function quiz_report_form($form, $form_state, $questions) {
+function quiz_report_form($form, $form_state, $result, $questions) {
   $obj = new QuizReportForm();
-  $form += $obj->getForm($form, $form_state, $questions);
+  $form += $obj->getForm($form, $form_state, $result, $questions);
 
   if (isset($form['next'])) {
     $form['next']['#submit'] = array('quiz_report_form_submit_next');
