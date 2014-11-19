@@ -1,9 +1,8 @@
-<?php
-print '<p>' . $content['explanation'] . '</p>' . "\n";
-print '<p>';
-$counter = 1;
-foreach ($content['links'] as $key => $value) {
-  print ' | '. l(t('revision !num', array('!num' => $counter++)), $value);
-}
-print ' |</p>';
-?>
+<p><?php echo $content['explanation']; ?></p>
+<p>
+  <?php
+  array_map(function($url) {
+    echo ' | ' . l(t('revision !num', array('!num' => '#' . arg(3, $url))), $url);
+  }, $content['links']);
+  ?>
+</p>

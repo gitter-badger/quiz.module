@@ -27,29 +27,25 @@ class RevisionStatsController {
   public function render() {
     return array(
         '#theme'    => 'quiz_stats_charts',
-        '#chart'    => $this->buildChartStructure(),
         '#attached' => array(
             'css' => array(drupal_get_path('module', 'quiz_stats') . '/quiz_stats.css')
-        )
-    );
-  }
-
-  private function buildChartStructure() {
-    return array(
-        'takeup'      => $this->getDateVSTakeupCountChart(),
-        // line chart/graph showing quiz takeup date along x-axis and count along y-axis
-        'status'      => $this->getQuizStatusChart($this->quiz_vid, $this->uid),
-        // 3D pie chart showing percentage of pass, fail, incomplete quiz status
-        'top_scorers' => $this->getQuizTopScorersChart(),
-        // Bar chart displaying top scorers
-        'grade_range' => $this->getQuizGradeRangeChart(),
+        ),
+        '#charts'   => array(
+            'takeup'      => $this->getDateVSTakeupCountChart(),
+            // line chart/graph showing quiz takeup date along x-axis and count along y-axis
+            'status'      => $this->getQuizStatusChart($this->quiz_vid, $this->uid),
+            // 3D pie chart showing percentage of pass, fail, incomplete quiz status
+            'top_scorers' => $this->getQuizTopScorersChart(),
+            // Bar chart displaying top scorers
+            'grade_range' => $this->getQuizGradeRangeChart(),
+        ),
     );
   }
 
   /**
    * Generates chart showing how often the quiz has been taken the last days
    *
-   * @return
+   * @return string
    *   HTML to display chart
    */
   private function getDateVSTakeupCountChart() {
@@ -65,14 +61,13 @@ class RevisionStatsController {
     }
     $sql .= " GROUP BY date ORDER BY time_start ASC";
     $results = db_query($sql, $sql_args);
+
+    // generate date vs takeup count line chart
     if ($res_o = $results->fetchAll()) {
-      $chart = '<div id="date_vs_takeup_count" class="quiz-stats-chart-space">';
-      // wrapping the chart output with div for custom theming.
-      $chart .= theme('date_vs_takeup_count', array('takeup' => $res_o));
-      // generate date vs takeup count line chart
-      $chart .= '</div>';
+      $chart = theme('date_vs_takeup_count', array('takeup' => $res_o));
       return array(
-          'chart'       => $chart,
+          // wrapping the chart output with div for custom theming.
+          'chart'       => '<div id="date_vs_takeup_count" class="quiz-stats-chart-space">' . $chart . '</div>',
           'title'       => t('Activity'),
           'explanation' => t('This chart shows how many times the quiz has been taken the last !days days.', array('!days' => $end)),
       );
@@ -82,7 +77,7 @@ class RevisionStatsController {
   /**
    * Generates a chart showing the status for all registered responses to a quiz
    *
-   * @return
+   * @return string
    *   HTML to render to chart/graph
    */
   private function getQuizStatusChart() {
@@ -103,8 +98,9 @@ class RevisionStatsController {
       . " FROM {quiz_results} "
       . " WHERE quiz_vid = :vid", array(':vid' => $this->quiz_vid))->fetchAssoc();
 
+    // no sufficient data
     if (($quiz['no_pass'] + $quiz['no_fail'] + $quiz['no_incomplete']) < 1) {
-      return FALSE; // no sufficient data
+      return FALSE;
     }
 
     // generates quiz status chart 3D pie chart
@@ -121,15 +117,12 @@ class RevisionStatsController {
   /**
    * Generates the top scorers chart
    *
-   * @return
+   * @return array
    *   array with chart and metadata
    */
   private function getQuizTopScorersChart() {
     $top_scorers = array();
-    $sql = 'SELECT name, score
-      FROM {quiz_results} qnr
-      LEFT JOIN {users} u ON (u.uid = qnr.uid)
-      WHERE quiz_vid = :vid';
+    $sql = 'SELECT name, score FROM {quiz_results} qnr LEFT JOIN {users} u ON (u.uid = qnr.uid) WHERE quiz_vid = :vid';
     $arg[':vid'] = $this->quiz_vid;
     if ($this->uid) {
       $sql .= ' AND qnr.uid = :uid';
@@ -157,7 +150,7 @@ class RevisionStatsController {
   /**
    * Generates grade range chart
    *
-   * @return
+   * @return array
    *   array with chart and metadata
    */
   private function getQuizGradeRangeChart() {
