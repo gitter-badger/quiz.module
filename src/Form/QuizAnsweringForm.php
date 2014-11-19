@@ -60,8 +60,8 @@ class QuizAnsweringForm {
   /**
    * Get the form to show to the quiz taker.
    *
-   * @param $questions
-   *   A list of question nodes to get answers from.
+   * @param \Drupal\quiz_question\Entity\Question[] $questions
+   *   A list of questions to get answers from.
    * @param $result_id
    *   The result ID for this attempt.
    */

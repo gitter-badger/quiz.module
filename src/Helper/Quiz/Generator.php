@@ -105,7 +105,7 @@ class Generator {
         throw new RuntimeException('Unsupported question: ' . $question_type);
     }
 
-    // Create question node
+    // Create question
     $question = (object) $question_array;
     node_save($question);
     devel_generate_fields($question, 'node', $question_type);

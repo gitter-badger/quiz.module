@@ -272,16 +272,16 @@ function quiz_question_modules_enabled($modules) {
 # ---------------------------------------------------------------
 
 /**
- * Delete the question node from the db, and mark its identifiers in the quiz
- * linking table as "NEVER".  This is safer than deleting them
- * and allows for same tracing of what's happened if a question was deleted unintentionally.
+ * Delete the question from the db, and mark its identifiers in the quiz linking
+ * table as "NEVER".  This is safer than deleting them and allows for same
+ * tracing of what's happened if a question was deleted unintentionally.
  *
- * @param $node the question node
- * @param $only_this_version whether to delete only the specific revision of the question
+ * @param \Drupal\quiz_question\Entity\Question $question the question
+ * @param bool $only_this_version whether to delete only the specific revision of the question
  */
-function _quiz_delete_question(&$node, $only_this_version) {
+function _quiz_delete_question(&$question, $only_this_version) {
   // let each question class delete its own stuff
-  quiz_question_get_provider($node, TRUE)->delete($only_this_version);
+  quiz_question_get_provider($question, TRUE)->delete($only_this_version);
 
   // FIXME QuizQuestion class makes these relationships, so it should handle their 'deletion' too
   // FIXME alternately, move the relationship handling out of QuizQuestion class
@@ -291,20 +291,20 @@ function _quiz_delete_question(&$node, $only_this_version) {
   $select_sql = 'SELECT quiz_vid FROM {quiz_relationship}';
   if ($only_this_version) {
     $select_sql .= ' WHERE question_nid = :question_nid AND question_vid = :question_vid';
-    $filter_arg = array(':question_nid' => $node->nid, ':question_vid' => $node->vid);
+    $filter_arg = array(':question_nid' => $question->qid, ':question_vid' => $question->vid);
   }
   else {
     $select_sql .= ' WHERE question_nid = :question_nid';
-    $filter_arg = array(':question_nid' => $node->nid);
+    $filter_arg = array(':question_nid' => $question->qid);
   }
 
   $res = db_query($select_sql, $filter_arg);
 
   $update = db_update('quiz_relationship')
     ->fields(array('question_status' => QUESTION_NEVER))
-    ->condition('question_nid', $node->nid);
+    ->condition('question_nid', $question->qid);
   if ($only_this_version) {
-    $update = $update->condition('question_vid', $node->vid);
+    $update = $update->condition('question_vid', $question->vid);
   }
   $update->execute();
 

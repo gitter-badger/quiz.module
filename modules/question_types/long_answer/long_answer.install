@@ -30,19 +30,9 @@ function long_answer_schema() {
   // Properties for a question nodes go in here:
   $schema['quiz_long_answer_node_properties'] = array(
       'fields'      => array(
-          'nid'    => array(
-              'type'     => 'int',
-              'unsigned' => TRUE,
-              'not null' => TRUE,
-          ),
-          'vid'    => array(
-              'type'     => 'int',
-              'unsigned' => TRUE,
-              'not null' => TRUE,
-          ),
-          'rubric' => array(
-              'type' => 'text',
-          ),
+          'nid'    => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE),
+          'vid'    => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE),
+          'rubric' => array('type' => 'text'),
       ),
       'primary key' => array('nid', 'vid'),
   );

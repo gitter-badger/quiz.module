@@ -17,7 +17,8 @@ abstract class QuizQuestionResponse {
   protected $result_id = 0;
   protected $is_correct = FALSE;
   protected $evaluated = TRUE;
-  // The question node(not a quiz question instance)
+
+  /** @var \Drupal\quiz_question\Entity\Question */
   public $question = NULL;
   public $quizQuestion = NULL;
   protected $answer = NULL;
@@ -58,7 +59,6 @@ abstract class QuizQuestionResponse {
   }
 
   /**
-   *
    * @return QuestionPlugin
    */
   function getQuizQuestion() {
@@ -66,13 +66,12 @@ abstract class QuizQuestionResponse {
   }
 
   /**
-   * Used to refresh this instances question node in case drupal has changed it.
+   * Used to refresh this instances question in case drupal has changed it.
    *
-   * @param $newNode
-   *  Question node
+   * @param \Drupal\quiz_question\Entity\Question $newQuestion
    */
-  public function refreshQuestionNode($newNode) {
-    $this->question = $newNode;
+  public function refreshQuestionNode($newQuestion) {
+    $this->question = $newQuestion;
   }
 
   /**

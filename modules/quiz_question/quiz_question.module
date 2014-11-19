@@ -150,9 +150,7 @@ function quiz_question_get_provider(&$question, $cache = FALSE) {
  * Get the max score for a question
  *
  * @param $question_qid
- *  Question node id
  * @param $question_vid
- *  Question node version id
  * @return
  *  Max score(int)
  */
@@ -169,9 +167,8 @@ function quiz_question_get_max_score($question_qid, $question_vid) {
  * The retaurned value is a form array because in some contexts the scores in the form
  * is editable
  *
- * @param $question
- *  The question node
- * @return
+ * @param Question $question
+ * @return array
  *  FAPI form array
  */
 function quiz_question_report_form(Question $question) {

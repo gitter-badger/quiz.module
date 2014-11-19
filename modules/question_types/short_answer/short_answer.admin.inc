@@ -62,16 +62,14 @@ function short_answer_edit_score($vid, $result_id) {
 /**
  * Build a form for scoring long-answer questions.
  *
- * @param $node
- *  The question node.
+ * @param \Drupal\quiz_question\Entity\Question $question
  * @param $answer
  *  An object containing an answer to the question. This form is for scoring that answer.
  * @return
  *  The form (as a FAPI array).
  */
-function short_answer_score_form($form, $context, $node, $answer) {
-
-  if (!$node || $node->type != 'short_answer' || !$answer) {
+function short_answer_score_form($form, $context, $question, $answer) {
+  if (!$question || $question->type != 'short_answer' || !$answer) {
     drupal_not_found();
     return;
   }
@@ -79,7 +77,7 @@ function short_answer_score_form($form, $context, $node, $answer) {
   $form['question'] = array(
       '#type'   => 'item',
       '#title'  => t('Question'),
-      '#markup' => check_markup($node->body['und'][0]['value'], $node->body['und'][0]['format']),
+      '#markup' => check_markup($question->body['und'][0]['value'], $question->body['und'][0]['format']),
   );
   $form['answer'] = array(
       '#type'   => 'item',
@@ -115,7 +113,7 @@ function short_answer_score_form($form, $context, $node, $answer) {
   // Save some work by keeping these.
   $form['max_score'] = array(
       '#type'  => 'value',
-      '#value' => $node->max_score,
+      '#value' => $question->max_score,
   );
   $form['rel_max_score'] = array(
       '#type'  => 'value',

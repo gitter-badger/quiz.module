@@ -47,9 +47,7 @@ function matching_schema() {
               'default'  => 0,
           ),
       ),
-      'primary key' => array(
-          'nid', 'vid'
-      ),
+      'primary key' => array('nid', 'vid'),
   );
 
   $schema['quiz_matching_node'] = array(

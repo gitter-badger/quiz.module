@@ -14,10 +14,8 @@ class RevisionActionsForm {
    * question is revised
    *
    * @param int $question_qid
-   *  Question node id
    * @param int $question_vid
-   *  Question node version id
-   * @return
+   * @return array
    *  FAPI form array
    */
   public function get($form, $form_state, $question_qid, $question_vid) {

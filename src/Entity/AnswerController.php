@@ -44,7 +44,7 @@ class AnswerController extends EntityAPIController {
     $responses = &drupal_static(__METHOD__, array());
 
     if (is_object($question) && isset($responses[$result_id][$question->vid])) {
-      // We refresh the question node in case it has been changed since we cached the response
+      // We refresh the question in case it has been changed since we cached the response
       $responses[$result_id][$question->vid]->refreshQuestionNode($question);
       if (FALSE !== $responses[$result_id][$question->vid]->is_skipped) {
         return $responses[$result_id][$question->vid];
@@ -55,7 +55,7 @@ class AnswerController extends EntityAPIController {
       return $responses[$result_id][$question_vid];
     }
 
-    // If the question node isn't set we fetch it from the QuizQuestion instance
+    // If the question isn't set we fetch it from the QuizQuestion instance
     // this responce belongs to
     if (!$question && ($_question = quiz_question_entity_load($question_qid, $question_vid))) {
       $question = $_question->getPlugin()->question;

@@ -289,7 +289,7 @@ Drupal.behaviors.quiz_ddlines = {
     
     // Initializing the result page; the correct answer part
     $('.quiz-ddlines-correct-answers', context).each(function() {
-      // Id is the node id of the question node
+      // Id is the node id of the question.
       // Will be overwritten in engine.init
       var id = $(this).attr('id');
 
@@ -302,7 +302,7 @@ Drupal.behaviors.quiz_ddlines = {
     
     // Initializing the result page; the user answer part
     $('.quiz-ddlines-user-answers', context).each(function() {
-      // Id is the node id of the question node
+      // Id is the node id of the question.
       // Will be overwritten in engine.init
       var id = $(this).attr('id');
       
