@@ -3,6 +3,8 @@
 namespace Drupal\quiz_question\Entity;
 
 use DatabaseTransaction;
+use Drupal\quiz\Entity\QuizEntity;
+use Drupal\quiz\Entity\Relationship;
 use EntityAPIController;
 
 class QuestionController extends EntityAPIController {
@@ -29,7 +31,7 @@ class QuestionController extends EntityAPIController {
   public function load($ids = array(), $conditions = array()) {
     $questions = parent::load($ids, $conditions);
 
-    /* @var $question \Drupal\quiz_question\Entity\Question */
+    /* @var $question Question */
     foreach ($questions as $question) {
       foreach ($question->getPlugin()->load() as $k => $v) {
         $question->$k = $v;
@@ -89,6 +91,19 @@ class QuestionController extends EntityAPIController {
       $content += $question->getPlugin()->getEntityView();
     }
     return parent::buildContent($question, $view_mode, $langcode, $content);
+  }
+
+  /**
+   * Find relationship object between a quiz and a question.
+   * @param QuizEntity $quiz
+   * @param Question $question
+   * @return Relationship
+   */
+  public function findRelationship(QuizEntity $quiz, Question $question) {
+    $conds = array('quiz_vid' => $quiz->vid, 'question_vid' => $question->vid);
+    if ($relationships = entity_load('quiz_question_relationship', FALSE, $conds)) {
+      return reset($relationships);
+    }
   }
 
 }
