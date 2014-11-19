@@ -39,7 +39,7 @@ class NodeUpdateHelper extends NodeHelper {
       ->fields('qnr', array('quiz_qid', 'question_nid', 'question_vid', 'question_status', 'weight', 'max_score', 'auto_update_max_score', 'qr_id', 'qr_pid'))
       ->condition('quiz_qid', $quiz_qid)
       ->condition('quiz_vid', $old_quiz_vid)
-      ->condition('question_status', QUESTION_NEVER, '!=')
+      ->condition('question_status', QUIZ_QUESTION_NEVER, '!=')
       ->execute();
 
     // only proceed if query returned data

@@ -28,7 +28,7 @@ class QuestionIO {
    * @return array[] Array of question info.
    */
   public function getQuestionList() {
-    if (QUESTION_CATEGORIZED_RANDOM == $this->quiz->randomization) {
+    if (QUIZ_QUESTION_CATEGORIZED_RANDOM == $this->quiz->randomization) {
       return $this->buildCategoziedQuestionList();
     }
     return $this->getRequiredQuestions();
@@ -94,7 +94,7 @@ class QuestionIO {
     $select->fields('relationship', array('qr_id', 'qr_pid', 'weight', 'max_score'));
     $query = $select
       ->condition('relationship.quiz_vid', $this->quiz->vid)
-      ->condition('relationship.question_status', QUESTION_ALWAYS)
+      ->condition('relationship.question_status', QUIZ_QUESTION_ALWAYS)
       ->condition('question.status', 1)
       ->orderBy('sub_relationship.weight')
       ->orderBy('relationship.weight')
@@ -150,7 +150,7 @@ class QuestionIO {
         ->fields('question', array('type'))
         ->condition('relationship.quiz_vid', $this->quiz->vid)
         ->condition('relationship.quiz_qid', $this->quiz->vid)
-        ->condition('relationship.question_status', QUESTION_RANDOM)
+        ->condition('relationship.question_status', QUIZ_QUESTION_RANDOM)
         ->condition('question.status', 1)
         ->orderRandom()
         ->range(0, $amount)
@@ -242,7 +242,7 @@ class QuestionIO {
 
   private function doSetQuestions($questions, $set_new_revision) {
     foreach ($questions as $question) {
-      if ($question->state == QUESTION_NEVER) {
+      if ($question->state == QUIZ_QUESTION_NEVER) {
         continue;
       }
 

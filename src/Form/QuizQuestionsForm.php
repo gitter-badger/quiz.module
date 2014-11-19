@@ -210,7 +210,7 @@ class QuizQuestionsForm extends BaseForm {
       if ($quiz->randomization == 2) {
         $form[$fieldset]['compulsories'][$id] = array(
             '#type'          => 'checkbox',
-            '#default_value' => isset($question->question_status) ? ($question->question_status == QUESTION_ALWAYS) ? 1 : 0 : 0,
+            '#default_value' => isset($question->question_status) ? ($question->question_status == QUIZ_QUESTION_ALWAYS) ? 1 : 0 : 0,
             '#attributes'    => array('class' => array('q-compulsory')),
         );
       }
@@ -364,7 +364,7 @@ class QuizQuestionsForm extends BaseForm {
     if (empty($term_id)) {
       $assigned_random = 0;
       foreach ($questions as $question) {
-        if ($question->state == QUESTION_RANDOM) {
+        if ($question->state == QUIZ_QUESTION_RANDOM) {
           ++$assigned_random;
         }
       }
@@ -388,7 +388,7 @@ class QuizQuestionsForm extends BaseForm {
     $query = db_select('quiz_relationship', 'qnr');
     $query->addExpression('SUM(max_score)', 'sum');
     $query->condition('quiz_vid', $quiz->vid);
-    $query->condition('question_status', QUESTION_ALWAYS);
+    $query->condition('question_status', QUIZ_QUESTION_ALWAYS);
     $score = $query->execute()->fetchAssoc();
 
     // Update the quiz's properties.
@@ -472,11 +472,11 @@ class QuizQuestionsForm extends BaseForm {
           'qr_pid'                => $qr_pids[$id] > 0 ? $qr_pids[$id] : NULL,
           'qr_id'                 => $qr_ids[$id] > 0 ? $qr_ids[$id] : NULL,
           'refresh'               => (isset($refreshes[$id]) && $refreshes[$id] == 1),
-          'state'                 => QUESTION_ALWAYS,
+          'state'                 => QUIZ_QUESTION_ALWAYS,
       ));
 
       if (isset($compulsories) && $compulsories[$id] != 1) {
-        $question->state = QUESTION_RANDOM;
+        $question->state = QUIZ_QUESTION_RANDOM;
         $max_scores[$id] = $quiz->max_score_for_random;
       }
 

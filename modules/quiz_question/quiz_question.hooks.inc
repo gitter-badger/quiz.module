@@ -301,7 +301,7 @@ function _quiz_delete_question(&$question, $only_this_version) {
   $res = db_query($select_sql, $filter_arg);
 
   $update = db_update('quiz_relationship')
-    ->fields(array('question_status' => QUESTION_NEVER))
+    ->fields(array('question_status' => QUIZ_QUESTION_NEVER))
     ->condition('question_nid', $question->qid);
   if ($only_this_version) {
     $update = $update->condition('question_vid', $question->vid);
