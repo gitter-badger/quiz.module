@@ -7,12 +7,6 @@ use Drupal\quiz_question\Entity\Question;
  * This module provides the basic facilities for adding quiz question types to a quiz.
  * @file
  */
-/*
- * The system remembers what quizzes a user has been involved in lately. This constant determines
- * how many quizzes the system will remember for each user
- */
-define('QUIZ_QUESTION_NUM_LATEST', 10);
-
 /**
  * Include hook implementations.
  */

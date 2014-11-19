@@ -32,7 +32,7 @@ abstract class NodeHelper {
     }
 
     db_delete('quiz_relationship')
-      ->condition('question_status', QUESTION_RANDOM)
+      ->condition('question_status', QUIZ_QUESTION_RANDOM)
       ->condition('quiz_vid', $quiz->vid)
       ->execute();
   }

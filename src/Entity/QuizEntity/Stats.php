@@ -48,7 +48,7 @@ class Stats {
         AND qnr.quiz_vid = :quiz_vid
         AND qnr.question_status = :question_status', array(
           ':quiz_vid'        => $quiz_vid,
-          ':question_status' => QUESTION_ALWAYS
+          ':question_status' => QUIZ_QUESTION_ALWAYS
       ))->fetchField();
   }
 

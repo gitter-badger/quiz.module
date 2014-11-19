@@ -28,7 +28,7 @@ class QuestionIO {
    * @return array[] Array of question info.
    */
   public function getQuestionList() {
-    if (QUESTION_CATEGORIZED_RANDOM == $this->quiz->randomization) {
+    if (QUIZ_QUESTION_CATEGORIZED_RANDOM == $this->quiz->randomization) {
       return $this->buildCategoziedQuestionList();
     }
     return $this->getRequiredQuestions();
@@ -91,10 +91,10 @@ class QuestionIO {
     $select->addField('relationship', 'question_nid', 'qid');
     $select->addField('relationship', 'question_vid', 'vid');
     $select->addField('question', 'type');
-    $select->fields('relationship', array('qr_id', 'qr_pid', 'weight', 'max_score'));
+    $select->fields('relationship', array('qr_id', 'qr_pid', 'question_status', 'weight', 'max_score'));
     $query = $select
       ->condition('relationship.quiz_vid', $this->quiz->vid)
-      ->condition('relationship.question_status', QUESTION_ALWAYS)
+      ->condition('relationship.question_status', QUIZ_QUESTION_ALWAYS)
       ->condition('question.status', 1)
       ->orderBy('sub_relationship.weight')
       ->orderBy('relationship.weight')
@@ -102,28 +102,28 @@ class QuestionIO {
 
     // Just to make it easier on us, let's use a 1-based index.
     $i = 1;
-    $questions = array();
-    while ($question_node = $query->fetchAssoc()) {
-      $questions[$i++] = $question_node;
+    $relationships = array();
+    while ($relationship = $query->fetchAssoc()) {
+      $relationships[$i++] = $relationship;
     }
 
     // Get random questions for the remainder.
     if ($this->quiz->number_of_random_questions > 0) {
-      $random_questions = $this->getRandomQuestions();
-      $questions = array_merge($questions, $random_questions);
+      $random_relationships = $this->getRandomQuestions();
+      $relationships = array_merge($relationships, $random_relationships);
 
       // Unable to find enough requested random questions.
-      if ($this->quiz->number_of_random_questions > count($random_questions)) {
+      if ($this->quiz->number_of_random_questions > count($random_relationships)) {
         return array();
       }
     }
 
     // Shuffle questions if required.
     if ($this->quiz->randomization > 0) {
-      shuffle($questions);
+      shuffle($relationships);
     }
 
-    return $questions;
+    return $relationships;
   }
 
   /**
@@ -142,20 +142,21 @@ class QuestionIO {
   private function doGetRandomQuestion($amount) {
     $select = db_select('quiz_relationship', 'relationship');
     $select->join('quiz_question', 'question', 'relationship.question_nid = question.qid');
-    $select->addField('relationship.question_nid', 'nid');
-    $select->addField('relationship.question_vid', 'vid');
+    $select->addField('relationship', 'question_nid', 'qid');
+    $select->addField('relationship', 'question_vid', 'vid');
     $select->addExpression(':true', 'random', array(':true' => TRUE));
     $select->addExpression(':number', 'relative_max_score', array(':number' => $this->quiz->max_score_for_random));
     return $select
+        ->fields('relationship', array('qr_id', 'qr_pid', 'question_status'))
         ->fields('question', array('type'))
         ->condition('relationship.quiz_vid', $this->quiz->vid)
         ->condition('relationship.quiz_qid', $this->quiz->vid)
-        ->condition('relationship.question_status', QUESTION_RANDOM)
+        ->condition('relationship.question_status', QUIZ_QUESTION_RANDOM)
         ->condition('question.status', 1)
         ->orderRandom()
         ->range(0, $amount)
         ->execute()
-        ->fetchAssoc();
+        ->fetchAll(\PDO::FETCH_ASSOC);
   }
 
   /**
@@ -198,8 +199,8 @@ class QuestionIO {
   /**
    * Sets the questions that are assigned to a quiz.
    *
-   * @param \Drupal\quiz_question\Entity\Question[] $questions
-   *   An array of questions.
+   * @param array[] $relationships
+   *   An array of relationship.
    * @param bool $set_new_revision
    *   If TRUE, a new revision will be generated. Note that saving
    *   quiz questions unmodified will still generate a new revision of the quiz if
@@ -212,7 +213,7 @@ class QuestionIO {
    * @return
    *   Boolean TRUE if update was successful, FALSE otherwise.
    */
-  public function setQuestions(array $questions, $set_new_revision = FALSE) {
+  public function setQuestions(array $relationships, $set_new_revision = FALSE) {
     // Create a new Quiz VID, even if nothing changed.
     if ($set_new_revision) {
       $this->quiz->is_new_revision = 1;
@@ -230,11 +231,11 @@ class QuestionIO {
       ->execute();
 
     // This is not an error condition.
-    if (empty($questions)) {
+    if (empty($relationships)) {
       return TRUE;
     }
 
-    $this->doSetQuestions($questions, $set_new_revision);
+    $this->doSetQuestions($relationships, $set_new_revision);
     $this->quiz->getController()->getMaxScoreWriter()->update(array($this->quiz->vid));
 
     return TRUE;
@@ -242,7 +243,7 @@ class QuestionIO {
 
   private function doSetQuestions($questions, $set_new_revision) {
     foreach ($questions as $question) {
-      if ($question->state == QUESTION_NEVER) {
+      if ($question->state == QUIZ_QUESTION_NEVER) {
         continue;
       }
 

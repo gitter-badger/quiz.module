@@ -250,7 +250,7 @@ class RevisionActionsForm {
         $randomization_sql = 'SELECT randomization FROM {quiz_entity_revision} WHERE vid = :vid';
         $quiz_randomization = db_query($randomization_sql, array(':vid' => $quiz_vid))->fetchField();
 
-        $question_status = $quiz_randomization == 2 ? QUESTION_RANDOM : QUESTION_ALWAYS;
+        $question_status = $quiz_randomization == 2 ? QUIZ_QUESTION_RANDOM : QUIZ_QUESTION_ALWAYS;
       }
 
       // Insert the newest revision of the question into the quiz

@@ -96,8 +96,8 @@ function quiz_question_entity_info() {
       'module'                    => 'quiz_question',
       'bundles'                   => array(),
       'view modes'                => array(
-          'question' => array('label' => t('Question'), 'custom settings' => TRUE),
-          'feedback' => array('label' => t('Feedback'), 'custom settings' => TRUE),
+          'question' => array('label' => t('Question'), 'custom settings' => FALSE),
+          'feedback' => array('label' => t('Feedback'), 'custom settings' => FALSE),
       ),
       'admin ui'                  => array(
           'path'             => 'admin/content/quiz-questions',
@@ -301,7 +301,7 @@ function _quiz_delete_question(&$question, $only_this_version) {
   $res = db_query($select_sql, $filter_arg);
 
   $update = db_update('quiz_relationship')
-    ->fields(array('question_status' => QUESTION_NEVER))
+    ->fields(array('question_status' => QUIZ_QUESTION_NEVER))
     ->condition('question_nid', $question->qid);
   if ($only_this_version) {
     $update = $update->condition('question_vid', $question->vid);

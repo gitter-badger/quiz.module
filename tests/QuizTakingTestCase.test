@@ -69,6 +69,38 @@ class QuizTakingTestCase extends QuizTestCase {
   }
 
   /**
+   * Test the quiz not resuming from database.
+   */
+  public function testQuizNoResuming() {
+    // Resuming is default behavior.
+    $quiz = $this->drupalCreateQuiz(array('allow_resume' => 0));
+
+    // 2 questions.
+    $question_1 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $question_2 = $this->drupalCreateQuestion(array('type' => 'truefalse', 'correct_answer' => 1));
+    $this->linkQuestionToQuiz($question_1, $quiz);
+    $this->linkQuestionToQuiz($question_2, $quiz);
+
+    // Answer a question. Ensure the question navigation restrictions are
+    // maintained.
+    $this->drupalLogin($this->user);
+    $this->drupalGet("quiz/{$quiz->qid}/take");
+    $this->drupalGet("quiz/{$quiz->qid}/take/2");
+    $this->assertResponse(403);
+    $this->drupalGet("quiz/{$quiz->qid}/take/1");
+    $this->drupalPost(NULL, array("question[$question_1->qid]" => 1), t('Next'));
+
+    // Login again.
+    $this->drupalLogin($this->user);
+    $this->drupalGet("quiz/{$quiz->qid}/take");
+    $this->assertNoText('Resuming');
+
+    // Assert 2nd question is not accessible (indicating the answer to #1 was not saved.)
+    $this->drupalGet("quiz/{$quiz->qid}/take/2");
+    $this->assertResponse(403);
+  }
+
+  /**
    * Test the quiz availability tests.
    */
   public function testQuizAvailability() {

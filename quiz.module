@@ -37,10 +37,10 @@ if (!defined('QUIZ_NAME')) {
 /*
  * Define question statuses…
  */
-define('QUESTION_RANDOM', 0);
-define('QUESTION_ALWAYS', 1);
-define('QUESTION_NEVER', 2);
-define('QUESTION_CATEGORIZED_RANDOM', 3);
+define('QUIZ_QUESTION_RANDOM', 0);
+define('QUIZ_QUESTION_ALWAYS', 1);
+define('QUIZ_QUESTION_NEVER', 2);
+define('QUIZ_QUESTION_CATEGORIZED_RANDOM', 3);
 
 /**
  * Define options for keeping results.

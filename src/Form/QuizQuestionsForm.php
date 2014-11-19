@@ -210,7 +210,7 @@ class QuizQuestionsForm extends BaseForm {
       if ($quiz->randomization == 2) {
         $form[$fieldset]['compulsories'][$id] = array(
             '#type'          => 'checkbox',
-            '#default_value' => isset($question->question_status) ? ($question->question_status == QUESTION_ALWAYS) ? 1 : 0 : 0,
+            '#default_value' => ($relationship->question_status == QUIZ_QUESTION_ALWAYS) ? 1 : 0,
             '#attributes'    => array('class' => array('q-compulsory')),
         );
       }
@@ -279,7 +279,6 @@ class QuizQuestionsForm extends BaseForm {
     }
 
     $already_checked = array();
-    $weight_map = $form_state['values']['weights'];
 
     // Make sure the number of random questions is a positive number
     if (isset($form_state['values']['num_random_questions']) && !quiz_valid_integer($form_state['values']['num_random_questions'], 0)) {
@@ -291,13 +290,9 @@ class QuizQuestionsForm extends BaseForm {
       form_set_error('max_score_for_random', 'The max score for random questions needs to be a positive number');
     }
 
-    if (empty($weight_map)) {
-      form_set_error('none', 'No questions were included.');
-      return;
-    }
-
+    $weight_map = isset($form_state['values']['weights']) ? $form_state['values']['weights'] : array();
     foreach (array_keys($weight_map) as $id) {
-      list($question_qid, $question_vid) = explode('-', $id, 2);
+      list($question_qid, ) = explode('-', $id, 2);
 
       // If a question isn't one of the question types we remove it from the question list
       $valid_question = db_select('quiz_question', 'question')
@@ -320,7 +315,7 @@ class QuizQuestionsForm extends BaseForm {
     }
 
     // We make sure max score is a positive number
-    $max_scores = $form_state['values']['max_scores'];
+    $max_scores = isset($form_state['values']['max_scores']) ? $form_state['values']['max_scores'] : array();
     foreach ($max_scores as $id => $max_score) {
       if (!quiz_valid_integer($max_score, 0)) {
         form_set_error("max_scores][$id", t('Max score needs to be a positive number'));
@@ -345,13 +340,13 @@ class QuizQuestionsForm extends BaseForm {
 
     $this->questionBrowserSubmit($form, $form_state);
 
-    $weight_map = $form_state['values']['weights'];
-    $qr_pids_map = $form_state['values']['qr_pids'];
-    $qr_ids_map = $form_state['values']['qr_ids'];
-    $max_scores = $form_state['values']['max_scores'];
-    $auto_update_max_scores = $form_state['values']['auto_update_max_scores'];
+    $weight_map = isset($form_state['values']['weights']) ? $form_state['values']['weights'] : array();
+    $qr_pids_map = isset($form_state['values']['qr_pids']) ? $form_state['values']['qr_pids'] : array();
+    $qr_ids_map = isset($form_state['values']['qr_ids']) ? $form_state['values']['qr_ids'] : array();
+    $max_scores = isset($form_state['values']['max_scores']) ? $form_state['values']['max_scores'] : array();
+    $auto_update_max_scores = isset($form_state['values']['auto_update_max_scores']) ? $form_state['values']['auto_update_max_scores'] : array();
     $refreshes = isset($form_state['values']['revision']) ? $form_state['values']['revision'] : NULL;
-    $stayers = $form_state['values']['stayers'];
+    $stayers = isset($form_state['values']['stayers']) ? $form_state['values']['stayers'] : array();
     $compulsories = isset($form_state['values']['compulsories']) ? $form_state['values']['compulsories'] : NULL;
     $num_random = isset($form_state['values']['num_random_questions']) ? $form_state['values']['num_random_questions'] : 0;
     $quiz->max_score_for_random = isset($form_state['values']['max_score_for_random']) ? $form_state['values']['max_score_for_random'] : 1;
@@ -364,7 +359,7 @@ class QuizQuestionsForm extends BaseForm {
     if (empty($term_id)) {
       $assigned_random = 0;
       foreach ($questions as $question) {
-        if ($question->state == QUESTION_RANDOM) {
+        if ($question->state == QUIZ_QUESTION_RANDOM) {
           ++$assigned_random;
         }
       }
@@ -388,7 +383,7 @@ class QuizQuestionsForm extends BaseForm {
     $query = db_select('quiz_relationship', 'qnr');
     $query->addExpression('SUM(max_score)', 'sum');
     $query->condition('quiz_vid', $quiz->vid);
-    $query->condition('question_status', QUESTION_ALWAYS);
+    $query->condition('question_status', QUIZ_QUESTION_ALWAYS);
     $score = $query->execute()->fetchAssoc();
 
     // Update the quiz's properties.
@@ -420,7 +415,7 @@ class QuizQuestionsForm extends BaseForm {
    */
   private function questionBrowserSubmit($form, &$form_state) {
     // Find the biggest weight:
-    $next_weight = max($form_state['values']['weights']);
+    $next_weight = isset($form_state['values']['weights']) ? max($form_state['values']['weights']) : 0;
 
     // If a question is chosen in the browser, add it to the question list if it isn't already there
     if (isset($form_state['values']['browser']['table']['titles'])) {
@@ -452,7 +447,7 @@ class QuizQuestionsForm extends BaseForm {
    *   True if we are creating a new revision of the quiz
    * @param $stayers
    *   Questions added to the quiz
-   * @param $compulsories
+   * @param bool[] $compulsories
    *   Array of boolean values determining if the question is compulsory or not.
    * @return array set of questions after updating
    */
@@ -472,11 +467,11 @@ class QuizQuestionsForm extends BaseForm {
           'qr_pid'                => $qr_pids[$id] > 0 ? $qr_pids[$id] : NULL,
           'qr_id'                 => $qr_ids[$id] > 0 ? $qr_ids[$id] : NULL,
           'refresh'               => (isset($refreshes[$id]) && $refreshes[$id] == 1),
-          'state'                 => QUESTION_ALWAYS,
+          'state'                 => QUIZ_QUESTION_ALWAYS,
       ));
 
       if (isset($compulsories) && $compulsories[$id] != 1) {
-        $question->state = QUESTION_RANDOM;
+        $question->state = QUIZ_QUESTION_RANDOM;
         $max_scores[$id] = $quiz->max_score_for_random;
       }
 
