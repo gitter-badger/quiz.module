@@ -96,8 +96,8 @@ function quiz_question_entity_info() {
       'module'                    => 'quiz_question',
       'bundles'                   => array(),
       'view modes'                => array(
-          'question' => array('label' => t('Question'), 'custom settings' => TRUE),
-          'feedback' => array('label' => t('Feedback'), 'custom settings' => TRUE),
+          'question' => array('label' => t('Question'), 'custom settings' => FALSE),
+          'feedback' => array('label' => t('Feedback'), 'custom settings' => FALSE),
       ),
       'admin ui'                  => array(
           'path'             => 'admin/content/quiz-questions',
