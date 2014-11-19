@@ -217,7 +217,7 @@ function quiz_question_get_report($nid, $vid, $result_id) {
  */
 function quiz_question_quiz_question_score($quiz, Question $question, $result_id = NULL) {
   if (!isset($quiz) && !isset($result_id)) {
-    return quiz_question_get_max_score($question->qid, $question->vid);
+    return $question->max_score;
   }
 
   if (!$plugin = $question->getPlugin()) {

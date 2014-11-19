@@ -408,12 +408,6 @@ class QuizQuestionsForm extends BaseForm {
    *
    * This function changes the form_state to reflect questions added via the browser.
    * (Especially if js is disabled)
-   *
-   *
-   * @param $form
-   *   FAPI form(array)
-   * @param $form_state
-   *   FAPI form_state(array)
    */
   private function questionBrowserSubmit($form, &$form_state) {
     // Find the biggest weight:
@@ -422,13 +416,11 @@ class QuizQuestionsForm extends BaseForm {
     // If a question is chosen in the browser, add it to the question list if it isn't already there
     if (isset($form_state['values']['browser']['table']['titles'])) {
       foreach ($form_state['values']['browser']['table']['titles'] as $id) {
-        if ($id !== 0) {
-          $matches = array();
-          preg_match('/([0-9]+)-([0-9]+)/', $id, $matches);
-          $nid = $matches[1];
-          $vid = $matches[2];
+        if ($id) {
+          list($question_qid, $question_vid) = explode('-', $id, 2);
+          $question = quiz_question_entity_load($question_qid, $question_vid);
           $form_state['values']['weights'][$id] = ++$next_weight;
-          $form_state['values']['max_scores'][$id] = quiz_question_get_max_score($nid, $vid);
+          $form_state['values']['max_scores'][$id] = $question->max_score;
           $form_state['values']['stayers'][$id] = 1;
         }
       }

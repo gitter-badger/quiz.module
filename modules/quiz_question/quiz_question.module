@@ -98,21 +98,6 @@ function quiz_question_access_to_score($question_vid, $result_id) {
 }
 
 /**
- * Get the max score for a question
- *
- * @param $question_qid
- * @param $question_vid
- * @return
- *  Max score(int)
- */
-function quiz_question_get_max_score($question_qid, $question_vid) {
-  return db_query('SELECT max_score FROM {quiz_question_revision} WHERE qid = :qid AND vid = :vid', array(
-        ':qid' => $question_qid,
-        ':vid' => $question_vid
-    ))->fetchField();
-}
-
-/**
  * Returns a result report for a question response.
  *
  * The retaurned value is a form array because in some contexts the scores in the form
