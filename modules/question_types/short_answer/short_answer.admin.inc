@@ -21,41 +21,29 @@ function short_answer_view_unscored() {
  * This function is called directly from the menu router. It generates a form for
  * scoring a quiz.
  *
- * @param $vid
- *  The VID of the question and answer to load.
- * @param $result_id
- *  The result ID of the answer to load.
- * @return
- *  Text to display.
+ * @param int $question_vid
+ * @param int $result_id
+ * @return string
  */
-function short_answer_edit_score($vid, $result_id) {
-  $nid = db_query('SELECT nid FROM {node_revision} WHERE vid = :vid', array(':vid' => $vid))->fetchField();
-  if (!$nid) {
-    drupal_not_found();
-    return;
+function short_answer_edit_score($question_vid, $result_id) {
+  if (!$question = quiz_question_entity_load(NULL, $question_vid)) {
+    return drupal_not_found();
   }
 
-  $question = quiz_question_entity_load($nid, $vid);
-  if (!$question || $question->type !== 'short_answer') {
-    drupal_not_found();
-    return;
+  if ('short_answer' !== $question->getQuestionType()->plugin) {
+    throw new \RuntimeException('Unexpected question type: ' . $question->getQuestionType()->plugin);
   }
 
-  $answer = (object) short_answer_get_answer($question->qid, $question->vid, $result_id);
-  if (!$answer) {
-    drupal_not_found();
-    return;
+  if (!$answer = (object) short_answer_get_answer($question->qid, $question->vid, $result_id)) {
+    return drupal_not_found();
   }
 
+  $answer->rel_score = 0;
   if ($question->max_score > 0) {
     $answer->rel_score = round($answer->score * $answer->rel_max_score / $question->max_score);
   }
-  else {
-    $answer->rel_score = 0;
-  }
 
   drupal_set_title(t('Score answer to "@title"', array('@title' => $question->title)), PASS_THROUGH);
-
   return drupal_get_form('short_answer_score_form', $question, $answer);
 }
 

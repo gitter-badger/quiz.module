@@ -64,20 +64,15 @@ function quiz_question_module_for_type($question_type_name) {
 /**
  * Figure out if a user has access to score a certain result
  *
- * @param $vid
- *  Question version id
- * @param $result_id
- *  Result id
- * @return
+ * @param int $question_vid
+ * @param int $result_id
+ * @return bool
  *  True if the user has access to score the result
  */
-function quiz_question_access_to_score($vid, $result_id) {
+function quiz_question_access_to_score($question_vid, $result_id) {
   global $user;
 
-  $sql = 'SELECT *'
-    . ' FROM {quiz_results_answers}'
-    . ' WHERE result_id = :result_id AND question_vid = :question_vid';
-  if (!$answer = db_query($sql, array(':result_id' => $result_id, ':question_vid' => $vid))->fetch()) {
+  if (!$answers = entity_load('quiz_result_answer', FALSE, array('result_id' => $result_id, 'question_vid' => $question_vid))) {
     return FALSE;
   }
 
@@ -86,18 +81,19 @@ function quiz_question_access_to_score($vid, $result_id) {
   }
 
   if (user_access('score taken quiz answer')) {
-    $sql = 'SELECT uid FROM {quiz_results} qnr WHERE qnr.result_id = :result_id';
-    if ($user->uid == db_query($sql, array(':result_id' => $result_id))->fetchField()) {
-      return TRUE;
+    if ($result = quiz_result_load($result_id)) {
+      if ($user->uid == $result->uid) {
+        return TRUE;
+      }
     }
   }
 
   if (user_access('score own quiz')) {
-    $sql = 'SELECT r.uid'
-      . ' FROM {node_revision} r'
-      . ' JOIN {quiz_results} qnr ON (r.nid = qnr.nid)'
-      . ' WHERE qnr.result_id = :result_id';
-    return $user->uid == db_query($sql, array(':result_id' => $result_id))->fetchField();
+    if ($result = quiz_result_load($result_id)) {
+      if ($quiz = quiz_load(NULL, $result->quiz_vid)) {
+        return $user->uid == $quiz->uid;
+      }
+    }
   }
 }
 

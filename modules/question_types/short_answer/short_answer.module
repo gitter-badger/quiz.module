@@ -51,11 +51,11 @@ function short_answer_menu() {
   $items['admin/quiz/reports/score-short-answer/%/%'] = array(
       'title'            => 'Score short answer response',
       'description'      => 'Score a response to a short answer question.',
+      'access arguments' => array(4, 5),
+      'access callback'  => 'quiz_question_access_to_score',
       'page callback'    => 'short_answer_edit_score',
       'page arguments'   => array(4, 5),
       'type'             => MENU_NORMAL_ITEM,
-      'access arguments' => array(4, 5),
-      'access callback'  => 'quiz_question_access_to_score',
       'file'             => 'short_answer.admin.inc'
   );
 
@@ -221,7 +221,7 @@ function short_answer_report_submit($values) {
  * Get the answer for a question.
  *
  * This stores a score for a short answer question and marks that question as having been evaluated.
- * @param $question_nid
+ * @param $question_qid
  *  Node ID of question.
  * @param $question_vid
  *  Version ID of question.
@@ -240,12 +240,12 @@ function short_answer_report_submit($values) {
  *  result_id
  *  </code>
  */
-function short_answer_get_answer($question_nid, $question_vid, $result_id) {
+function short_answer_get_answer($question_qid, $question_vid, $result_id) {
   $results = db_query('SELECT sa.answer_id, sa.answer, sa.is_evaluated, sa.score, sa.question_vid, sa.question_nid, sa.result_id, sa.answer_feedback, sa.answer_feedback_format, rel.max_score AS rel_max_score
     FROM {quiz_short_answer_user_answers} sa
     JOIN {quiz_results} qnr ON (sa.result_id = qnr.result_id)
     JOIN {quiz_relationship} rel ON (qnr.quiz_vid = rel.quiz_vid AND rel.question_vid = sa.question_vid)
-    WHERE sa.question_nid = :qnid AND sa.question_vid = :qvid AND sa.result_id = :rid', array(':qnid' => $question_nid, ':qvid' => $question_vid, ':rid' => $result_id))->fetchAssoc();
+    WHERE sa.question_nid = :qnid AND sa.question_vid = :qvid AND sa.result_id = :rid', array(':qnid' => $question_qid, ':qvid' => $question_vid, ':rid' => $result_id))->fetchAssoc();
   return $results ? $results : FALSE;
 }
 
