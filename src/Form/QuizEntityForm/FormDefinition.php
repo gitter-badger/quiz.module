@@ -175,7 +175,7 @@ class FormDefinition extends FormHelper {
 
     $review_options = quiz()->getQuizHelper()->getFeedbackHelper()->getOptions();
 
-    foreach (array('question' => 'After the question', 'end' => t('After the @quiz', array('@quiz' => QUIZ_NAME))) as $key => $when) {
+    foreach (array('question' => t('After the question'), 'end' => t('After the @quiz', array('@quiz' => QUIZ_NAME))) as $key => $when) {
       $form['taking']['review_options'][$key] = array(
           '#title'         => $when,
           '#type'          => 'checkboxes',
@@ -394,7 +394,7 @@ class FormDefinition extends FormHelper {
             '#default_value' => isset($option['option_name']) ? $option['option_name'] : '',
             '#maxlength'     => 40,
             '#size'          => 40,
-            '#description'   => 'e.g., "A" or "Passed"',
+            '#description'   => t('e.g., "A" or "Passed"'),
         );
         $form['resultoptions'][$i]['option_start'] = array(
             '#type'          => 'textfield',
