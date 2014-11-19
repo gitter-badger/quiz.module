@@ -477,8 +477,7 @@ function quiz_result_page(Result $result) {
  *  Array of score information as returned by quiz_calculate_score().
  * @param string $summary
  *  Filtered text of the summary.
- * @return
- *  Themed html.
+ * @return string
  *
  * @ingroup themeable
  */
@@ -526,8 +525,10 @@ function theme_quiz_result($variables) {
     }
   }
 
-  $report_form = drupal_get_form('quiz_report_form', $questions);
-  return $output . drupal_render($report_form);
+  return array(
+      '#markup'     => $output,
+      'report_form' => drupal_get_form('quiz_report_form', $questions),
+  );
 }
 
 /**

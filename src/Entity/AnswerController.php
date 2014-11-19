@@ -32,9 +32,7 @@ class AnswerController extends EntityAPIController {
    *
    * @param int $result_id
    * @param Question $question
-   *  The question enttiy
    * @param string $answer
-   *  Resonce to the answering form.
    * @param int $question_qid
    * @param int $question_vid
    * @return \Drupal\quiz_question\QuizQuestionResponse

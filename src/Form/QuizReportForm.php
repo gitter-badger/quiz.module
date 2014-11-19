@@ -9,12 +9,10 @@ class QuizReportForm {
   /**
    * Form for showing feedback, and for editing the feedback if necessary…
    *
+   * @param array $form
    * @param array $form_state
-   *   FAPI form state(array)
    * @param Question[] $questions
-   *   array of questions to inclide in the report
    * @return array
-   *   FAPI form array
    */
   public function getForm($form, $form_state, $questions) {
     $form['#tree'] = TRUE;

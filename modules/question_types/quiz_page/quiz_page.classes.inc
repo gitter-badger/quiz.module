@@ -64,7 +64,7 @@ class QuizPagesQuestion extends QuestionPlugin {
 
   function getAnsweringForm(array $form_state = NULL, $result_id) {
     $element = array(
-      '#type' => 'hidden',
+        '#type' => 'hidden',
     );
     return $element;
   }
@@ -128,7 +128,7 @@ class QuizPagesResponse extends QuizQuestionResponse {
    */
   public function getReportForm() {
     return array(
-      '#no_report' => TRUE,
+        '#no_report' => TRUE,
     );
   }
 

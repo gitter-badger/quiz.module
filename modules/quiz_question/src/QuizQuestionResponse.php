@@ -227,7 +227,7 @@ abstract class QuizQuestionResponse {
 
     $form['max_score'] = array(
         '#type'  => 'value',
-        '#value' => ($this->canReview('score')) ? $this->getMaxScore() : '?',
+        '#value' => $this->canReview('score') ? $this->getMaxScore() : '?',
     );
 
     $labels = array(
@@ -251,12 +251,7 @@ abstract class QuizQuestionResponse {
 
     if ($this->isEvaluated()) {
       $score = $this->getScore();
-      if ($this->isCorrect()) {
-        $class = 'q-correct';
-      }
-      else {
-        $class = 'q-wrong';
-      }
+      $class = $this->isCorrect() ? 'q-correct' : 'q-wrong';
     }
     else {
       $score = t('?');
