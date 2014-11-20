@@ -45,9 +45,8 @@ class LongAnswerTestCase extends QuizQuestionTestCase {
    */
   public function testGradeAnswerManualFeedback() {
     $question_1 = $this->createQuizQuestion();
-    $quiz = $this->linkQuestionToQuiz($question_1);
-
     $question_2 = $this->createQuizQuestion();
+    $quiz = $this->linkQuestionToQuiz($question_1);
     $this->linkQuestionToQuiz($question_2, $quiz);
 
     // Test correct.

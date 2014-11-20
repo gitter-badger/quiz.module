@@ -1,6 +1,7 @@
 <?php
 
 use Drupal\quiz\Entity\QuizEntity;
+use Drupal\quiz_question\Entity\Question;
 
 /**
  * Base test class for Quiz questions.
@@ -95,7 +96,7 @@ abstract class QuizTestCase extends DrupalWebTestCase {
   /**
    * Link a question to a new or provided quiz.
    *
-   * @param \Drupal\quiz_question\Entity\Question $question
+   * @param Question $question
    * @param QuizEntity|null $quiz
    * @return QuizEntity
    */
@@ -127,7 +128,7 @@ abstract class QuizTestCase extends DrupalWebTestCase {
    * Create question entity.
    *
    * @param array $values
-   * @return \Drupal\quiz_question\Entity\Question
+   * @return Question
    */
   protected function drupalCreateQuestion(array $values) {
     $values['type'] = 'default_' . $values['type'];
