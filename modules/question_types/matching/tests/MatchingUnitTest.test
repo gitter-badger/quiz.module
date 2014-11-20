@@ -58,6 +58,10 @@ class MatchingTestCase extends QuizQuestionTestCase {
 
     $this->assertText('You got 3 of 4 possible points.');
     $this->assertText('Your score: 75%');
+    $this->assertText('Correct result is: "Number 1"');
+    $this->assertText('Correct result is: "Number 2"');
+    $this->assertText('Correct result is: "Number 3"');
+    $this->assertText('Correct result is: "Number 4"');
   }
 
 }
