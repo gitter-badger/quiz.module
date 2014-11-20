@@ -49,14 +49,6 @@ function quiz_question_menu_local_tasks_alter(&$data, $router_item, $root_path) 
 function quiz_question_entity_info() {
   $info = array();
 
-  $info['quiz_question_properties'] = array(
-      'label'                  => t('Quiz question properties'),
-      'controller class'       => 'EntityAPIController',
-      'base table'             => 'quiz_question_properties',
-      'entity keys'            => array('id' => 'qqp_id'),
-      'views controller class' => 'EntityDefaultViewsController',
-  );
-
   $info['quiz_question_type'] = array(
       'label'            => t('Question type'),
       'plural label'     => t('Question types'),

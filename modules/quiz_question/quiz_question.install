@@ -13,20 +13,6 @@
 function quiz_question_schema() {
   $schema = array();
 
-  $schema['quiz_question_properties'] = array(
-      'description' => 'Properties common for all quizzes.',
-      'fields'      => array(
-          'qqp_id'          => array('type' => 'serial'),
-          'nid'             => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE,),
-          'vid'             => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE),
-          'max_score'       => array('type' => 'int', 'unsigned' => TRUE, 'default' => 0),
-          'feedback'        => array('type' => 'text'),
-          'feedback_format' => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE),
-      ),
-      'primary key' => array('qqp_id'),
-      'indexes'     => array('question_id' => array('vid', 'nid')),
-  );
-
   $schema['quiz_question'] = array(
       'description' => 'Store quiz questions',
       'fields'      => array(
@@ -226,4 +212,60 @@ function quiz_question_update_7605() {
     ->condition('base', 'quiz_question')
     ->execute();
   return 'Change owner for quiz node type.';
+}
+
+/**
+ * Create temp columns for next update scripts.
+ */
+function quiz_question_update_7606() {
+  db_add_field('quiz_question', 'node_nid', array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0));
+  db_add_field('quiz_question_revision', 'node_vid', array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0));
+  db_add_index('quiz_question', 'question_node', array('node_qid'));
+  db_add_index('quiz_question_revision', 'question_node', array('node_vid'));
+}
+
+/**
+ * @TODO: Migrate question nodes to question entities.
+ */
+function quiz_question_update_7607() {
+  foreach (module_implements('quiz_question_info') as $module) {
+    $select = db_select('node_revision', 'r');
+    $select->innerJoin('node', 'n', 'r.nid = n.nid');
+    $node_revisions = $select
+      ->fields('r', array('nid', 'vid', 'uid', 'title', 'log', 'timestamp', 'status'))
+      ->fields('n', array('type', 'language', 'created', 'changed'))
+      ->condition('node.type', $module)
+      ->orderBy('r.vid')
+      ->execute()
+      ->fetchAll();
+    foreach ($node_revisions as $node_revision) {
+      // …
+    }
+  }
+}
+
+/**
+ * @TODO: Other steps
+ */
+function quiz_question_update_7609() {
+  return '…';
+}
+
+/**
+ * Clean up migration's temp data.
+ */
+function quiz_question_update_76010() {
+  db_drop_index('quiz_question', 'question_node');
+  db_drop_index('quiz_question_revision', 'question_node');
+  db_drop_field('quiz_question', 'node_nid');
+  db_drop_field('quiz_question_revision', 'node_vid');
+  return 'Cleaned up migration\'s temp columns.';
+}
+
+/**
+ * Drop {quiz_question_properties} table.
+ */
+function quiz_question_update_76011() {
+  db_drop_table('quiz_question_properties');
+  return 'Dropped {quiz_question_properties} table.';
 }
